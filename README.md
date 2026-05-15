@@ -1,232 +1,94 @@
-# mdtC
-Version: `1.5`
+# MdtC — Mindustry 逻辑代码编译器
 
-本转换器支持类Java代码和mindustry逻辑代码互转.  
-输入: `*.mdtc` `*.mdtcode` `*.libmdtc`.  
-输出: `*.mdtcode`(逻辑代码), `*.mdtc`(反编译的类java代码).
+> v2.0 · JDK 25 · Mindustry v157
 
-### 命令行参数
+一种类 Java 的高级语言，可编译为 Mindustry 原生逻辑汇编（`.mdtc` → `.mdtcode`），也可反向反编译。
 
-- `-v, --version`: 显示版本信息
-- `-f, --format`: 格式化代码
-- `-fo, --format-only`: 仅格式化代码
-- `-i, --file <文件路径>`: 指定文件路径
-- `-o, --output <输出路径>`: 指定输出路径
-- `-oo, --open-out`: 编译后打开输出
-- `-gpc, --generate-prime-code <代码等级>`: 产生中间代码
+提供 **CLI 命令行工具** 和 **游戏内模组** 两种使用方式。
 
-> ### 示例: 编译/反编译  
-> `java -jar mdtc.jar -i "sample_cases/testcase.mdtc" -f -v -gpc 2`  
-> `java -jar mdtc.jar -i "sample_cases/testcase.mdtcode" -f -v -gpc 2`  
-
-
-### *样例*  
-#### 从`.mdtc`编译:
-- [钍堆防爆](sample_cases/failsafe_钍堆.mdtcode)
-- [采矿逻辑-5单位max](sample_cases/mine%20u5.mdtcode)
-#### 从`.mdtcode`反编译:
-- [智能装卸-最终版-旧](sample_cases/智能装卸.mdtc)
-
-
-### TodoList
-- 编写为游戏模组
-  - 用户界面编写
-  - 物品名表自动导入
 ---
 
-## 语法
+## 快速开始
 
-### 0.注释与标签
-```githubexpressionlanguage
-::这是注释,也是标签
-tag(这也是标签,而且是全局标签)
+### CLI 工具
 
-::代码头尾自带HEAD和END标签
-::缺省时代码头自带DEFAULT标签
-```
-输出: [`case0.mdtcode`](./sample_cases/case0.mdtcode)
+```bash
+# 编译 .mdtc → .mdtcode
+java -jar build/libs/mdtc-2.0-all.jar -i "sample_cases/case1.mdtc"
 
+# 反编译 .mdtcode → .mdtc
+java -jar build/libs/mdtc-2.0-all.jar -i "sample_cases/case1.mdtcode"
 
-### 1. 赋值与计算
-> 特别的, 减号应用.-表示 (-为连字符,加以区分), 但负数直接书写 (eg.`-x0`)
-```githubexpressionlanguage
-::赋值
-x0="Hello World"
-
-::计算
-x=1+(-1).-(-x0)*4/5//6%7%%8.^9
-y=1==(2!=3)&&4<5<=6>7>=8===9
-z=1<<2>>3>>>4|5&6^7
-
-i=max(min(len(1,2),noise(3,4)),angle(log(5,6),angleDiff(7,8)))
-j=not(abs(sign(ln(lg(lb(floor(ceil(7.8))))))))
-k=round(sqrt(rand(sin(cos(tan(asin(acos(atan(9)))))))))
-```
-输出: [`case1.mdtcode`](./sample_cases/case1.mdtcode)
-
-
-### 2. 控制(无副作用)
-```githubexpressionlanguage
-::控制(无副作用)
-wait(6)
-stop()
-end()
-
-print("1145{0}")
-printchar(64)
-format(14)
-ubind(@mono)
-uctrl(payDrop)
-ushoot(1).target(114,514)
-ushoot(i).target(ene1)
-raw("end")
-
-::点控制(无副作用)
-b1.enable(false).config(null).color(0)
-b2.shoot().target(x,y)
-b2.shoot(st).target(u1).config(@copper)
-c.ulocate(turret).enemy(1)
-msg.pflush().dflush()
-color1.unpack(r,g,b,a)
-result.write(cell1,x1)
-
-::拓展
-printf("666{0}yf{1}",6,cr1)
-```
-```githubexpressionlanguage
-::拓展
-printf("666{0}yf{1}",6,cr1)
-```
-输出: [`case2.mdtcode`](./sample_cases/case2.mdtcode)
-
-
-### 3. 控制(有副作用)
-```githubexpressionlanguage
-::控制(有副作用)
-r=link(i)
-g=block(unit(item(liquid(team(LookupIndex)))))*pack(r,g,b,a)
-b=uradar()===radar(t5).target(player,ground).order(0).sort(maxHealth)
-
-::点控制(有副作用)
-x=b1.sensor(@lead)+c1.read(bit2)
-y=a.orElse(b).when(x!=0).orElse(c).when(r)
-```
-输出: [`case3.mdtcode`](./sample_cases/case3.mdtcode)
-
-
-### 4. 跳转/分支/循环
-```githubexpressionlanguage
-::原生跳转jump
-::不指定标签时跳转到DEFAULT
-::不指定条件时始终跳转
-::tag1
-e=e+1
-jump(tag1).when(e<6)
-
-::分支if-else
-if(init==0){
-	mid=rand(100000)
-	u.flag=floor(mid)
-	init=1
-}
-else{
-    end()
-}
-
-::循环for
-::例:钍堆防爆
-for(e=0;e<@links;e=e+1){
-	t=link(e)
-	case= t.sensor(@heat)<0.01 && t.sensor(@thorium)>27
-	t.enable(case)
-}
-
-::循环do-while
-do{
-	e=e-1
-}while(e.^3>(-114514))
-
-::跳转jump2
-::警告:jump2的未定义行为不会报错,必须手动检查标签
-jump2(+4)
-jump2(+min(19198,1).^0)
-jump2(0)
-```
-输出: [`case4.mdtcode`](./sample_cases/case4.mdtcode)
-
-
-### 5. 绘图
-```githubexpressionlanguage
-::仅简单参数传递
-draw(clear)
-draw(image,0,0,@copper,32,0,0)
+# 格式化 .libmdtc
+java -jar build/libs/mdtc-2.0-all.jar -i "modules/example.libmdtc" -fo
 ```
 
+### 游戏内模组
 
-### 6. 函数
-函数体应定义于主代码后, 分为有副作用和无副作用两种  
-定义时应指定输入参数和返回值名(void为无返回值)  
-调用时使用funcName(funcArgs)调用
-```githubexpressionlanguage
-::函数
-::示例使用
-println("Hello world")
-message1.pflush()
-for(e=0;e<@links;e=e+1){
-	t=link(e)
-	t.enable(isReactorSafe(t))
-}
-onebind(u,@mono,114514)
+1. 将 `build/libs/mdtcDesktop.jar` 放入 Mindustry `mods/` 目录
+2. 打开任意处理器 → 底部出现 **MdtC** 按钮
+3. 点击打开左右双栏编辑器，处理器代码自动带入右栏并反编译到左栏
 
+---
 
-::示例定义(无副作用)
-::例:println
-function void println(str){
-	print(str)
-	print("\n")
-}
+## 命令行参数
 
-::示例定义(有副作用)
-::例:钍堆安全
-function status isReactorSafe(th_reactor){
-	status= th_reactor.sensor(@heat)<0.01 && th_reactor.sensor(@thorium)>27
-}
+| 参数 | 说明 |
+|------|------|
+| `-i, --file <path>` | 输入文件 (`.mdtc` / `.mdtcode` / `.libmdtc`) |
+| `-o, --output <path>` | 输出路径（默认与输入同目录、不同后缀） |
+| `-f, --format` | 编译后同时格式化源文件 |
+| `-fo, --format-only` | 仅格式化 |
+| `-oo, --open-out` | 编译后在资源管理器中定位输出文件 |
+| `-gpc, --generate-prime-code <0-2>` | 生成中间代码（调试用） |
+| `-v, --version` | 显示版本 |
 
-::示例定义(带内部标签)
-::例:单位绑定控制
-::绑定一个类型u.type单位, 保存到u, 标记u.fx; (unsafe)跳转到bind.end
-function void onebind(u,u.type,u.fx){
-	if(u==null){
-		::init
-		ubind(u.type)
-		u=@unit
-	}
-	ubind(u)
-	jump(init).when(u.sensor(@dead)!=0)
-	u.cer=u.sensor(@controller)
-	if(u.cer!=@unit){
-		jump(init).when(u.cer!=@this)
-		jump(init).when(u.sensor(@flag)!=u.fx)
-	}
-	uctrl(flag,u.fx)
-	jump2(bind.end)
-}
+---
+
+## 语法速览
+
+| 特性 | 示例 |
+|------|------|
+| 注释/标签 | `::这是注释` `tag(标签名)` |
+| 赋值 | `x = 1 + 2` |
+| 函数调用 | `max(a, b)` `sin(x)` `len(s)` |
+| 控制语句 | `if(cond){ }` `for(var, list){ }` `do{ }` |
+| 等待/停止 | `wait(6)` `stop()` `end()` |
+| 单位控制 | `ubind(@unit)` `ushoot(x, y, shoot)` |
+| 传感器 | `block.sensor(result, @type)` `.read(result, cell)` |
+| 跳转 | `jump(tag, when(cond))` `jump2(expr)` |
+| 函数定义 | `function name(arg1, arg2){ ... }` |
+| 导入 | `import path/to/lib` |
+| 重复展开 | `repeat(var, 3){ ... }` |
+| 打印 | `print(x)` `printf(x)` `printchar(x)` |
+
+> 详细语法见 [`sample_cases/`](sample_cases/) 下的样例文件。
+
+---
+
+## 构建
+
+```bash
+# 要求 JDK 25+
+./gradlew build          # 完整构建 + 测试
+./gradlew jarMod          # 构建 Mindustry mod JAR
+./gradlew shadowJar       # 构建 CLI fat JAR
 ```
-输出: [`case5.mdtcode`](./sample_cases/case5.mdtcode)
 
+---
 
-### 7. 重复和导入
-repeat对代码段多次重复
-等价的1D数组实现, 嵌套即可实现n维数组
-```githubexpressionlanguage
-::repeat和import使用示例
-::此处导入了example.libmdtc
-import sample_cases/modules/example
+## 项目结构
 
-::变量将以flag1-flag3命名
-repeat(flag,3){
-	flag=simpleFlag(5)
-}
 ```
-库文件: [`example.libmdtc`](./sample_cases/modules/example.libmdtc)  
-输出: [`case6.mdtcode`](./sample_cases/case6.mdtcode) 
+src/main/java/cn/sumitm/mdtc/
+├── cli/          CLI 入口 (Main, CliHelper)
+├── compiler/     编译器 + 反编译器 (CodeCompiler, CodeDecompiler)
+├── core/         核心类型与工具 (Constants, Utils, stdCodeStream, stdFuncStream)
+├── formatter/    代码格式化 (CodeFormatter)
+└── mod/          Mindustry 模组 (ModInterface, I18n, ui/)
+assets/
+├── bundles/      多语言资源 (en, zh_CN)
+└── sprites/      模组贴图
+sample_cases/     语法样例
+modules/          可复用函数库 (.libmdtc)
+```

@@ -1,14 +1,20 @@
-import java.awt.*;
-import java.io.File;
+package cn.sumitm.mdtc.core;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
-public class Utils {
-    static String readFile(String filePath) {
+public final class Utils {
+    private Utils() {}
+
+    public static String readFile(String filePath) {
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
             return "";
@@ -21,7 +27,7 @@ public class Utils {
         }
     }
 
-    static void writeFile(String filePath, String content) {
+    public static void writeFile(String filePath, String content) {
         try {
             Files.writeString(Paths.get(filePath), content);
         } catch (IOException e) {
@@ -29,38 +35,45 @@ public class Utils {
         }
     }
 
-    static void openWithExplorer(String filePath) {
-        File directory = new File(filePath);
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            try {
-                desktop.open(directory);
-            } catch (IOException e) {
-                printError("Unable to open directory." + e.getMessage());
+    public static void openWithExplorer(String filePath) {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            ProcessBuilder pb;
+            if (os.contains("win")) {
+                pb = new ProcessBuilder("explorer", "/select,", filePath);
+            } else if (os.contains("mac")) {
+                pb = new ProcessBuilder("open", "-R", filePath);
+            } else {
+                // Linux and others: open the parent directory
+                Path parent = Paths.get(filePath).getParent();
+                pb = new ProcessBuilder("xdg-open", parent != null ? parent.toString() : filePath);
             }
+            pb.start();
+        } catch (IOException e) {
+            printError("Unable to open directory: " + e.getMessage());
         }
     }
 
-    static String formatParams(int paramNum, String[] params, String defaultParam, String delimiter) {
+    public static String formatParams(int paramNum, String[] params, String defaultParam, String delimiter) {
         params = Arrays.copyOf(params, paramNum);
         for (int i = 0; i < params.length; i++)
             if (params[i] == null) params[i] = defaultParam;
         return String.join(delimiter, params);
     }
 
-    static String padParams(String defaultParam, int paramNum, String paramString) {
+    public static String padParams(String defaultParam, int paramNum, String paramString) {
         return formatParams(paramNum, paramString.split(","), defaultParam, " ");
     }
 
-    static String padParams(int paramNum, String... params) {
+    public static String padParams(int paramNum, String... params) {
         return formatParams(paramNum, params, "0", " ");
     }
 
-    static String padParams(int paramNum, String paramString) {
+    public static String padParams(int paramNum, String paramString) {
         return formatParams(paramNum, paramString.split(","), "0", " ");
     }
 
-    static String reduceParams(String defaultParam, String paramString) {
+    public static String reduceParams(String defaultParam, String paramString) {
         int dpLength = defaultParam.length();
         while (paramString.endsWith(defaultParam)) {
             paramString = paramString.substring(0, paramString.length() - dpLength).trim();
@@ -68,19 +81,19 @@ public class Utils {
         return paramString.replace(" ", ",");
     }
 
-    static String reduceParams(String defaultParam, String... params) {
+    public static String reduceParams(String defaultParam, String... params) {
         String paramString = String.join(" ", params);
         return reduceParams(defaultParam, paramString);
     }
 
-    static String reduceParams(String defaultParam, int paramNum, String... params) {
+    public static String reduceParams(String defaultParam, int paramNum, String... params) {
         params = Arrays.copyOf(params, paramNum);
         for (int i = 0; i < params.length; i++)
             if (params[i] == null) params[i] = defaultParam;
         return reduceParams(defaultParam, params);
     }
 
-    static String reduceCondition(String condition) {
+    public static String reduceCondition(String condition) {
         String[] params = condition.split(" ", 3);
         String operator = params[0];
         if (operator.equals("always")) return "always";
@@ -88,21 +101,21 @@ public class Utils {
         return params[1] + Constants.midOpValueMap.get(operator) + params[2].trim();
     }
 
-    static boolean isDotCtrlCode(String codeLine) {
+    public static boolean isDotCtrlCode(String codeLine) {
         for (String command : Constants.dotCtrlCodes) if (codeLine.contains(command)) return true;
         return false;
     }
 
-    static boolean isCtrlCode(String codeLine) {
+    public static boolean isCtrlCode(String codeLine) {
         for (String command : Constants.ctrlCodes) if (codeLine.startsWith(command)) return true;
         return false;
     }
 
-    static void printError(String message) {
+    public static void printError(String message) {
         System.err.println("\u001B[31m" + message + "\u001B[0m");
     }
 
-    static int getEndDotChain(String expr, int start) {
+    public static int getEndDotChain(String expr, int start) {
         int end = getEndBracket(expr, start);
         while (end < expr.length() - 1 && expr.charAt(end + 1) == '.') {
             if (expr.startsWith(".^", end + 1)) return end;
@@ -116,7 +129,7 @@ public class Utils {
         return end;
     }
 
-    static String getDotBlock(String expr) {
+    public static String getDotBlock(String expr) {
         int index = expr.length() - 1;
         for (String key : Constants.dotCtrlCodes) {
             int keyIndex = expr.indexOf(key);
@@ -130,7 +143,7 @@ public class Utils {
      *
      * @return 变量分离的字符串数组
      */
-    static List<String> stringSplit(String str) {
+    public static List<String> stringSplit(String str) {
         if (str.isEmpty()) return List.of();
         if (str.startsWith("::")) return List.of("::", str.substring(2));
         if (str.contains("::")) str = str.substring(0, str.indexOf("::"));
@@ -202,7 +215,7 @@ public class Utils {
         return tokens;
     }
 
-    static List<String> bracketPartSplit(String str) {
+    public static List<String> bracketPartSplit(String str) {
         if (str.isEmpty()) return List.of();
 
         List<String> tokens = new ArrayList<>();
@@ -223,22 +236,22 @@ public class Utils {
         return tokens;
     }
 
-    static String stringOf(List<String> list) {
+    public static String stringOf(List<String> list) {
         return list.stream().reduce("", (a, b) -> a + b);
     }
 
-    static String stringBlockOf(List<String> bashList) {
+    public static String stringBlockOf(List<String> bashList) {
         return bashList.stream().reduce("", (a, b) -> a + "\n" + b).trim();
     }
 
     /**
      * 转换所有已声明变量到保留变量名
      */
-    static String replaceVars(String s, List<String> varsList, List<String> replaceToList) {
+    public static String replaceVars(String s, List<String> varsList, List<String> replaceToList) {
         if (varsList.size() != replaceToList.size()) {
-            Utils.printError("Unable to deal with " + varsList + replaceToList);
+            printError("Unable to deal with " + varsList + replaceToList);
         }
-        List<String> splitList = stringSplit(s);
+        List<String> splitList = new ArrayList<>(stringSplit(s));
         for (int i = 0; i < splitList.size(); i++) {
             for (int j = 0; j < varsList.size(); j++) {
                 if (splitList.get(i).equals(varsList.get(j)))
@@ -248,8 +261,8 @@ public class Utils {
         return stringOf(splitList);
     }
 
-    static String replaceVar(String s, String var, String replaceToVar) {
-        List<String> splitList = stringSplit(s);
+    public static String replaceVar(String s, String var, String replaceToVar) {
+        List<String> splitList = new ArrayList<>(stringSplit(s));
         for (int i = 0; i < splitList.size(); i++) {
             if (splitList.get(i).equals(var))
                 splitList.set(i, replaceToVar);
@@ -260,9 +273,9 @@ public class Utils {
     /**
      * 转换所有已声明标签到保留变量名和标签
      */
-    static String replaceTags(String s, List<String> tagsList, String prefix) {
+    public static String replaceTags(String s, List<String> tagsList, String prefix) {
         final List<String> keyList = List.of("::", "jump");
-        List<String> splitList = stringSplit(s);
+        List<String> splitList = new ArrayList<>(stringSplit(s));
         if (splitList.size() < 2 || !keyList.contains(splitList.getFirst())) return s;
         for (int i = 0; i < keyList.size(); i++) {
             if (splitList.getFirst().equals(keyList.get(i))) {
@@ -273,7 +286,7 @@ public class Utils {
         return stringOf(splitList);
     }
 
-    static String reverseCondition(String codeLine) {
+    public static String reverseCondition(String codeLine) {
         final Map<String, String> reMap = Constants.operatorReverseMap;
         String[] splitList = codeLine.split(" ");
         for (int i = 0; i < splitList.length; i++) {
@@ -283,7 +296,7 @@ public class Utils {
         return String.join(" ", splitList);
     }
 
-    static boolean isSpecialControl(String codeLine) {
+    public static boolean isSpecialControl(String codeLine) {
         String[] keys = new String[]{"::", "}", "do{", "for(", "if(", "else{"};
         for (String key : keys) {
             if (codeLine.startsWith(key)) return true;
@@ -291,7 +304,7 @@ public class Utils {
         return false;
     }
 
-    static int getEndBracket(String expr, int start) {
+    public static int getEndBracket(String expr, int start) {
         if (start < 0) return -1;
         Stack<Integer> stack = new Stack<>();
         for (int i = start; i < expr.length(); i++) {
@@ -306,7 +319,7 @@ public class Utils {
         return -1;
     }
 
-    static String getCondition(String codeLine) {
+    public static String getCondition(String codeLine) {
         final String defaultCondition = "always 0 0";
         String[] params = codeLine.split(" ");
         if (params.length == 0) return defaultCondition;
@@ -324,7 +337,7 @@ public class Utils {
         return defaultCondition;
     }
 
-    static Map<String, String> getChainParams(String s) {
+    public static Map<String, String> getChainParams(String s) {
         String expr = ".main(" + s + ")";
         Map<String, String> paramsMap = new HashMap<>();
         for (int i = 0; i < expr.length(); i++) {
@@ -388,7 +401,7 @@ public class Utils {
         return output;
     }
 
-    static void removeSpareTags(ArrayList<String> bashList) {
+    public static void removeSpareTags(ArrayList<String> bashList) {
         for (int i = 0; i < bashList.size(); i++) {
             String line = bashList.get(i);
             if (line.startsWith("::")) {
@@ -401,7 +414,7 @@ public class Utils {
         }
     }
 
-    static boolean isLowPriority(String op0, String... ops) {
+    public static boolean isLowPriority(String op0, String... ops) {
         int p0 = getPriority(op0);
         for (String op : ops) {
             int p = getPriority(op);
@@ -416,9 +429,8 @@ public class Utils {
      * @return c1的优先级是否比c2的高，高则返回正数，等于返回0，小于返回负数
      */
     public static int cmp(String c1, String c2) {
-        int p1, p2;
-        p1 = Constants.midOpPriorityMap.getOrDefault(c1, 0);
-        p2 = Constants.midOpPriorityMap.getOrDefault(c2, 0);
+        int p1 = Constants.midOpPriorityMap.getOrDefault(c1, 0);
+        int p2 = Constants.midOpPriorityMap.getOrDefault(c2, 0);
         return p1 - p2;
     }
 

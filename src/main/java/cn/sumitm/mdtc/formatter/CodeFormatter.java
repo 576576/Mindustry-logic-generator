@@ -1,4 +1,10 @@
-public class CodeFormatter {
+package cn.sumitm.mdtc.formatter;
+
+import cn.sumitm.mdtc.core.Utils;
+
+public final class CodeFormatter {
+    private CodeFormatter() {}
+
     /**
      * 主代码格式化函数入口
      */

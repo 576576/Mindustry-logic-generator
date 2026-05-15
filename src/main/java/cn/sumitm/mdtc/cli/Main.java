@@ -1,15 +1,23 @@
-import picocli.CommandLine;
+package cn.sumitm.mdtc.cli;
+
 import java.io.InputStream;
 import java.util.Properties;
 
+import cn.sumitm.mdtc.compiler.CodeCompiler;
+import cn.sumitm.mdtc.compiler.CodeDecompiler;
+import cn.sumitm.mdtc.core.Constants;
+import cn.sumitm.mdtc.core.Utils;
+import cn.sumitm.mdtc.formatter.CodeFormatter;
+import picocli.CommandLine;
+
 public class Main {
     private static final String VERSION_TAG;
-    static boolean isToFormat;
-    static boolean isFormatOnly;
-    static boolean isOpenOutput;
-    static String filePath = "";
-    static String outPath = "";
-    static int primeCodeLevel = 0;
+    public static boolean isToFormat;
+    public static boolean isFormatOnly;
+    public static boolean isOpenOutput;
+    public static String filePath = "";
+    public static String outPath = "";
+    public static int primeCodeLevel = 0;
 
     static {
         Properties prop = new Properties();
@@ -24,7 +32,7 @@ public class Main {
         }
     }
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         CliHelper cliHelper = new CliHelper();
         CommandLine cmd = new CommandLine(cliHelper);
         cmd.parseArgs(args);

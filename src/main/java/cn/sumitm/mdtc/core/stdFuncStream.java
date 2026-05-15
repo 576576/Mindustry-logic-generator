@@ -1,3 +1,5 @@
+package cn.sumitm.mdtc.core;
+
 import java.util.List;
 
 public record stdFuncStream(String funcName, List<String> funcBody, List<String> varsList, List<String> tagsList) {

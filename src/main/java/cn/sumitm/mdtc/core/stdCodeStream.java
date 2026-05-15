@@ -1,29 +1,32 @@
+package cn.sumitm.mdtc.core;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public record stdCodeStream(ArrayList<String> bash, String expr, int stat) {
-    private stdCodeStream(ArrayList<String> bash, String expr) {
+
+    public stdCodeStream(ArrayList<String> bash, String expr) {
         this(bash, expr, 1);
     }
 
-    private stdCodeStream(ArrayList<String> bash, int stat) {
+    public stdCodeStream(ArrayList<String> bash, int stat) {
         this(bash, "", stat);
     }
 
-    private stdCodeStream(ArrayList<String> bash) {
+    public stdCodeStream(ArrayList<String> bash) {
         this(bash, "");
     }
 
-    private stdCodeStream(String expr, int stat) {
+    public stdCodeStream(String expr, int stat) {
         this(new ArrayList<>(), expr, stat);
     }
 
-    private stdCodeStream(String expr) {
+    public stdCodeStream(String expr) {
         this(new ArrayList<>(), expr);
     }
 
-    private stdCodeStream() {
+    public stdCodeStream() {
         this("");
     }
 
@@ -58,7 +61,7 @@ public record stdCodeStream(ArrayList<String> bash, String expr, int stat) {
     @Override
     public String toString() {
         return bash.stream().map(line -> line + "\n")
-                .collect(Collectors.joining("", "", expr));
+            .collect(Collectors.joining("", "", expr));
     }
 
     public List<String> toList() {
