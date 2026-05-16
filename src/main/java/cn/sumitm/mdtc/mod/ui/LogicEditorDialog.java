@@ -4,6 +4,7 @@ import arc.Core;
 import arc.scene.ui.CheckBox;
 import arc.scene.ui.Label;
 import arc.scene.ui.ScrollPane;
+import arc.scene.ui.Slider;
 import arc.scene.ui.TextArea;
 import arc.util.Log;
 import cn.sumitm.mdtc.compiler.CodeCompiler;
@@ -19,6 +20,9 @@ public class LogicEditorDialog extends BaseDialog {
     private Label statusLabel;
     private boolean autoFormat;
     private boolean autoLoad;
+    private int indentWidth = 2;
+    private ScrollPane sourceScroll;
+    private ScrollPane outputScroll;
 
     private static final float BTN_WIDTH = 130f;
     private static final float BTN_HEIGHT = 40f;
@@ -26,9 +30,7 @@ public class LogicEditorDialog extends BaseDialog {
     private static final float CP_BTN_WIDTH = 80f;
     private static final float PAD = 6f;
 
-    public LogicEditorDialog() {
-        this("");
-    }
+    public LogicEditorDialog() { this(""); }
 
     public LogicEditorDialog(String initialCode) {
         super(I18n.get("mdtc.title"));
@@ -40,6 +42,7 @@ public class LogicEditorDialog extends BaseDialog {
     private void loadSettings() {
         autoFormat = Core.settings.getBool("mdtc.autoformat", true);
         autoLoad = Core.settings.getBool("mdtc.autoload", true);
+        indentWidth = Core.settings.getInt("mdtc.indent", 2);
     }
 
     private void setupUI(String initialCode) {
@@ -69,11 +72,11 @@ public class LogicEditorDialog extends BaseDialog {
                 }).growX().row();
                 sourceArea = new TextArea("");
                 sourceArea.setMaxLength(100000);
-                ScrollPane sp = new ScrollPane(sourceArea);
-                sp.setScrollingDisabled(false, false);
-                sp.setFadeScrollBars(false);
-                sp.setCancelTouchFocus(true);
-                left.add(sp).grow().fill();
+                sourceArea.setPrefRows(50);
+                sourceScroll = new ScrollPane(sourceArea);
+                sourceScroll.setFadeScrollBars(false);
+                sourceScroll.setScrollingDisabledX(true);
+                left.add(sourceScroll).grow().fill();
             }).grow().fill().padLeft(PAD * 3).padRight(PAD * 2);
 
             panes.table(right -> {
@@ -86,11 +89,11 @@ public class LogicEditorDialog extends BaseDialog {
                 }).growX().row();
                 outputArea = new TextArea("");
                 outputArea.setMaxLength(100000);
-                ScrollPane sp = new ScrollPane(outputArea);
-                sp.setScrollingDisabled(false, false);
-                sp.setFadeScrollBars(false);
-                sp.setCancelTouchFocus(true);
-                right.add(sp).grow().fill();
+                outputArea.setPrefRows(50);
+                outputScroll = new ScrollPane(outputArea);
+                outputScroll.setFadeScrollBars(false);
+                outputScroll.setScrollingDisabledX(true);
+                right.add(outputScroll).grow().fill();
             }).grow().fill().padLeft(PAD * 2).padRight(PAD * 3);
         }).grow().fill().minHeight(400f).row();
 
@@ -108,6 +111,8 @@ public class LogicEditorDialog extends BaseDialog {
         BaseDialog dlg = new BaseDialog(I18n.get("mdtc.settings"));
         dlg.addCloseButton();
 
+        final float[] indentVal = { indentWidth };
+
         dlg.cont.pane(p -> {
             p.margin(14f);
 
@@ -117,12 +122,29 @@ public class LogicEditorDialog extends BaseDialog {
 
             CheckBox autoFmtCb = new CheckBox(I18n.get("mdtc.settings.autoformat"));
             autoFmtCb.setChecked(autoFormat);
-            p.add(autoFmtCb).left().padBottom(6f).row();
+            p.add(autoFmtCb).left().padBottom(10f).row();
+
+            Label indentLabel = new Label(I18n.format("mdtc.settings.indent", indentWidth));
+            p.add(indentLabel).left().padTop(6f).row();
+            Slider indentSlider = new Slider(1, 8, 1, false);
+            indentSlider.setValue(indentWidth);
+            p.table(t -> {
+                t.add(indentSlider).growX().padRight(10f);
+                t.add().width(40f);
+            }).growX().row();
+
+            indentSlider.changed(() -> {
+                indentVal[0] = (int) indentSlider.getValue();
+                indentLabel.setText(I18n.format("mdtc.settings.indent", indentVal[0]));
+            });
 
             autoFmtCb.changed(() -> autoFormat = autoFmtCb.isChecked());
             autoLoadCb.changed(() -> autoLoad = autoLoadCb.isChecked());
 
-            dlg.hidden(() -> persistSettings());
+            dlg.hidden(() -> {
+                indentWidth = (int) indentVal[0];
+                persistSettings();
+            });
         });
 
         dlg.show();
@@ -131,6 +153,7 @@ public class LogicEditorDialog extends BaseDialog {
     private void persistSettings() {
         Core.settings.put("mdtc.autoformat", autoFormat);
         Core.settings.put("mdtc.autoload", autoLoad);
+        Core.settings.put("mdtc.indent", indentWidth);
         Core.settings.forceSave();
     }
 
@@ -143,8 +166,8 @@ public class LogicEditorDialog extends BaseDialog {
         try {
             String result = CodeCompiler.compile(source);
             outputArea.setText(result);
-            statusLabel.setText("[green]" + I18n.format("mdtc.compiled",
-                result.split("\n").length));
+            relayoutScrolls();
+            statusLabel.setText("[green]" + I18n.format("mdtc.compiled", result.split("\n").length));
         } catch (Exception ex) {
             statusLabel.setText("[red]" + I18n.get("mdtc.error.compile") + ex.getMessage());
             Log.err(ex);
@@ -159,14 +182,12 @@ public class LogicEditorDialog extends BaseDialog {
         }
         try {
             String result = CodeDecompiler.decompile(source);
-            if (autoFormat) {
-                result = CodeFormatter.format(result);
-            }
-            result = result.replace("\t", "  ");
+            if (autoFormat) result = CodeFormatter.format(result);
+            result = fixIndent(result);
             sourceArea.setText(result);
+            relayoutScrolls();
             statusLabel.setText("[green]" + I18n.format(
-                autoFormat ? "mdtc.decompiled.fmt" : "mdtc.decompiled",
-                result.split("\n").length));
+                autoFormat ? "mdtc.decompiled.fmt" : "mdtc.decompiled", result.split("\n").length));
         } catch (Exception ex) {
             statusLabel.setText("[red]" + I18n.get("mdtc.error.decompile") + ex.getMessage());
             Log.err(ex);
@@ -184,10 +205,10 @@ public class LogicEditorDialog extends BaseDialog {
             if (result.isEmpty() || result.equals(source)) {
                 statusLabel.setText("Nothing to format");
             } else {
-                result = result.replace("\t", "  ");
+                result = fixIndent(result);
                 sourceArea.setText(result);
-                statusLabel.setText("[green]" + I18n.format("mdtc.formatted",
-                    result.split("\n").length));
+                relayoutScrolls();
+                statusLabel.setText("[green]" + I18n.format("mdtc.formatted", result.split("\n").length));
             }
         } catch (Exception ex) {
             statusLabel.setText("[red]Format error: " + ex.getMessage());
@@ -198,6 +219,16 @@ public class LogicEditorDialog extends BaseDialog {
     private void clearEditor() {
         sourceArea.setText("");
         outputArea.setText("");
+        relayoutScrolls();
         statusLabel.setText(I18n.get("mdtc.cleared"));
+    }
+
+    private void relayoutScrolls() {
+        if (sourceScroll != null) sourceScroll.layout();
+        if (outputScroll != null) outputScroll.layout();
+    }
+
+    private String fixIndent(String text) {
+        return text.replace("\t", " ".repeat(indentWidth));
     }
 }

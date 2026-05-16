@@ -10,8 +10,14 @@ import java.util.stream.Stream;
 public final class Constants {
     private Constants() {}
 
-    public static final String trueCondition = "always 0 0";
-    public static final String falseCondition = "notEqual 0 0";
+    public enum JumpCondition {
+        TRUE ("always 0 0"),
+        FALSE("notEqual 0 0");
+
+        private final String id;
+        JumpCondition(String id) { this.id = id; }
+        public String id() { return id; }
+    }
     public static final Pattern NUMBER_PATTERN = Pattern.compile("^([-+])?\\d+(\\.\\d+)?$");
 
     public static final List<String> dotCtrlCodes = List.of(

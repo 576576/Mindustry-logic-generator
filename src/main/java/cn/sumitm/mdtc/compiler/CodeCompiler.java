@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 import cn.sumitm.mdtc.cli.Main;
 import cn.sumitm.mdtc.core.Constants;
@@ -235,87 +234,6 @@ public final class CodeCompiler {
         return convertSet(stream);
     }
 
-    // --- Helper: build funcHandlers map for convertCtrl ---
-    private static Map<String, Function<String, String>> buildCtrlHandlers(
-            ArrayList<String> bashList, int[] ref) {
-        Map<String, Function<String, String>> handlers = new HashMap<>();
-
-        handlers.put("print(", s -> "print " + s);
-        handlers.put("printchar(", s -> "printchar " + s);
-        handlers.put("format(", s -> "format " + s);
-        handlers.put("wait(", s -> "wait " + s);
-        handlers.put("stop(", _ -> "stop");
-        handlers.put("end(", _ -> "end");
-
-        handlers.put("ubind(", s -> "ubind " + s);
-        handlers.put("uctrl(", s -> "ucontrol " + Utils.padParams(6, s));
-
-        handlers.put("ushoot(", s -> {
-            final String defaultTarget = "@this", defaultShooting = "1";
-            Map<String, String> paramsMap = Utils.getChainParams(s);
-            String shooting = paramsMap.getOrDefault("main", defaultShooting);
-            String target = paramsMap.getOrDefault("target", defaultTarget);
-            String ctrlType = target.contains(",") ? "target" : "targetp";
-            target = target.replace(',', ' ');
-            String shootArgs = Utils.padParams(5, target, shooting);
-            return "ucontrol " + ctrlType + " " + shootArgs;
-        });
-
-        handlers.put("draw(", s -> "draw " + Utils.padParams(7, s));
-
-        handlers.put("jump(", s -> {
-            final String defaultTarget = "DEFAULT",
-                trueCondition = Constants.trueCondition,
-                falseCondition = Constants.falseCondition;
-            Map<String, String> paramsMap = Utils.getChainParams(s);
-            String target = paramsMap.getOrDefault("main", defaultTarget);
-            String condition = trueCondition;
-
-            String whenExpr = paramsMap.getOrDefault("when", "");
-            List<String> splitList = Utils.stringSplit(whenExpr);
-            if (splitList.size() > 1) {
-                stdCodeStream bashCache = convertCodeLine(stdCodeStream.of(whenExpr, ref[0]));
-                if (!bashCache.bash().isEmpty()) {
-                    ref[0] = bashCache.stat();
-                    String bashLast = bashCache.bash().getLast();
-                    condition = Utils.getCondition(bashLast);
-                    if (!condition.equals(trueCondition)) bashCache.bash().removeLast();
-                    else if (!bashCache.expr().isEmpty())
-                        condition = String.join(" ", "notEqual", bashCache.expr(), "0");
-                    bashList.addAll(bashCache.bash());
-                }
-            } else if (splitList.size() == 1) {
-                if (splitList.getFirst().equals("always")) condition = trueCondition;
-                else if (splitList.getFirst().equals("never")) condition = falseCondition;
-                else condition = String.join(" ", "notEqual", whenExpr, "0");
-            }
-            return String.join(" ", "jump", target, condition);
-        });
-
-        handlers.put("jump2(", s -> {
-            List<String> strSplit = Utils.stringSplit(s);
-            if (strSplit.size() > 1) s = "@counter=@counter" + s;
-            else s = "@counter=" + s;
-            stdCodeStream jump2stream = convertCodeLine(stdCodeStream.of(s));
-            bashList.addAll(jump2stream.bash());
-            return "";
-        });
-
-        handlers.put("printf(", s -> {
-            String[] parts = s.split(",");
-            if (parts.length < 2) return "print " + s;
-            bashList.add("print " + parts[0]);
-            IntStream.range(1, parts.length).mapToObj(i ->
-                    "format " + parts[i]).forEach(bashList::add);
-            return "";
-        });
-
-        handlers.put("tag(", s -> "::" + s);
-        handlers.put("raw(", s -> s.substring(1, s.length() - 1));
-
-        return handlers;
-    }
-
     /**
      * 转换{@code CtrlCode}类型函数
      */
@@ -324,14 +242,15 @@ public final class CodeCompiler {
         String expr = stream.expr();
         int[] ref = {stream.stat()};
 
-        Map<String, Function<String, String>> funcHandlers = buildCtrlHandlers(bashList, ref);
+        LangRegistry.SubCompiler sub = (e, r) -> convertCodeLine(stdCodeStream.of(e, r[0]));
+        Map<String, Function<String, String>> funcHandlers = LangRegistry.ctrlHandlers(bashList, ref, sub);
 
         final List<String> ignoreKeys = List.of("jump(", "jump2(", "draw(", "ushoot(", "tag(", "raw(", "print(", "printf(");
         for (Map.Entry<String, Function<String, String>> entry : funcHandlers.entrySet()) {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 if (end == -1) {
-                    Utils.printError("Bracket unmatched of frontCode:\n> " + expr);
+                    Utils.printError("Bracket unmatched of ctrlCode:\n> " + expr);
                     return stream;
                 }
                 String s = expr.substring(start + entry.getKey().length(), end).trim();
@@ -355,70 +274,6 @@ public final class CodeCompiler {
         return stdCodeStream.of(bashList);
     }
 
-    // --- Helper: build dotCtrl handlers ---
-    private static Map<String, Function<String, String>> buildDotCtrlHandlers(
-            ArrayList<String> bashList, String[] blockRef, int[] ref) {
-        Map<String, Function<String, String>> handlers = new HashMap<>();
-
-        handlers.put(".ctrl(", s -> {
-            String ctrlType = "enabled", target = "";
-            String[] params = s.split(",", 2);
-            if (params.length > 1) {
-                ctrlType = params[0];
-                target = params[1];
-            }
-            return String.join(" ", "control" + ctrlType + blockRef[0]
-                + Utils.padParams(4, target));
-        });
-        handlers.put(".enable(", s -> "control enabled " + blockRef[0] + " " + Utils.padParams(4, s));
-        handlers.put(".config(", s -> "control config " + blockRef[0] + " " + Utils.padParams(4, s));
-        handlers.put(".color(", s -> "control color " + blockRef[0] + " " + Utils.padParams(4, s));
-
-        handlers.put(".shoot(", s -> {
-            final String defaultTarget = "@this", defaultShooting = "1";
-            Map<String, String> paramsMap = Utils.getChainParams(s);
-            String shooting = paramsMap.getOrDefault("main", defaultShooting);
-            String target = paramsMap.getOrDefault("target", defaultTarget);
-            String ctrlType = target.contains(",") ? "shoot" : "shootp";
-            target = target.replace(',', ' ');
-            String shootArgs = Utils.padParams(4, target, shooting);
-            return "control " + ctrlType + " " + blockRef[0] + " " + shootArgs;
-        });
-
-        handlers.put(".ulocate(", s -> {
-            final String defaultType = "ore", defaultOre = "0",
-                defaultBuilding = "core", defaultEnemy = "0";
-            Map<String, String> paramsMap = Utils.getChainParams(s);
-            String locateType = paramsMap.getOrDefault("main", defaultType);
-            String ore = paramsMap.getOrDefault("ore", defaultOre);
-            String building = paramsMap.getOrDefault("building", defaultBuilding);
-            String enemy = paramsMap.getOrDefault("enemy", defaultEnemy);
-
-            final List<String> buildings = List.of("core", "storage", "generator",
-                "turret", "factory", "repair", "battery", "reactor", "drill", "shield");
-            if (buildings.contains(locateType)) {
-                building = locateType;
-                locateType = "building";
-            }
-            return String.join(" ", "ulocate", locateType, building,
-                enemy, ore, blockRef[0] + ".x", blockRef[0] + ".y",
-                blockRef[0] + ".f", blockRef[0]);
-        });
-
-        handlers.put(".unpack(", s -> "unpackcolor " + Utils.padParams(4, s) + " " + blockRef[0]);
-        handlers.put(".pflush(", _ -> "printflush " + blockRef[0]);
-        handlers.put(".dflush(", _ -> "drawflush " + blockRef[0]);
-        handlers.put(".write(", s -> {
-            String[] parts = s.split(",");
-            String content = "null", bit = "0";
-            if (parts.length > 0) content = parts[0];
-            if (parts.length > 1) bit = parts[1];
-            return "write " + content + " " + blockRef[0] + " " + bit;
-        });
-
-        return handlers;
-    }
-
     /**
      * 转换{@code DotCtrlCode}类型函数
      */
@@ -429,14 +284,14 @@ public final class CodeCompiler {
         String[] blockRef = {Utils.getDotBlock(finalExpr)};
         int[] ref = {stream.stat()};
 
-        Map<String, Function<String, String>> funcHandlers = buildDotCtrlHandlers(bashList, blockRef, ref);
+        Map<String, Function<String, String>> funcHandlers = LangRegistry.dotCtrlHandlers(bashList, blockRef, ref);
 
         final List<String> ignoreKeys = List.of(".shoot(", ".ulocate(");
         for (Map.Entry<String, Function<String, String>> entry : funcHandlers.entrySet()) {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 if (end == -1) {
-                    Utils.printError("Bracket unmatched of frontCode:\n> " + expr);
+                    Utils.printError("Bracket unmatched of dotCtrlCode:\n> " + expr);
                     return stream;
                 }
                 String s = expr.substring(start + entry.getKey().length(), end).trim();
@@ -464,45 +319,6 @@ public final class CodeCompiler {
         return stdCodeStream.of(bashList, expr);
     }
 
-    // --- Helper: build dot handlers ---
-    private static Map<String, Function<String, String>> buildDotHandlers(
-            ArrayList<String> bashList, String[] blockRef, int[] ref) {
-        Map<String, Function<String, String>> handlers = new HashMap<>();
-
-        handlers.put(".sensor(", s -> "sensor mid." + ref[0] + " " + blockRef[0] + " " + s);
-        handlers.put(".read(", s -> "read mid." + ref[0] + " " + blockRef[0] + " " + s);
-
-        handlers.put(".orElse(", s -> {
-            final String defaultTarget = "0",
-                defaultCondition = Constants.trueCondition;
-            Map<String, String> paramsMap = Utils.getChainParams(s);
-            String target = paramsMap.getOrDefault("main", defaultTarget);
-            String condition = defaultCondition;
-
-            String whenExpr = paramsMap.getOrDefault("when", "");
-            List<String> splitList = Utils.stringSplit(whenExpr);
-            if (splitList.size() > 1) {
-                stdCodeStream bashCache = convertCodeLine(stdCodeStream.of(whenExpr, ref[0]));
-                if (!bashCache.bash().isEmpty()) {
-                    ref[0] = bashCache.stat();
-                    String bashLast = bashCache.bash().getLast();
-                    condition = Utils.getCondition(bashLast);
-                    if (!condition.equals(defaultCondition)) bashCache.bash().removeLast();
-                    else if (!bashCache.expr().isEmpty())
-                        condition = String.join(" ", "notEqual", bashCache.expr(), "0");
-                    bashList.addAll(bashCache.bash());
-                }
-            } else if (splitList.size() == 1)
-                condition = String.join(" ", "notEqual", whenExpr, "0");
-
-            condition = Utils.reverseCondition(condition);
-            return String.join(" ", "select", "mid." + ref[0], condition,
-                blockRef[0], target);
-        });
-
-        return handlers;
-    }
-
     /**
      * 转换{@code DotCode}类型函数
      */
@@ -512,7 +328,8 @@ public final class CodeCompiler {
         int[] ref = {stream.stat()};
         String[] blockRef = {""};
 
-        Map<String, Function<String, String>> funcHandlers = buildDotHandlers(bashList, blockRef, ref);
+        LangRegistry.SubCompiler sub = (e, r) -> convertCodeLine(stdCodeStream.of(e, r[0]));
+        Map<String, Function<String, String>> funcHandlers = LangRegistry.dotHandlers(bashList, blockRef, ref, sub);
 
         final List<String> ignoreKeys = List.of(".orElse(");
         for (Map.Entry<String, Function<String, String>> entry : funcHandlers.entrySet()) {
@@ -543,107 +360,6 @@ public final class CodeCompiler {
         return new stdCodeStream(bashList, expr, ref[0]);
     }
 
-    // --- Helpers: build front handlers ---
-    private static Map<String, Function<String, String>> buildFrontHandlersHigh(int[] ref) {
-        Map<String, Function<String, String>> handlers = new HashMap<>();
-
-        handlers.put("not(", s -> "op not mid." + ref[0] + " " + s + " 0");
-        handlers.put("abs(", s -> "op abs mid." + ref[0] + " " + s + " 0");
-        handlers.put("sign(", s -> "op sign mid." + ref[0] + " " + s + " 0");
-        handlers.put("floor(", s -> "op floor mid." + ref[0] + " " + s + " 0");
-        handlers.put("ceil(", s -> "op ceil mid." + ref[0] + " " + s + " 0");
-        handlers.put("round(", s -> "op round mid." + ref[0] + " " + s + " 0");
-        handlers.put("sqrt(", s -> "op sqrt mid." + ref[0] + " " + s + " 0");
-        handlers.put("rand(", s -> "op rand mid." + ref[0] + " " + s + " 0");
-        handlers.put("asin(", s -> "op asin mid." + ref[0] + " " + s + " 0");
-        handlers.put("acos(", s -> "op acos mid." + ref[0] + " " + s + " 0");
-        handlers.put("atan(", s -> "op atan mid." + ref[0] + " " + s + " 0");
-        handlers.put("ln(", s -> "op log mid." + ref[0] + " " + s + " 0");
-        handlers.put("lg(", s -> "op log10 mid." + ref[0] + " " + s + " 0");
-        handlers.put("lb(", s -> "op logn mid." + ref[0] + " " + s + " 2");
-
-        handlers.put("max(", s -> {
-            String[] paramParts = s.split(",");
-            return "op max mid." + ref[0] + " " + paramParts[0].trim() + " " + paramParts[1].trim();
-        });
-        handlers.put("min(", s -> {
-            String[] paramParts = s.split(",");
-            return "op min mid." + ref[0] + " " + paramParts[0].trim() + " " + paramParts[1].trim();
-        });
-        handlers.put("len(", s -> {
-            String[] paramParts = s.split(",");
-            return "op len mid." + ref[0] + " " + paramParts[0].trim() + " " + paramParts[1].trim();
-        });
-        handlers.put("angle(", s -> {
-            String[] paramParts = s.split(",");
-            return "op angle mid." + ref[0] + " " + paramParts[0].trim() + " " + paramParts[1].trim();
-        });
-        handlers.put("angleDiff(", s -> {
-            String[] paramParts = s.split(",");
-            return "op angleDiff mid." + ref[0] + " " + paramParts[0].trim() + " " + paramParts[1].trim();
-        });
-        handlers.put("noise(", s -> {
-            String[] paramParts = s.split(",");
-            return "op noise mid." + ref[0] + " " + paramParts[0].trim() + " " + paramParts[1].trim();
-        });
-        handlers.put("log(", s -> {
-            String[] paramParts = s.split(",");
-            return "op logn mid." + ref[0] + " " + paramParts[1].trim() + " " + paramParts[0].trim();
-        });
-
-        handlers.put("link(", s -> "getlink mid." + ref[0] + " " + s);
-        handlers.put("lookup(", s -> {
-            String lookupType = "block", index = "0";
-            String[] paramParts = s.split(",");
-            if (paramParts.length > 0) index = paramParts[paramParts.length - 1];
-            if (paramParts.length > 1) lookupType = paramParts[0];
-            return String.join(" ", "lookup", lookupType, "mid." + ref[0], index);
-        });
-        handlers.put("block(", s -> "lookup block mid." + ref[0] + " " + s);
-        handlers.put("unit(", s -> "lookup unit mid." + ref[0] + " " + s);
-        handlers.put("item(", s -> "lookup item mid." + ref[0] + " " + s);
-        handlers.put("liquid(", s -> "lookup liquid mid." + ref[0] + " " + s);
-        handlers.put("team(", s -> "lookup team mid." + ref[0] + " " + s);
-        handlers.put("pack(", s -> "packcolor mid." + ref[0] + " " + Utils.padParams(4, s));
-
-        handlers.put("uradar(", s -> {
-            final String block = "0", defaultTarget = "enemy,any,any",
-                defaultOrder = "1", defaultSort = "distance";
-            Map<String, String> paramsMap = Utils.getChainParams(s);
-            String target = paramsMap.getOrDefault("target", defaultTarget);
-            String order = paramsMap.getOrDefault("order", defaultOrder);
-            String sort = paramsMap.getOrDefault("sort", defaultSort);
-            target = Utils.padParams("any", 3, target);
-            return "uradar " + target + " " + sort + " " + block + " "
-                + order + " mid." + ref[0];
-        });
-
-        return handlers;
-    }
-
-    private static Map<String, Function<String, String>> buildFrontHandlersLow(int[] ref) {
-        Map<String, Function<String, String>> handlers = new HashMap<>();
-
-        handlers.put("sin(", s -> "op sin mid." + ref[0] + " " + s);
-        handlers.put("cos(", s -> "op cos mid." + ref[0] + " " + s);
-        handlers.put("tan(", s -> "op tan mid." + ref[0] + " " + s);
-
-        handlers.put("radar(", s -> {
-            final String defaultBlock = "@this", defaultTarget = "enemy,any,any",
-                defaultOrder = "1", defaultSort = "distance";
-            Map<String, String> paramsMap = Utils.getChainParams(s);
-            String block = paramsMap.getOrDefault("main", defaultBlock);
-            String target = paramsMap.getOrDefault("target", defaultTarget);
-            String order = paramsMap.getOrDefault("order", defaultOrder);
-            String sort = paramsMap.getOrDefault("sort", defaultSort);
-            target = Utils.padParams("any", 3, target);
-            return "radar " + target + " " + sort + " " + block + " "
-                + order + " mid." + ref[0];
-        });
-
-        return handlers;
-    }
-
     /**
      * 转换{@code FrontCode}类型函数
      */
@@ -651,8 +367,8 @@ public final class CodeCompiler {
         ArrayList<String> bashList = new ArrayList<>(stream.bash());
         int[] ref = {stream.stat()};
 
-        Map<String, Function<String, String>> funcHandlers_high = buildFrontHandlersHigh(ref);
-        Map<String, Function<String, String>> funcHandlers_low = buildFrontHandlersLow(ref);
+        Map<String, Function<String, String>> funcHandlers_high = LangRegistry.frontHandlersHigh(ref);
+        Map<String, Function<String, String>> funcHandlers_low = LangRegistry.frontHandlersLow(ref);
 
         String expr = stream.expr();
 

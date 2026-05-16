@@ -55,7 +55,7 @@ class ConstantsTest {
 
     @Test
     void trueAndFalseConditions() {
-        assertThat(Constants.trueCondition).isEqualTo("always 0 0");
-        assertThat(Constants.falseCondition).isEqualTo("notEqual 0 0");
+        assertThat(Constants.JumpCondition.TRUE.id()).isEqualTo("always 0 0");
+        assertThat(Constants.JumpCondition.FALSE.id()).isEqualTo("notEqual 0 0");
     }
 }

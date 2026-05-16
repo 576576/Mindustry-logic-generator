@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main, master]
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,17 +26,33 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build and Test
+      - name: Build & Test
         run: ./gradlew build
 
-      - name: Build Shadow JAR
+      - name: Build CLI JAR
         run: ./gradlew shadowJar
 
-      - name: Upload JAR
+      - name: Build Desktop Mod JAR
+        run: ./gradlew jarMod
+
+      - name: Upload CLI JAR
         uses: actions/upload-artifact@v4
         with:
-          name: mdtc-jar
-          path: build/libs/*-all.jar
+          name: mdtc-Cli
+          path: build/libs/mdtc-*-Cli.jar
+
+      - name: Upload Desktop Mod JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: mdtc-Desktop
+          path: build/libs/mdtc-*-Desktop.jar
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: build/test-results/
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -49,11 +70,16 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build Shadow JAR
+      - name: Build CLI JAR
         run: ./gradlew shadowJar
+
+      - name: Build Desktop Mod JAR
+        run: ./gradlew jarMod
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/libs/*-all.jar
+          files: |
+            build/libs/mdtc-*-Cli.jar
+            build/libs/mdtc-*-Desktop.jar
           generate_release_notes: true

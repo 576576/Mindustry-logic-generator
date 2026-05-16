@@ -68,7 +68,7 @@ tasks.shadowJar {
     manifest {
         attributes["Main-Class"] = "cn.sumitm.mdtc.cli.Main"
     }
-    archiveFileName.set("${project.name}-${project.version}-all.jar")
+    archiveFileName.set("${project.name}-${project.version}-Cli.jar")
 }
 
 tasks.processResources {
@@ -100,7 +100,7 @@ tasks.register<Jar>("javadocJar") {
 tasks.register<Jar>("jarMod") {
     group = "mindustry mod"
     description = "Build desktop Mindustry mod JAR (includes mod.hjson + assets/)"
-    archiveFileName.set("${project.name}Desktop.jar")
+    archiveFileName.set("${project.name}-${project.version}-Desktop.jar")
 
     from(sourceSets.main.get().output)
 
@@ -161,8 +161,8 @@ tasks.register("jarAndroidMod") {
                 classpathFiles.flatMap { listOf("--classpath", it.absolutePath) } +
                 listOf(
                     "--min-api", "30",
-                    "--output", "${project.name}Android.jar",
-                    "${project.name}Desktop.jar"
+                    "--output", "${project.name}-${project.version}-Android.jar",
+                    "${project.name}-${project.version}-Desktop.jar"
                 )
         )
         pb.directory(File("build/libs"))
@@ -181,18 +181,18 @@ tasks.register<Jar>("deployMod") {
     group = "mindustry mod"
     description = "Deploy combined Mindustry mod JAR (Desktop + Android)"
     dependsOn("jarMod", "jarAndroidMod")
-    archiveFileName.set("${project.name}.jar")
+    archiveFileName.set("${project.name}-${project.version}.jar")
 
     from({
         listOf(
-            zipTree("build/libs/${project.name}Desktop.jar"),
-            zipTree("build/libs/${project.name}Android.jar")
+            zipTree("build/libs/${project.name}-${project.version}-Desktop.jar"),
+            zipTree("build/libs/${project.name}-${project.version}-Android.jar")
         )
     })
 
     doLast {
         // 清理中间 Android JAR
-        delete("build/libs/${project.name}Android.jar")
+        delete("build/libs/${project.name}-${project.version}-Android.jar")
     }
 }
 

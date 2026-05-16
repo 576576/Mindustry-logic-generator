@@ -57,12 +57,12 @@ public final class Utils {
     public static String formatParams(int paramNum, String[] params, String defaultParam, String delimiter) {
         params = Arrays.copyOf(params, paramNum);
         for (int i = 0; i < params.length; i++)
-            if (params[i] == null) params[i] = defaultParam;
+            if (params[i] == null || params[i].isEmpty()) params[i] = defaultParam;
         return String.join(delimiter, params);
     }
 
     public static String padParams(String defaultParam, int paramNum, String paramString) {
-        return formatParams(paramNum, paramString.split(","), defaultParam, " ");
+        return formatParams(paramNum, bracketPartSplit(paramString).toArray(new String[0]), defaultParam, " ");
     }
 
     public static String padParams(int paramNum, String... params) {
@@ -70,7 +70,7 @@ public final class Utils {
     }
 
     public static String padParams(int paramNum, String paramString) {
-        return formatParams(paramNum, paramString.split(","), "0", " ");
+        return formatParams(paramNum, bracketPartSplit(paramString).toArray(new String[0]), "0", " ");
     }
 
     public static String reduceParams(String defaultParam, String paramString) {
@@ -95,20 +95,19 @@ public final class Utils {
 
     public static String reduceCondition(String condition) {
         String[] params = condition.split(" ", 3);
-        String operator = params[0];
-        if (operator.equals("always")) return "always";
-        if (operator.equals("never")) return "never";
-        return params[1] + Constants.midOpValueMap.get(operator) + params[2].trim();
+        return switch (params[0]) {
+            case "always" -> "always";
+            case "never"  -> "never";
+            default       -> params[1] + Constants.midOpValueMap.get(params[0]) + params[2].trim();
+        };
     }
 
     public static boolean isDotCtrlCode(String codeLine) {
-        for (String command : Constants.dotCtrlCodes) if (codeLine.contains(command)) return true;
-        return false;
+        return Constants.dotCtrlCodes.stream().anyMatch(codeLine::contains);
     }
 
     public static boolean isCtrlCode(String codeLine) {
-        for (String command : Constants.ctrlCodes) if (codeLine.startsWith(command)) return true;
-        return false;
+        return Constants.ctrlCodes.stream().anyMatch(codeLine::startsWith);
     }
 
     public static void printError(String message) {
@@ -118,13 +117,13 @@ public final class Utils {
     public static int getEndDotChain(String expr, int start) {
         int end = getEndBracket(expr, start);
         while (end < expr.length() - 1 && expr.charAt(end + 1) == '.') {
-            if (expr.startsWith(".^", end + 1)) return end;
-            for (String key : Constants.dotCtrlCodes) if (expr.startsWith(key, end + 1)) return end;
-            for (String key : Constants.dotCodes) if (expr.startsWith(key, end + 1)) return end;
-
-            int endNext = getEndBracket(expr, end + 1);
-            if (endNext != -1) end = endNext;
-            else return end;
+            int pos = end + 1;
+            if (expr.startsWith(".^", pos)) return end;
+            if (Constants.dotCtrlCodes.stream().anyMatch(k -> expr.startsWith(k, pos))) return end;
+            if (Constants.dotCodes.stream().anyMatch(k -> expr.startsWith(k, pos))) return end;
+            int endNext = getEndBracket(expr, pos);
+            if (endNext == -1) return end;
+            end = endNext;
         }
         return end;
     }
