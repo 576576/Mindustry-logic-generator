@@ -17,16 +17,15 @@
 ### Editor Layout
 
 ```
-┌──────────────────────────────────────┐
-│ [Compile] [Decompile] [Format] [Clear]  [Settings] │
-├──────────────┬───────────────────────┤
-│ Source .mdtc │  Output .mdtcode      │
-│ (editable)   │  (editable)           │
-│              │                       │
-│    [Copy]    │     [Copy]            │
-├──────────────┴───────────────────────┤
-│ Status: Ready                        │
-└──────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│  [Compile] [Decompile] [Format]   [Settings] │
+├───────────────────┬──────────────────────┤
+│  Source .mdtc     │  Output .mdtcode     │
+│  [Import/Copy/Clear] │  [Import/Copy/Clear] │
+│  (editable)       │  (editable)          │
+├───────────────────┴──────────────────────┤
+│  Status: Ready                           │
+└──────────────────────────────────────────┘
 ```
 
 ### Workflow
@@ -35,6 +34,10 @@
 - **Compile**: Edit left `.mdtc` → click Compile → result appears in right `.mdtcode`
 - **Decompile**: Paste `.mdtcode` into right → click Decompile → result in left
 - **Copy to Processor**: Copy right pane → paste back into Mindustry's editor via Edit > Import
+- **Import**: Copy file content to clipboard → click an Import button on the pane header:
+  - **Import Src** (left header) → paste `.mdtc` source into left pane
+  - **Import Lib** (left header) → append `.libmdtc` library to left pane
+  - **Import Raw** (right header) → paste `.mdtcode` native code into right pane
 
 ## Settings
 
@@ -50,9 +53,4 @@ Settings persist across game sessions via Mindustry's settings system.
 
 ## Language Support
 
-Detects game language automatically:
-
-- **English** — default
-- **简体中文** — when game language is set to Chinese
-
-To add a new language, create `assets/bundles/bundle_xx_XX.properties` and translate the keys.
+Detects game language automatically. See [i18n.md](../i18n.md) for supported languages and contribution guide.

@@ -6,7 +6,7 @@
 [![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange)](https://github.com/Anuken/Mindustry)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green)](LICENSE)
 
-> **Language**: **English** | [简体中文](docs/zh/README.md)
+> **Language**: **English** | [简体中文](docs/zh_CN/README.md)
 
 A Java-like high-level language that compiles to Mindustry's native logic assembly (`.mdtc` → `.mdtcode`), with full round-trip decompilation support. Available as a **CLI** tool and an **in-game mod**.
 
@@ -72,6 +72,7 @@ java -jar mdtc-[version]-Cli.jar -i sample.mdtc -o out.mdtcode -oo
 | [Mod Guide](docs/MOD.md) | In-game mod features and settings |
 | [Building](docs/BUILDING.md) | How to build from source |
 | [AGENT.md](AGENT.md) | Project architecture (for AI assistants) |
+| [i18n Status](i18n.md) | Translation coverage & contributing |
 
 ---
 
@@ -95,6 +96,20 @@ java -jar mdtc-[version]-Cli.jar -i sample.mdtc -o out.mdtcode -oo
 | `mdtc-[version]-Cli.jar` | CLI (fat JAR) | `./gradlew shadowJar` |
 | `mdtc-[version]-Desktop.jar` | Desktop Mod | `./gradlew jarMod` |
 | `mdtc-[version]-Android.jar` | Android Mod | `./gradlew jarAndroidMod` |
+
+---
+
+## Internationalization
+
+MdtC auto-detects the game locale for its in-game UI. See [i18n.md](i18n.md) for the current translation status.
+
+### Contributing a Translation
+
+1. Copy `assets/bundles/bundle.properties` to `assets/bundles/bundle_xx_XX.properties`  
+   (use a [valid locale code](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Locale.html))
+2. Translate all values — **keys must stay unchanged**
+3. (Optional) Copy `docs/` to `docs/xx/` and translate the documentation
+4. Submit a Pull Request — CI will auto-update [i18n.md](i18n.md) on merge
 
 ---
 

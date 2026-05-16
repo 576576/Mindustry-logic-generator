@@ -26,12 +26,12 @@ public final class I18n {
         String country = locale.getCountry();
 
         // 按优先级从低到高加载，后加载的覆盖先加载的
-        load(BUNDLE_BASE + ".properties");                          // 默认 (en)
+        load(BUNDLE_BASE + ".properties");
         if (!lang.isEmpty()) {
             if (!country.isEmpty()) {
                 load(BUNDLE_BASE + "_" + lang + "_" + country + ".properties");
             }
-            load(BUNDLE_BASE + "_" + lang + ".properties");         // 语言
+            load(BUNDLE_BASE + "_" + lang + ".properties");
         }
 
         Log.info("[MdtC] I18n loaded for locale: @ (@ keys)",
