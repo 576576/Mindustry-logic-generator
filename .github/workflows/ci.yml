@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 permissions:
-  contents: read
+  contents: write
   actions: read
   checks: write
 
@@ -61,6 +61,8 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -76,6 +78,43 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
+      - name: Determine version
+        id: version
+        run: |
+          SUMMARY=$(git log -1 --pretty=%B "${{ github.ref }}")
+          echo "Commit summary: $SUMMARY"
+
+          # Try to match "Release X.Y.Z" or "Beta X.Y.Z"
+          if echo "$SUMMARY" | grep -qP '^Release\s+\d+\.\d+\.\d+'; then
+            VERSION=$(echo "$SUMMARY" | grep -oP '\d+\.\d+\.\d+')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          elif echo "$SUMMARY" | grep -qP '^Beta\s+\d+\.\d+\.\d+'; then
+            VERSION=$(echo "$SUMMARY" | grep -oP '\d+\.\d+\.\d+')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag=v$VERSION-beta" >> $GITHUB_OUTPUT
+          else
+            SHA=$(git rev-parse --short HEAD)
+            echo "version=Alpha-$SHA" >> $GITHUB_OUTPUT
+            echo "tag=alpha-$SHA" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update version files
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Setting version to: $VERSION"
+
+          # Update gradle.properties
+          sed -i "s/^version=.*/version=$VERSION/" gradle.properties
+
+          # Update mod.hjson
+          sed -i "s/^version:.*/version: $VERSION/" mod.hjson
+
+          echo "=== gradle.properties ==="
+          cat gradle.properties
+          echo "=== mod.hjson ==="
+          cat mod.hjson
+
       - name: Build CLI JAR
         run: ./gradlew shadowJar
 
@@ -85,6 +124,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.version.outputs.tag }}
           files: |
             build/libs/mdtc-*-Cli.jar
             build/libs/mdtc-*-Desktop.jar
