@@ -80,22 +80,24 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          SUMMARY=$(git log -1 --pretty=%B "${{ github.ref }}")
-          echo "Commit summary: $SUMMARY"
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Commit message: $COMMIT_MSG"
 
-          # Try to match "Release X.Y.Z" or "Beta X.Y.Z"
-          if echo "$SUMMARY" | grep -qP '^Release\s+\d+\.\d+\.\d+'; then
-            VERSION=$(echo "$SUMMARY" | grep -oP '\d+\.\d+\.\d+')
+          if echo "$COMMIT_MSG" | grep -qE '^release-[0-9]+\.[0-9]+\.[0-9]+'; then
+            VERSION=$(echo "$COMMIT_MSG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "tag=v$VERSION" >> $GITHUB_OUTPUT
-          elif echo "$SUMMARY" | grep -qP '^Beta\s+\d+\.\d+\.\d+'; then
-            VERSION=$(echo "$SUMMARY" | grep -oP '\d+\.\d+\.\d+')
+            echo "release_name=Release $VERSION" >> $GITHUB_OUTPUT
+          elif echo "$COMMIT_MSG" | grep -qE '^beta-[0-9]+\.[0-9]+\.[0-9]+'; then
+            VERSION=$(echo "$COMMIT_MSG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "tag=v$VERSION-beta" >> $GITHUB_OUTPUT
+            echo "release_name=Beta $VERSION" >> $GITHUB_OUTPUT
           else
-            SHA=$(git rev-parse --short HEAD)
-            echo "version=Alpha-$SHA" >> $GITHUB_OUTPUT
-            echo "tag=alpha-$SHA" >> $GITHUB_OUTPUT
+            SHORT_SHA=$(git rev-parse --short HEAD)
+            echo "version=$SHORT_SHA" >> $GITHUB_OUTPUT
+            echo "tag=alpha-latest" >> $GITHUB_OUTPUT
+            echo "release_name=Alpha ($SHORT_SHA)" >> $GITHUB_OUTPUT
           fi
 
       - name: Update version files
@@ -124,7 +126,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.release_name }}
+          body: |
+            ${{ github.event.head_commit.message }}
           files: |
             build/libs/mdtc-*-Cli.jar
             build/libs/mdtc-*-Desktop.jar
           generate_release_notes: true
+          allowUpdates: true
