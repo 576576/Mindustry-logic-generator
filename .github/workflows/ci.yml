@@ -26,6 +26,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
       - name: Build & Test
         run: ./gradlew build
 
@@ -69,6 +72,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
 
       - name: Build CLI JAR
         run: ./gradlew shadowJar
