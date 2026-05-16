@@ -1,5 +1,7 @@
 # 从源码构建
 
+> [← 返回 README](README.md)
+
 ## 前置要求
 
 - **JDK 25+** — 推荐使用 [Adoptium](https://adoptium.net/)

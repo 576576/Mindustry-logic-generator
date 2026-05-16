@@ -1,5 +1,7 @@
 # Mod Guide
 
+> [← Back to README](../README.md)
+
 ## Installation
 
 1. Download `mdtc-[version]-Desktop.jar` from [Releases](https://github.com/576576/mdtC/releases)

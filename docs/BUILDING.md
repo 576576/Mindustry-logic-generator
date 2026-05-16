@@ -1,5 +1,7 @@
 # Building from Source
 
+> [← Back to README](../README.md)
+
 ## Prerequisites
 
 - **JDK 25+** — [Adoptium](https://adoptium.net/) recommended

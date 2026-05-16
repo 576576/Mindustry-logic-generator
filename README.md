@@ -6,7 +6,7 @@
 [![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange)](https://github.com/Anuken/Mindustry)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green)](LICENSE)
 
-> **Language**: [English](#quick-start) | [简体中文](docs/zh/README.md)
+> **Language**: **English** | [简体中文](docs/zh/README.md)
 
 A Java-like high-level language that compiles to Mindustry's native logic assembly (`.mdtc` → `.mdtcode`), with full round-trip decompilation support. Available as a **CLI** tool and an **in-game mod**.
 

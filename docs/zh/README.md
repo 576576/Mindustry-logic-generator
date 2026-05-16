@@ -6,7 +6,7 @@
 [![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange)](https://github.com/Anuken/Mindustry)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green)](../../LICENSE)
 
-> **语言**: [English](../../README.md) | [简体中文](#快速开始)
+> **语言**: [English](../../README.md) | **简体中文**
 
 一种类 Java 的高级语言，可编译为 Mindustry 原生逻辑汇编（`.mdtc` → `.mdtcode`），并支持完整反向反编译。提供 **CLI 命令行工具** 和 **游戏内模组** 两种形态。
 

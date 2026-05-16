@@ -1,5 +1,7 @@
 # Mod 指南
 
+> [← 返回 README](README.md)
+
 ## 安装
 
 1. 从 [Releases](https://github.com/576576/mdtC/releases) 下载 `mdtc-[version]-Desktop.jar`

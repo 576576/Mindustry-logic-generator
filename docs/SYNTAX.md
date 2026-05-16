@@ -1,5 +1,7 @@
 # MdtC Syntax Guide
 
+> [← Back to README](../README.md)
+
 ## File Types
 
 | Extension | Purpose |

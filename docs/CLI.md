@@ -1,5 +1,7 @@
 # CLI Reference
 
+> [← Back to README](../README.md)
+
 ## Usage
 
 ```bash
