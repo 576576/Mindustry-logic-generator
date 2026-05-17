@@ -52,7 +52,7 @@ public final class CodeDecompiler {
         ArrayList<String> bashList = stream.bash();
         List<Integer> tags = bashList.stream()
                 .filter(line -> line.startsWith("jump "))
-                .map(line -> Integer.parseInt(line.split(" ", 3)[1]))
+                .map(line -> Integer.valueOf(line.split(" ", 3)[1]))
                 .sorted().toList();
 
         Map<Integer, String> tagMap = new HashMap<>();
@@ -216,17 +216,21 @@ public final class CodeDecompiler {
                 target = Utils.reduceParams("0", params[0], target);
             } else {
                 params = target.split(" ");
-                if (ctrlType.equals("targetp")) {
-                    ctrlType = "ushoot";
-                    target = params[1];
-                    if (target.equals("1")) target = "";
-                    target2 = ".target(" + params[0] + ")";
-                } else if (ctrlType.equals("target")) {
-                    ctrlType = "ushoot";
-                    target = params[2];
-                    if (target.equals("1")) target = "";
-                    target2 = ".target(" + String.join(",", params[0], params[1]) + ")";
-                } else target = params[0];
+                switch (ctrlType) {
+                    case "targetp" -> {
+                        ctrlType = "ushoot";
+                        target = params[1];
+                        if (target.equals("1")) target = "";
+                        target2 = ".target(" + params[0] + ")";
+                    }
+                    case "target" -> {
+                        ctrlType = "ushoot";
+                        target = params[2];
+                        if (target.equals("1")) target = "";
+                        target2 = ".target(" + String.join(",", params[0], params[1]) + ")";
+                    }
+                    default -> target = params[0];
+                }
             }
 
             return String.format("%s(%s)%s", ctrlType, target, target2);
@@ -253,16 +257,20 @@ public final class CodeDecompiler {
                 if (ctrlType.equals("enabled"))
                     ctrlType = "enable";
                 params = target.split(" ");
-                if (ctrlType.equals("shootp")) {
-                    ctrlType = "shoot";
-                    target = params[1];
-                    if (target.equals("1")) target = "";
-                    target2 = ".target(" + params[0] + ")";
-                } else if (ctrlType.equals("shoot")) {
-                    target = params[2];
-                    if (target.equals("1")) target = "";
-                    target2 = ".target(" + String.join(",", params[0], params[1]) + ")";
-                } else target = params[0];
+                switch (ctrlType) {
+                    case "shootp" -> {
+                        ctrlType = "shoot";
+                        target = params[1];
+                        if (target.equals("1")) target = "";
+                        target2 = ".target(" + params[0] + ")";
+                    }
+                    case "shoot" -> {
+                        target = params[2];
+                        if (target.equals("1")) target = "";
+                        target2 = ".target(" + String.join(",", params[0], params[1]) + ")";
+                    }
+                    default -> target = params[0];
+                }
             }
             return String.format("%s.%s(%s)%s", block, ctrlType, target, target2);
         });
@@ -419,7 +427,7 @@ public final class CodeDecompiler {
                             boolean finalBracketTo = bracketTo;
                             parts.replaceAll(part -> part.equals(midVar)
                                 ? (finalBracketTo ? ("(" + value + ")") : value) : part);
-                            bashList.set(i, String.join(" ", parts));
+                            bashList.set(i, joinTokens(parts));
                             bashList.remove(j);
                             break;
                         }
@@ -452,6 +460,22 @@ public final class CodeDecompiler {
         }
 
         return stdCodeStream.of(bashList);
+    }
+
+    /** 将 token 列表重新拼接为字符串，括号和点号两侧不留空格 */
+    private static String joinTokens(List<String> tokens) {
+        if (tokens.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder(tokens.get(0));
+        for (int i = 1; i < tokens.size(); i++) {
+            String prev = tokens.get(i - 1);
+            String curr = tokens.get(i);
+            boolean noSpace = "(".equals(curr) || ")".equals(curr) || ",".equals(curr)
+                || "(".equals(prev) || ")".equals(prev) || ".".equals(prev)
+                || prev.endsWith("(") || prev.startsWith(".");
+            if (noSpace) sb.append(curr);
+            else sb.append(' ').append(curr);
+        }
+        return sb.toString();
     }
 
     /**
