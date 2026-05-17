@@ -133,4 +133,4 @@ jobs:
             build/libs/mdtc-*-Cli.jar
             build/libs/mdtc-*-Desktop.jar
           generate_release_notes: true
-          allowUpdates: true
+          make_latest: true
