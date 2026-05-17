@@ -105,6 +105,19 @@ tasks.register<Jar>("javadocJar") {
 // ==================== Mindustry Mod 构建任务 ====================
 
 /**
+ * 清理历史构建产物，防止文件锁冲突
+ */
+tasks.register("cleanModJars") {
+    group = "mindustry mod"
+    description = "Clean old mod JARs from build/libs"
+    doLast {
+        project.fileTree("build/libs").matching {
+            include("mdtc-*-Desktop.jar", "mdtc-*-Android.jar", "mdtc-*.jar")
+        }.forEach { it.delete() }
+    }
+}
+
+/**
  * 构建 Desktop 版 Mindustry mod JAR。
  * 包含：编译产物、运行时依赖、mod.hjson、assets/
  */
@@ -112,7 +125,7 @@ tasks.register<Jar>("jarMod") {
     group = "mindustry mod"
     description = "Build desktop Mindustry mod JAR (includes mod.hjson + assets/)"
     archiveFileName.set("${project.name}-${project.version}-Desktop.jar")
-    dependsOn("processModHjson")
+    dependsOn("processModHjson", "cleanModJars")
 
     from(sourceSets.main.get().output) {
         exclude("version.properties")
