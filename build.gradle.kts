@@ -75,6 +75,17 @@ tasks.processResources {
     filesMatching("**/version.properties") {
         expand("version" to project.version)
     }
+    inputs.property("version", project.version)
+}
+
+// 将 mod.hjson 版本号与 gradle.properties 同步
+tasks.register<Copy>("processModHjson") {
+    from(rootDir) {
+        include("mod.hjson")
+    }
+    into(layout.buildDirectory.dir("mod"))
+    expand("version" to project.version)
+    inputs.property("version", project.version)
 }
 
 tasks.test {
@@ -101,18 +112,21 @@ tasks.register<Jar>("jarMod") {
     group = "mindustry mod"
     description = "Build desktop Mindustry mod JAR (includes mod.hjson + assets/)"
     archiveFileName.set("${project.name}-${project.version}-Desktop.jar")
+    dependsOn("processModHjson")
 
-    from(sourceSets.main.get().output)
+    from(sourceSets.main.get().output) {
+        exclude("version.properties")
+    }
 
-    // 打包运行时依赖
+    // 打包运行时依赖（排除 picocli — CLI 工具专用，mod 不需要）
     from({
         configurations.runtimeClasspath.get()
-            .filter { it.exists() }
+            .filter { it.exists() && !it.name.contains("picocli") }
             .map { if (it.isDirectory) it else zipTree(it) }
     })
 
-    // 打包 mod.hjson（位于项目根目录）
-    from(rootDir) {
+    // 打包处理后的 mod.hjson（版本号已同步）
+    from(tasks.named("processModHjson")) {
         include("mod.hjson")
     }
 
@@ -120,6 +134,11 @@ tasks.register<Jar>("jarMod") {
     from(rootDir.resolve("assets")) {
         into("assets")
         include("**")
+    }
+
+    // 将 icon.png 额外打包到 JAR 根（Mindustry 图标要求）
+    from(rootDir.resolve("assets/sprites/icon.png")) {
+        into("")
     }
 }
 
