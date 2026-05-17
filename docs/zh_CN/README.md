@@ -1,7 +1,7 @@
 # MdtC — Mindustry 逻辑代码编写器
 
 [![CI](https://github.com/576576/mdtC/actions/workflows/ci.yml/badge.svg)](https://github.com/576576/mdtC/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2F576576%2FmdtC%2Fmain%2Fmod.hjson&query=%24.version&label=version&color=blue)](https://github.com/576576/mdtC/releases)
+[![Version](https://img.shields.io/github/v/release/576576/mdtC?label=version&color=blue)](https://github.com/576576/mdtC/releases)
 [![JDK](https://img.shields.io/badge/JDK-25-red)](https://adoptium.net/)
 [![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange)](https://github.com/Anuken/Mindustry)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green)](../../LICENSE)
