@@ -84,12 +84,12 @@ jobs:
           echo "Commit message: $COMMIT_MSG"
 
           if echo "$COMMIT_MSG" | grep -qE '^release-[0-9]+\.[0-9]+\.[0-9]+'; then
-            VERSION=$(echo "$COMMIT_MSG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+            VERSION=$(echo "$COMMIT_MSG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "tag=v$VERSION" >> $GITHUB_OUTPUT
             echo "release_name=Release $VERSION" >> $GITHUB_OUTPUT
           elif echo "$COMMIT_MSG" | grep -qE '^beta-[0-9]+\.[0-9]+\.[0-9]+'; then
-            VERSION=$(echo "$COMMIT_MSG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+            VERSION=$(echo "$COMMIT_MSG" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
             echo "version=$VERSION" >> $GITHUB_OUTPUT
             echo "tag=v$VERSION-beta" >> $GITHUB_OUTPUT
             echo "release_name=Beta $VERSION" >> $GITHUB_OUTPUT
