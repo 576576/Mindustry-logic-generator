@@ -8,7 +8,7 @@ main: "cn.sumitm.mdtc.mod.ModInterface"
 
 description: "In-game MdtC logic editor with dual-pane layout. Compile .mdtc to .mdtcode in real-time."
 
-version: ${version}
+version: ebd18cf
 minGameVersion: 157
 java: true
 
