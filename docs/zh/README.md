@@ -72,7 +72,7 @@ java -jar mdtc-[version]-Cli.jar -i sample.mdtc -o out.mdtcode -oo
 | [Mod 指南](MOD.md) | 游戏内模组功能与设置 |
 | [构建指南](BUILDING.md) | 从源码构建 |
 | [AGENT.md](../../AGENT.md) | 项目架构（供 AI 辅助阅读） |
-| [i18n 状态](../../i18n.md) | 翻译覆盖率与贡献指南 |
+| [i18n 状态](../i18n.md) | 翻译覆盖率与贡献指南 |
 
 ---
 
@@ -101,7 +101,7 @@ java -jar mdtc-[version]-Cli.jar -i sample.mdtc -o out.mdtcode -oo
 
 ## 多语言翻译
 
-MdtC 自动检测游戏语言以适配游戏内 UI。详见 [i18n.md](../../i18n.md)。
+MdtC 自动检测游戏语言以适配游戏内 UI。详见 [i18n.md](../i18n.md)。
 
 ### 贡献翻译
 
@@ -109,7 +109,7 @@ MdtC 自动检测游戏语言以适配游戏内 UI。详见 [i18n.md](../../i18n
    （使用[有效的 locale 代码](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Locale.html)）
 2. 翻译所有值 — **键名不可更改**
 3. （可选）复制 `docs/` 到 `docs/xx/` 并翻译文档
-4. 提交 Pull Request — CI 合入后自动更新 [i18n.md](../../i18n.md)
+4. 提交 Pull Request — CI 合入后自动更新 [i18n.md](../i18n.md)
 
 ---
 

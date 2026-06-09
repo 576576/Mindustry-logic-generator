@@ -1,67 +1,63 @@
-# MdtC — Mindustry Logic Coder
+<p align="center">
+  <img src="{{icon_prefix}}assets/sprites/icon.png" width="64" alt="MdtC">
+</p>
 
-[![CI](https://github.com/576576/mdtC/actions/workflows/ci.yml/badge.svg)](https://github.com/576576/mdtC/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/release/576576/mdtC?label=version&color=blue)](https://github.com/576576/mdtC/releases)
-[![JDK](https://img.shields.io/badge/JDK-25-red)](https://adoptium.net/)
-[![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange)](https://github.com/Anuken/Mindustry)
-[![License](https://img.shields.io/badge/license-GPL--3.0-green)](LICENSE)
+<h1 align="center">MdtC</h1>
 
-> **Language**: **English** | [简体中文](docs/zh_CN/README.md)
+<p align="center">
+{{languages}}
+</p>
 
-A Java-like high-level language that compiles to Mindustry's native logic assembly (`.mdtc` → `.mdtcode`), with full round-trip decompilation support. Available as a **CLI** tool and an **in-game mod**.
+<p align="center">
+  <img src="https://img.shields.io/github/actions/workflow/status/576576/mdtC/ci.yml?branch=main&label=CI" alt="CI">
+  <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
+  <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
+  <img alt="version" src="https://img.shields.io/badge/version-ebd18cf-informational" />
+  <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
+</p>
+
+<p align="center"><em>{{tagline}}</em></p>
 
 ---
 
 ## Quick Start
 
-### CLI
+### Mindustry Mod
 
-```bash
-java -jar mdtc-[version]-Cli.jar [options]
-```
+**From Mod Browser**
 
-| Flag | Long | Argument | Description |
-|------|------|----------|-------------|
-| `-i` | `--file` | `<path>` | Input file (`.mdtc` / `.mdtcode` / `.libmdtc`) |
-| `-o` | `--output` | `<path>` | Output path (default: auto-derived) |
-| `-f` | `--format` | — | Format source after compilation |
-| `-fo` | `--format-only` | — | Only format, skip compile |
-| `-oo` | `--open-out` | — | Reveal output in file explorer |
-| `-gpc` | `--generate-prime-code` | `<0\|1\|2>` | Generate intermediate code (debug) |
-| `-v` | `--version` | — | Show version info |
-
-```bash
-# Compile
-java -jar mdtc-[version]-Cli.jar -i sample_cases/case1.mdtc
-
-# Decompile
-java -jar mdtc-[version]-Cli.jar -i sample_cases/case1.mdtcode -f
-
-# Format only
-java -jar mdtc-[version]-Cli.jar -i modules/example.libmdtc -fo
-
-# Custom output + open after
-java -jar mdtc-[version]-Cli.jar -i sample.mdtc -o out.mdtcode -oo
-```
-
-> See [CLI Reference](docs/CLI.md) for more examples.
-
-### Desktop Mod
-
-1. Download `mdtc-[version]-Desktop.jar` from [Releases](https://github.com/576576/mdtC/releases)
-2. In Mindustry, go to **Mods** → **Import Mod** → select the JAR file
+1. In Mindustry, go to **Mods** → **Mod Browser**
+2. Search for **MdtC** → **Install**
 3. Open any processor → click **MdtC** at the bottom toolbar
 4. Edit `.mdtc` in the left pane, preview `.mdtcode` in the right pane
 
-### Android Mod
+**Manual Import**
 
-1. Download `mdtc-[version]-Android.jar` from [Releases](https://github.com/576576/mdtC/releases)
+1. [Download](https://github.com/576576/mdtC/releases) `mdtc-ebd18cf-Desktop.jar`
 2. In Mindustry, go to **Mods** → **Import Mod** → select the JAR file
-3. Same workflow as Desktop Mod
+3. Then same as steps 3–4 above
 
-> If the Android JAR is not available, use the Desktop JAR — it works on Android for code-only mods.
+### Cli
 
+```bash
+java -jar mdtc-ebd18cf-Cli.jar [options]
+```
+
+> See [CLI Reference](docs/CLI.md) for instructions.
 ---
+
+
+## Features
+
+- **Full Round-Trip**: Compile `.mdtc` → `.mdtcode` and decompile back
+- **Dual-Pane Editor**: Side-by-side edit/preview in Mindustry
+- **Auto-Format**: Configurable indentation, bracket-aware
+- **i18n**: English, 简体中文, 繁體中文, 日本語, Français — auto-detects game locale
+- **Persistent Settings**: Indent width, auto-format, auto-import
+- **Modular Libraries**: Reusable `.libmdtc` function imports
+- **Repeat Macro**: `repeat(var, n){ ... }` compile-time unrolling
+- **Named Arguments**: `.main(...).target(...).when(...)` chain syntax
+
 
 ## Documentation
 
@@ -71,37 +67,13 @@ java -jar mdtc-[version]-Cli.jar -i sample.mdtc -o out.mdtcode -oo
 | [CLI Reference](docs/CLI.md) | Command-line arguments and usage |
 | [Mod Guide](docs/MOD.md) | In-game mod features and settings |
 | [Building](docs/BUILDING.md) | How to build from source |
-| [AGENT.md](AGENT.md) | Project architecture (for AI assistants) |
-| [i18n Status](i18n.md) | Translation coverage & contributing |
+| [i18n Status](docs/i18n.md) | Translation coverage & contributing |
 
 ---
 
-## Features
+## I18n
 
-- **Full Round-Trip**: Compile `.mdtc` → `.mdtcode` and decompile back
-- **Dual-Pane Editor**: Side-by-side edit/preview in Mindustry
-- **Auto-Format**: Configurable indentation, bracket-aware
-- **i18n**: English & 简体中文 — auto-detects game locale
-- **Persistent Settings**: Indent width, auto-format, auto-import
-- **Modular Libraries**: Reusable `.libmdtc` function imports
-- **Repeat Macro**: `repeat(var, n){ ... }` compile-time unrolling
-- **Named Arguments**: `.main(...).target(...).when(...)` chain syntax
-
----
-
-## Build Artifacts
-
-| File | Platform | Build Task |
-|------|----------|------------|
-| `mdtc-[version]-Cli.jar` | CLI (fat JAR) | `./gradlew shadowJar` |
-| `mdtc-[version]-Desktop.jar` | Desktop Mod | `./gradlew jarMod` |
-| `mdtc-[version]-Android.jar` | Android Mod | `./gradlew jarAndroidMod` |
-
----
-
-## Internationalization
-
-MdtC auto-detects the game locale for its in-game UI. See [i18n.md](i18n.md) for the current translation status.
+MdtC auto-detects the game locale for its in-game UI. See [i18n.md](docs/i18n.md) for the current translation status.
 
 ### Contributing a Translation
 
@@ -109,7 +81,7 @@ MdtC auto-detects the game locale for its in-game UI. See [i18n.md](i18n.md) for
    (use a [valid locale code](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Locale.html))
 2. Translate all values — **keys must stay unchanged**
 3. (Optional) Copy `docs/` to `docs/xx/` and translate the documentation
-4. Submit a Pull Request — CI will auto-update [i18n.md](i18n.md) on merge
+4. Submit a Pull Request — CI will auto-update [docs/i18n.md](docs/i18n.md) on merge
 
 ---
 
@@ -119,15 +91,15 @@ MdtC auto-detects the game locale for its in-game UI. See [i18n.md](i18n.md) for
 src/main/java/cn/sumitm/mdtc/
 ├── cli/           CLI entry (Main, CliHelper)
 ├── compiler/      Compiler & decompiler (CodeCompiler, CodeDecompiler, LangRegistry)
-├── core/          Types & utilities (Constants, Utils, LangBuiltins, WrappedList)
-├── formatter/     Code formatter
-└── mod/           Mindustry mod (ModInterface, I18n, ui/LogicEditorDialog)
-assets/bundles/    i18n resources (en, zh_CN)
-docs/              Documentation
-sample_cases/      Syntax examples
-modules/           Reusable .libmdtc libraries
+├── core/          Data structures & utilities (Constants, Utils, LangBuiltins, WrappedList)
+├── formatter/     Code formatter (CodeFormatter)
+├── mod/           Mindustry mod (ModInterface, LogicEditorDialog, I18n)
+└── resources/     Bundled assets
 ```
+
 
 ## License
 
-GPL-3.0 — see [LICENSE](LICENSE).
+This project is licensed under [GNU General Public License v3.0](LICENSE).
+
+Mindustry is © Anuken, licensed under GPLv3. This mod is not affiliated with or endorsed by Anuken.
