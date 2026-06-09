@@ -105,7 +105,7 @@ MdtC auto-detects the game locale for its in-game UI. See [i18n.md](i18n.md) for
 
 ### Contributing a Translation
 
-1. Copy `assets/bundles/bundle.properties` to `assets/bundles/bundle_xx_XX.properties`  
+1. Copy `assets/bundles/en.properties` to `assets/bundles/[langCode]-[regionCode].properties`  
    (use a [valid locale code](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Locale.html))
 2. Translate all values — **keys must stay unchanged**
 3. (Optional) Copy `docs/` to `docs/xx/` and translate the documentation

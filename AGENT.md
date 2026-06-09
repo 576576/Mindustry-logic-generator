@@ -130,8 +130,10 @@ mdtcDesktop.jar
 
 ```
 assets/bundles/
-├── bundle.properties          英文（默认）
-└── bundle_zh_CN.properties    简体中文（Unicode 转义 \uXXXX）
+├── bundle.properties        语言索引（locale → 文件名映射）
+├── en.properties            英文（默认，UTF-8）
+├── zh.properties             简体中文（zh-CN/SG，UTF-8 直观中文）
+└── zh-Hant.properties        繁體中文（zh-TW/HK/MO，UTF-8）
 ```
 
 Bundle key 前缀 `mdtc.`，共 ~25 个 key。

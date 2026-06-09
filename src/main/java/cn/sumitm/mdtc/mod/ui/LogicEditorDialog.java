@@ -63,8 +63,8 @@ public class LogicEditorDialog extends BaseDialog {
         cont.table(toolbar -> {
             toolbar.defaults().size(BTN_WIDTH, BTN_HEIGHT).pad(PAD);
 
-            toolbar.button(I18n.get("mdtc.compile"), () -> compile());
-            toolbar.button(I18n.get("mdtc.decompile"), this::doDecompile);
+            toolbar.button(I18n.get("mdtc.compile") + " >", () -> compile());
+            toolbar.button("< " + I18n.get("mdtc.decompile"), this::doDecompile);
             toolbar.button(I18n.get("mdtc.format"), () -> doFormat());
 
             toolbar.add().growX();
@@ -243,8 +243,14 @@ public class LogicEditorDialog extends BaseDialog {
             String result = CodeCompiler.compile(source);
             outputArea.setText(result);
             relayoutScrolls();
-            statusLabel.setText("[green]" + I18n.format("mdtc.compiled", result.split("\n").length));
-        } catch (Exception ex) {
+            String warn = CodeCompiler.lastWarning;
+            if (warn != null) {
+                statusLabel.setText("[orange]" + warn);
+                Log.warn("[MdtC] " + warn);
+            } else {
+                statusLabel.setText("[green]" + I18n.format("mdtc.compiled", result.split("\n").length));
+            }
+        } catch (Throwable ex) {
             statusLabel.setText("[red]" + I18n.get("mdtc.error.compile") + ex.getMessage());
             Log.err(ex);
         }

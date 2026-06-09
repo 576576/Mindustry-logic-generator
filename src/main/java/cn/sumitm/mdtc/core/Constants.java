@@ -36,7 +36,7 @@ public final class Constants {
 
     public static final List<String> ctrlCodes = List.of(
         "print(", "printchar(", "format(", "wait(", "stop(",
-        "end(", "ubind(", "uctrl(", "ushoot(", "jump(", "jump2(", "printf(", "tag(", "raw("
+        "end(", "ubind(", "uctrl(", "ushoot(", "draw(", "jump(", "jump2(", "printf(", "tag(", "raw("
     );
 
     public static final Map<String, Integer> operatorOffsetMap = Map.ofEntries(

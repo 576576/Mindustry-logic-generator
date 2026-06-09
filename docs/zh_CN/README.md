@@ -105,7 +105,7 @@ MdtC 自动检测游戏语言以适配游戏内 UI。详见 [i18n.md](../../i18n
 
 ### 贡献翻译
 
-1. 复制 `assets/bundles/bundle.properties` 为 `assets/bundles/bundle_xx_XX.properties`  
+1. 复制 `assets/bundles/en.properties` 为 `assets/bundles/[langCode]-[regionCode].properties`  
    （使用[有效的 locale 代码](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Locale.html)）
 2. 翻译所有值 — **键名不可更改**
 3. （可选）复制 `docs/` 到 `docs/xx/` 并翻译文档

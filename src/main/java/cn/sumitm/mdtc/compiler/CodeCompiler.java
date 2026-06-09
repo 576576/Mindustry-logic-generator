@@ -18,10 +18,14 @@ import cn.sumitm.mdtc.formatter.CodeFormatter;
 public final class CodeCompiler {
     private CodeCompiler() {}
 
+    /** 最近一次编译的警告信息（供 UI 读取） */
+    public static String lastWarning;
+
     /**
      * 主转换函数入口
      */
     public static String compile(String codeBlock) {
+        lastWarning = null;
         ArrayList<String> bashList = new ArrayList<>();
         Map<Integer, stdFuncStream> funcMap = new HashMap<>();
 
@@ -654,9 +658,12 @@ public final class CodeCompiler {
                         String jumpString = String.join(" ", "jump", index + "", parts[2]);
                         bashList.set(i, jumpString);
                     } else {
-                        Utils.printError("Compile Error: jump() tag not found of [" + target + "]");
-                        Utils.printError(i + 1 + " " + line);
-                        return stream;
+                        Utils.printError("Compile Warning: jump() tag not found of [" + target + "] — replaced with DEFAULT");
+                        lastWarning = "jump() tag not found: " + target;
+                        // 替换为 DEFAULT 并重新解析，避免输出不可用的动态标签
+                        String fallback = String.join(" ", "jump", "DEFAULT", parts[2]);
+                        bashList.set(i, fallback);
+                        return convertLink(stdCodeStream.of(bashList, expr, stream.stat()));
                     }
                 }
             }
