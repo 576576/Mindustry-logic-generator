@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="../assets/sprites/icon.png" width="64" alt="MdtC">
+  <img src="../../assets/sprites/icon.png" width="64" alt="MdtC">
 </p>
 
 <h1 align="center">MdtC</h1>
 
 <p align="center">
-[English](README.md) | [中文](docs/zh-Hant/README.md) | **中文**(docs/zh/README.md)
+[English](README.md) | [中文](docs/zh-Hant/README.md) | [**中文**](docs/zh/README.md)
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-fc1d4fd-informational" />
+  <img alt="version" src="https://img.shields.io/badge/version-4efc0f8-informational" />
   <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
   <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
 </p>
@@ -44,7 +44,7 @@
 ### CLI
 
 ```bash
-java -jar mdtc-fc1d4fd-Cli.jar [options]
+java -jar mdtc-4efc0f8-Cli.jar [options]
 ```
 
 > 详见 [CLI 参考](docs/CLI.md)。
