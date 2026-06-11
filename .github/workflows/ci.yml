@@ -222,7 +222,7 @@ jobs:
             BASENAME=$(basename "$DOC" .properties)
             LANGCODE=$(grep '^langCode = ' "$DOC" | sed 's/^langCode = //')
 
-            LANG_BAR=$(echo "$LANGS" | sed "s|__${BASENAME}__\[\([^]]*\)\]|**\1**|g" | sed 's|__[a-zA-Z-]*__||g')
+            LANG_BAR=$(echo "$LANGS" | sed "s|__${BASENAME}__\[\([^]]*\)\]\(([^)]*)\)|[**\1**]\2|g" | sed 's|__[a-zA-Z-]*__||g')
 
             if [ "$LANGCODE" = "en" ]; then
               OUT="README.md"
@@ -230,7 +230,7 @@ jobs:
             else
               mkdir -p "docs/$BASENAME"
               OUT="docs/$BASENAME/README.md"
-              ICON_PREFIX="../"
+              ICON_PREFIX="../../"
             fi
 
             SED_SCRIPT="s#{{VERSION}}#$VERSION#g;s#{{languages}}#$LANG_BAR#g;s#{{icon_prefix}}#$ICON_PREFIX#g"
