@@ -235,8 +235,8 @@ jobs:
 
             SED_SCRIPT="s#{{VERSION}}#$VERSION#g;s#{{languages}}#$LANG_BAR#g;s#{{icon_prefix}}#$ICON_PREFIX#g"
             while IFS='=' read -r key value; do
-              key=$(echo "$key" | xargs)
-              value=$(echo "$value" | xargs)
+              key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+              value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
               [ -z "$key" ] && continue
               case "$key" in lang|langCode|langRegion|langRegionCode|title) continue ;; esac
               value_esc=$(echo "$value" | sed 's/[#\\&]/\\&/g')
@@ -289,7 +289,8 @@ jobs:
           fi
 
   build:
-    needs: prebuild
+    needs: commit
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
