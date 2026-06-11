@@ -5,12 +5,12 @@
 <h1 align="center">MdtC</h1>
 
 <p align="center">
-[English](README.md) | [**中文**](docs/zh-Hant/README.md) | [中文](docs/zh/README.md)
+<a href="../zh/README.md">中文</a> &nbsp;|&nbsp; 中文 &nbsp;|&nbsp; <a href="../../README.md">English</a>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-e9735a7-informational" />
+  <img alt="version" src="https://img.shields.io/badge/version-07bd32b-informational" />
   <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
   <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
 </p>
@@ -44,10 +44,10 @@
 ### CLI
 
 ```bash
-java -jar mdtc-e9735a7-Cli.jar [options]
+java -jar mdtc-07bd32b-Cli.jar [options]
 ```
 
-> 詳見 [CLI 參考](docs/CLI.md)。
+> 詳見 [CLI 參考](../CLI.md)。
 
 ---
 
@@ -64,17 +64,17 @@ java -jar mdtc-e9735a7-Cli.jar [options]
 
 | 文件 | 內容 |
 |----------|---------|
-| [語法指南](docs/SYNTAX.md) | 完整語法說明與範例 |
-| [CLI 參考](docs/CLI.md) | 命令列參數與用法 |
-| [模組指南](docs/MOD.md) | 遊戲內模組功能與設定 |
-| [構建指南](docs/BUILDING.md) | 如何從原始碼構建 |
-| [i18n 狀態](docs/i18n.md) | 翻譯覆蓋率與貢獻指南 |
+| [語法指南](../SYNTAX.md) | 完整語法說明與範例 |
+| [CLI 參考](../CLI.md) | 命令列參數與用法 |
+| [模組指南](../MOD.md) | 遊戲內模組功能與設定 |
+| [構建指南](../BUILDING.md) | 如何從原始碼構建 |
+| [i18n 狀態](../i18n.md) | 翻譯覆蓋率與貢獻指南 |
 
 ---
 
 ## 多語言
 
-MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](docs/i18n.md)。
+MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](../i18n.md)。
 
 ### 貢獻翻譯
 
@@ -84,7 +84,7 @@ MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](docs/i18n.
 
 3. （可選）複製 `docs/` 到 `docs/xx/` 並翻譯文件
 
-4. 提交 Pull Request — CI 合入後自動更新 [docs/i18n.md](docs/i18n.md)
+4. 提交 Pull Request — CI 合入後自動更新 [docs/i18n.md](../i18n.md)
 
 ---
 

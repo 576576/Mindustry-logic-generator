@@ -5,12 +5,12 @@
 <h1 align="center">MdtC</h1>
 
 <p align="center">
-[**English**](README.md) | [中文](docs/zh-Hant/README.md) | [中文](docs/zh/README.md)
+<a href="docs/zh/README.md">中文</a> &nbsp;|&nbsp; <a href="docs/zh-Hant/README.md">中文</a> &nbsp;|&nbsp; English
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-e9735a7-informational" />
+  <img alt="version" src="https://img.shields.io/badge/version-07bd32b-informational" />
   <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
   <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
 </p>
@@ -44,7 +44,7 @@
 ### CLI
 
 ```bash
-java -jar mdtc-e9735a7-Cli.jar [options]
+java -jar mdtc-07bd32b-Cli.jar [options]
 ```
 
 > See [CLI Reference](docs/CLI.md) for instructions.
