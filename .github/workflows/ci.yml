@@ -21,7 +21,11 @@ jobs:
       is_stable: ${{ steps.detect.outputs.is_stable }}
       build_cli: ${{ steps.detect.outputs.build_cli }}
       build_mod: ${{ steps.detect.outputs.build_mod }}
-      i18n_changed: ${{ steps.detect.outputs.i18n_changed }}
+      i18n_do: ${{ steps.hash-check.outputs.do_i18n }}
+      docs_do: ${{ steps.hash-check.outputs.do_docs }}
+      bundles_hash: ${{ steps.hash-check.outputs.bundles_hash }}
+      docs_hash: ${{ steps.hash-check.outputs.docs_hash }}
+      templates_hash: ${{ steps.hash-check.outputs.templates_hash }}
     steps:
       - uses: actions/checkout@v4
 
@@ -62,20 +66,45 @@ jobs:
             echo "is_stable=false" >> $GITHUB_OUTPUT
           fi
 
-          # ---- i18n lazy: hash source files, compare with stored hashes ----
-          B_HASH=$(sha256sum assets/bundles/en.properties assets/bundles/zh.properties assets/bundles/zh-Hant.properties assets/bundles/fr.properties assets/bundles/ja.properties 2>/dev/null | sha256sum | cut -d' ' -f1)
-          D_HASH=$(sha256sum assets/docs/en.properties assets/docs/zh.properties assets/docs/zh-Hant.properties 2>/dev/null | sha256sum | cut -d' ' -f1)
-          T_HASH=$(sha256sum assets/templates/README.md assets/templates/i18n.md 2>/dev/null | sha256sum | cut -d' ' -f1)
-          OLD_B=$(grep '^> bundles:' docs/i18n.md 2>/dev/null | sed 's/> bundles: *//' || echo "")
-          OLD_D=$(grep '^> docs:' docs/i18n.md 2>/dev/null | sed 's/> docs: *//' || echo "")
-          OLD_T=$(grep '^> templates:' docs/i18n.md 2>/dev/null | sed 's/> templates: *//' || echo "")
-          if [ "$B_HASH" != "$OLD_B" ] || [ "$D_HASH" != "$OLD_D" ] || [ "$T_HASH" != "$OLD_T" ]; then
-            echo "i18n_changed=true" >> $GITHUB_OUTPUT
-            echo "i18n hash changed"
-          else
-            echo "i18n_changed=false" >> $GITHUB_OUTPUT
-            echo "i18n hash unchanged, skipping"
+      - name: Check i18n & docs changes
+        id: hash-check
+        env:
+          MSG: ${{ github.event.head_commit.message || '' }}
+        run: |
+          BUNDLES_HASH=$(find assets/bundles -type f -name '*.properties' ! -name 'bundle.properties' -exec sha256sum {} \; | sort | sha256sum | cut -c1-8)
+          DOCS_HASH=$(find assets/docs -type f -name '*.properties' -exec sha256sum {} \; | sort | sha256sum | cut -c1-8)
+          TEMPLATES_HASH=$(find assets/templates -type f -exec sha256sum {} \; | sort | sha256sum | cut -c1-8)
+
+          # b-doc: force i18n + docs regeneration
+          if echo "$MSG" | grep -qE '\bb-doc\b'; then
+            echo "do_i18n=true" >> $GITHUB_OUTPUT
+            echo "do_docs=true" >> $GITHUB_OUTPUT
+            echo "bundles_hash=$BUNDLES_HASH" >> $GITHUB_OUTPUT
+            echo "docs_hash=$DOCS_HASH" >> $GITHUB_OUTPUT
+            echo "templates_hash=$TEMPLATES_HASH" >> $GITHUB_OUTPUT
+            echo "i18n: true (forced)  docs: true (forced)"
+            exit 0
           fi
+
+          OLD_BUNDLES=""; OLD_DOCS=""; OLD_TEMPLATES=""
+          if [ -f docs/i18n.md ]; then
+            OLD_BUNDLES=$(grep 'bundles:' docs/i18n.md | tail -1 | awk '{print $2}')
+            OLD_DOCS=$(grep 'docs:' docs/i18n.md | tail -1 | awk '{print $2}')
+            OLD_TEMPLATES=$(grep 'templates:' docs/i18n.md | tail -1 | awk '{print $2}')
+          fi
+
+          DO_I18N="false"; DO_DOCS="false"
+          [ "$TEMPLATES_HASH" != "$OLD_TEMPLATES" ] && DO_I18N="true" && DO_DOCS="true"
+          [ "$BUNDLES_HASH" != "$OLD_BUNDLES" ] && DO_I18N="true"
+          [ "$DOCS_HASH" != "$OLD_DOCS" ] && DO_I18N="true"
+          [ "$DOCS_HASH" != "$OLD_DOCS" ] && DO_DOCS="true"
+
+          echo "do_i18n=$DO_I18N" >> $GITHUB_OUTPUT
+          echo "do_docs=$DO_DOCS" >> $GITHUB_OUTPUT
+          echo "bundles_hash=$BUNDLES_HASH" >> $GITHUB_OUTPUT
+          echo "docs_hash=$DOCS_HASH" >> $GITHUB_OUTPUT
+          echo "templates_hash=$TEMPLATES_HASH" >> $GITHUB_OUTPUT
+          echo "i18n: $DO_I18N  docs: $DO_DOCS"
 
       - name: Update version files
         run: |
@@ -96,66 +125,121 @@ jobs:
 
   i18n:
     needs: prebuild
-    if: github.event_name == 'push' && needs.prebuild.outputs.i18n_changed == 'true'
+    if: always() && !failure() && !cancelled() && (needs.prebuild.outputs.i18n_do == 'true' || needs.prebuild.outputs.docs_do == 'true')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate i18n.md
+      - name: Generate i18n status
+        if: needs.prebuild.outputs.i18n_do == 'true'
         run: |
-          ROWS_FILE=$(mktemp)
-          mkdir -p docs
+          TEMPLATE="assets/templates/i18n.md"
+          OUTPUT="docs/i18n.md"
+          DEFAULT="assets/bundles/en.properties"
+          NOW=$(date -u +'%Y-%m-%d %H:%M UTC')
 
-          DEFAULT_KEYS=$(grep -c '^mdtc\.' assets/bundles/en.properties || echo 0)
-          DEFAULT_DOCS=$(( $(find docs -maxdepth 1 -name '*.md' | wc -l) + 1 ))
+          HEADER_KEYS=4
+          DEFAULT_TOTAL=$(grep -c '^mdtc\.' "$DEFAULT" || echo 0)
 
-          for f in assets/bundles/*.properties; do
+          ROWS=""
+          for f in $(ls assets/bundles/*.properties | sort -r); do
             BASENAME=$(basename "$f" .properties)
             [ "$BASENAME" = "bundle" ] && continue
 
             LANG=$(grep '^lang = ' "$f" | sed 's/^lang = //')
             CODE=$(grep '^langCode = ' "$f" | sed 's/^langCode = //')
             REGION=$(grep '^langRegion = ' "$f" | sed 's/^langRegion = //')
-            [ -z "$LANG" ] && { [ "$BASENAME" = "en" ] && LANG="English" || LANG="$BASENAME"; }
             [ -z "$REGION" ] && REGION="—"
 
             KEYS=$(grep -c '^mdtc\.' "$f" || echo 0)
-            PCT=$(( DEFAULT_KEYS > 0 ? 100 * KEYS / DEFAULT_KEYS : 100 ))
+            PCT=$(( DEFAULT_TOTAL > 0 ? 100 * KEYS / DEFAULT_TOTAL : 100 ))
+            [ "$PCT" -gt 100 ] && PCT=100
 
+            DOCS=0
             if [ "$CODE" = "en" ]; then
-              README_LINK="README.md"; DOCS=$DEFAULT_DOCS
-            else
-              README_LINK="docs/$BASENAME/README.md"
-              DOCS=$(find "docs/$BASENAME" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l)
+              DOCS=$(ls docs/*.md 2>/dev/null | wc -l)
+              [ -f README.md ] && DOCS=$((DOCS + 1))
+            elif [ -d "docs/$BASENAME" ]; then
+              DOCS=$(find "docs/$BASENAME" -name '*.md' 2>/dev/null | wc -l)
             fi
-            DOC_PCT=$((100 * DOCS / DEFAULT_DOCS))
-            [ "$DOC_PCT" -gt 100 ] && DOC_PCT=100
+            HAS_DOC=""
+            [ -f "assets/docs/$BASENAME.properties" ] && HAS_DOC=" 📄"
 
-            STATUS="✅"
-            [ "$PCT" -lt 100 ] && STATUS="⚠️"
-            [ "$PCT" -lt 50 ] && STATUS="❌"
+            if [ "$CODE" = "en" ]; then README_LINK="../README.md"
+            else README_LINK="$BASENAME/README.md"
+            fi
 
-            echo "| [$LANG]($README_LINK) | \`$CODE\` | $REGION | $KEYS/$DEFAULT_KEYS ($PCT%) | $DOCS/$DEFAULT_DOCS ($DOC_PCT%) $STATUS |" >> "$ROWS_FILE"
+            ROWS="$ROWS| [$LANG]($README_LINK) | \`$CODE\` | $REGION | $KEYS/$DEFAULT_TOTAL ($PCT%) | $DOCS$HAS_DOC |\n"
           done
 
-          B_HASH=$(sha256sum assets/bundles/en.properties assets/bundles/zh.properties assets/bundles/zh-Hant.properties assets/bundles/fr.properties assets/bundles/ja.properties 2>/dev/null | sha256sum | cut -d' ' -f1)
-          D_HASH=$(sha256sum assets/docs/en.properties assets/docs/zh.properties assets/docs/zh-Hant.properties 2>/dev/null | sha256sum | cut -d' ' -f1)
-          T_HASH=$(sha256sum assets/templates/README.md assets/templates/i18n.md 2>/dev/null | sha256sum | cut -d' ' -f1)
+          cp "$TEMPLATE" "$OUTPUT"
+          sed -i "s#{{date}}#$NOW#" "$OUTPUT"
+          sed -i "s#{{rows}}#$ROWS#" "$OUTPUT"
+          sed -i "s#{{bundles_hash}}#${{ needs.prebuild.outputs.bundles_hash }}#" "$OUTPUT"
+          sed -i "s#{{docs_hash}}#${{ needs.prebuild.outputs.docs_hash }}#" "$OUTPUT"
+          sed -i "s#{{templates_hash}}#${{ needs.prebuild.outputs.templates_hash }}#" "$OUTPUT"
+          echo "=== Generated docs/i18n.md ==="
 
-          sed -e "s|{{date}}|$(date -u +'%Y-%m-%d %H:%M UTC')|g" \
-              -e "s|{{bundles_hash}}|$B_HASH|g" \
-              -e "s|{{docs_hash}}|$D_HASH|g" \
-              -e "s|{{templates_hash}}|$T_HASH|g" \
-              -e "/{{rows}}/{
-                r $ROWS_FILE
-                d
-              }" \
-              assets/templates/i18n.md > docs/i18n.md
+      - name: Generate READMEs
+        if: needs.prebuild.outputs.docs_do == 'true'
+        run: |
+          TEMPLATE="assets/templates/README.md"
+          VERSION="${{ needs.prebuild.outputs.version }}"
 
-          rm "$ROWS_FILE"
-          echo "=== Generated docs/i18n.md (hash: $I18N_HASH) ==="
+          for DATA in assets/docs/*.properties; do
+            LANG=$(basename "$DATA" .properties)
+            if [ "$LANG" = "en" ]; then OUTPUT="README.md"
+            else mkdir -p "docs/$LANG"; OUTPUT="docs/$LANG/README.md"
+            fi
+            echo "Generating $OUTPUT from $DATA"
+
+            # Build HTML language bar
+            LANGS_HTML=""
+            for doc in $(ls assets/docs/*.properties | sort -r); do
+              code=$(basename "$doc" .properties)
+              label=$(grep '^lang = ' "$doc" | sed 's/^lang = //')
+              region=$(grep '^langRegion = ' "$doc" | sed 's/^langRegion = //')
+              base=$(echo "$code" | cut -d- -f1)
+              other_count=$(grep '^lang = ' assets/docs/*.properties | grep -cFx "$label" || echo 0)
+              if [ "$other_count" -gt 1 ]; then label="$label ($region)"; fi
+
+              if [ "$OUTPUT" = "README.md" ]; then
+                [ "$code" = "en" ] && path="README.md" || path="docs/$code/README.md"
+              else
+                [ "$code" = "en" ] && path="../../README.md" || path="../$code/README.md"
+              fi
+              [ -n "$LANGS_HTML" ] && LANGS_HTML="$LANGS_HTML &nbsp;|&nbsp; "
+              if [ "$code" = "$LANG" ]; then LANGS_HTML="$LANGS_HTML$label"
+              else LANGS_HTML="$LANGS_HTML<a href=\"$path\">$label</a>"
+              fi
+            done
+
+            ICON_PREFIX=""; [ "$OUTPUT" != "README.md" ] && ICON_PREFIX="../../"
+            DOC_PREFIX=""; [ "$OUTPUT" != "README.md" ] && DOC_PREFIX="../"
+
+            cp "$TEMPLATE" "$OUTPUT"
+            sed -i "s#{{icon_prefix}}#$ICON_PREFIX#" "$OUTPUT"
+            LANGS_ESC=$(echo "$LANGS_HTML" | sed 's/&/\\&/g')
+            sed -i "s#{{languages}}#$LANGS_ESC#" "$OUTPUT"
+            sed -i "s#{{VERSION}}#$VERSION#" "$OUTPUT"
+
+            while IFS='=' read -r key value; do
+              key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+              value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+              [ -z "$key" ] && continue
+              case "$key" in lang|langCode|langRegion|langRegionCode|title) continue ;; esac
+              value_esc=$(echo "$value" | sed 's/[#\\&]/\\&/g')
+              sed -i "s#{{${key}}}#${value_esc}#g" "$OUTPUT"
+            done < "$DATA"
+
+            # Fix doc links: docs/ -> relative for subdirectory READMEs
+            [ "$OUTPUT" != "README.md" ] && sed -i "s|](docs/|]($DOC_PREFIX|g" "$OUTPUT"
+          done
 
       - name: Generate bundle.properties
+        if: needs.prebuild.outputs.i18n_do == 'true'
         run: |
           INDEX="assets/bundles/bundle.properties"
           echo "# MdtC Bundle Index" > "$INDEX"
@@ -199,55 +283,8 @@ jobs:
           echo "=== Generated bundle.properties ==="
           cat "$INDEX"
 
-      - name: Generate README.md
-        run: |
-          VERSION="${{ needs.prebuild.outputs.version }}"
-          TEMPLATE="assets/templates/README.md"
-
-          LANGS=""
-          for DOC in assets/docs/*.properties; do
-            LANG=$(grep '^lang = ' "$DOC" | sed 's/^lang = //')
-            LANGCODE=$(grep '^langCode = ' "$DOC" | sed 's/^langCode = //')
-            BASENAME=$(basename "$DOC" .properties)
-            if [ "$LANGCODE" = "en" ]; then
-              LINK="README.md"
-            else
-              LINK="docs/$BASENAME/README.md"
-            fi
-            [ -n "$LANGS" ] && LANGS="$LANGS | "
-            LANGS="${LANGS}__${BASENAME}__[${LANG}](${LINK})"
-          done
-
-          for DOC in assets/docs/*.properties; do
-            BASENAME=$(basename "$DOC" .properties)
-            LANGCODE=$(grep '^langCode = ' "$DOC" | sed 's/^langCode = //')
-
-            LANG_BAR=$(echo "$LANGS" | sed "s|__${BASENAME}__\[\([^]]*\)\]\(([^)]*)\)|[**\1**]\2|g" | sed 's|__[a-zA-Z-]*__||g')
-
-            if [ "$LANGCODE" = "en" ]; then
-              OUT="README.md"
-              ICON_PREFIX=""
-            else
-              mkdir -p "docs/$BASENAME"
-              OUT="docs/$BASENAME/README.md"
-              ICON_PREFIX="../../"
-            fi
-
-            SED_SCRIPT="s#{{VERSION}}#$VERSION#g;s#{{languages}}#$LANG_BAR#g;s#{{icon_prefix}}#$ICON_PREFIX#g"
-            while IFS='=' read -r key value; do
-              key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-              value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-              [ -z "$key" ] && continue
-              case "$key" in lang|langCode|langRegion|langRegionCode|title) continue ;; esac
-              value_esc=$(echo "$value" | sed 's/[#\\&]/\\&/g')
-              SED_SCRIPT="$SED_SCRIPT;s#{{${key}}}#${value_esc}#g"
-            done < "$DOC"
-
-            sed "$SED_SCRIPT" "$TEMPLATE" > "$OUT"
-            echo "Generated $OUT"
-          done
-
       - name: Upload i18n artifacts
+        if: needs.prebuild.outputs.i18n_do == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: i18n-files
@@ -259,7 +296,7 @@ jobs:
 
   commit:
     needs: i18n
-    if: always() && needs.prebuild.outputs.i18n_changed == 'true'
+    if: always() && !failure() && !cancelled() && (needs.prebuild.outputs.i18n_do == 'true' || needs.prebuild.outputs.docs_do == 'true')
     runs-on: ubuntu-latest
     permissions:
       contents: write
