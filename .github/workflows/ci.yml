@@ -290,7 +290,7 @@ jobs:
 
   build:
     needs: commit
-    if: always() && !cancelled()
+    if: always() && !cancelled() && (needs.prebuild.outputs.build_cli == 'true' || needs.prebuild.outputs.build_mod == 'true')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
