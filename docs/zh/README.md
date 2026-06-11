@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-4efc0f8-informational" />
+  <img alt="version" src="https://img.shields.io/badge/version-e9735a7-informational" />
   <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
   <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
 </p>
@@ -44,7 +44,7 @@
 ### CLI
 
 ```bash
-java -jar mdtc-4efc0f8-Cli.jar [options]
+java -jar mdtc-e9735a7-Cli.jar [options]
 ```
 
 > 详见 [CLI 参考](docs/CLI.md)。
