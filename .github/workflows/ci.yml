@@ -59,20 +59,23 @@ jobs:
             echo "version=$SHORT_SHA" >> $GITHUB_OUTPUT
             echo "tag=nightly-$SHORT_SHA" >> $GITHUB_OUTPUT
             echo "release_name=Nightly ($SHORT_SHA)" >> $GITHUB_OUTPUT
-            # ---- i18n lazy: hash source files, compare with stored hashes ----
-            B_HASH=$(sha256sum assets/bundles/en.properties assets/bundles/zh.properties assets/bundles/zh-Hant.properties assets/bundles/fr.properties assets/bundles/ja.properties 2>/dev/null | sha256sum | cut -d' ' -f1)
-            D_HASH=$(sha256sum assets/docs/en.properties assets/docs/zh.properties assets/docs/zh-Hant.properties 2>/dev/null | sha256sum | cut -d' ' -f1)
-            T_HASH=$(sha256sum assets/templates/README.md assets/templates/i18n.md 2>/dev/null | sha256sum | cut -d' ' -f1)
-            OLD_B=$(grep '^> bundles:' docs/i18n.md 2>/dev/null | sed 's/> bundles: *//' || echo "")
-            OLD_D=$(grep '^> docs:' docs/i18n.md 2>/dev/null | sed 's/> docs: *//' || echo "")
-            OLD_T=$(grep '^> templates:' docs/i18n.md 2>/dev/null | sed 's/> templates: *//' || echo "")
-            if [ "$B_HASH" != "$OLD_B" ] || [ "$D_HASH" != "$OLD_D" ] || [ "$T_HASH" != "$OLD_T" ]; then
-              echo "i18n_changed=true" >> $GITHUB_OUTPUT
-              echo "i18n hash changed"
-            else
-              echo "i18n_changed=false" >> $GITHUB_OUTPUT
-              echo "i18n hash unchanged, skipping"
-            fi
+            echo "is_stable=false" >> $GITHUB_OUTPUT
+          fi
+
+          # ---- i18n lazy: hash source files, compare with stored hashes ----
+          B_HASH=$(sha256sum assets/bundles/en.properties assets/bundles/zh.properties assets/bundles/zh-Hant.properties assets/bundles/fr.properties assets/bundles/ja.properties 2>/dev/null | sha256sum | cut -d' ' -f1)
+          D_HASH=$(sha256sum assets/docs/en.properties assets/docs/zh.properties assets/docs/zh-Hant.properties 2>/dev/null | sha256sum | cut -d' ' -f1)
+          T_HASH=$(sha256sum assets/templates/README.md assets/templates/i18n.md 2>/dev/null | sha256sum | cut -d' ' -f1)
+          OLD_B=$(grep '^> bundles:' docs/i18n.md 2>/dev/null | sed 's/> bundles: *//' || echo "")
+          OLD_D=$(grep '^> docs:' docs/i18n.md 2>/dev/null | sed 's/> docs: *//' || echo "")
+          OLD_T=$(grep '^> templates:' docs/i18n.md 2>/dev/null | sed 's/> templates: *//' || echo "")
+          if [ "$B_HASH" != "$OLD_B" ] || [ "$D_HASH" != "$OLD_D" ] || [ "$T_HASH" != "$OLD_T" ]; then
+            echo "i18n_changed=true" >> $GITHUB_OUTPUT
+            echo "i18n hash changed"
+          else
+            echo "i18n_changed=false" >> $GITHUB_OUTPUT
+            echo "i18n hash unchanged, skipping"
+          fi
 
       - name: Update version files
         run: |
@@ -230,14 +233,14 @@ jobs:
               ICON_PREFIX="../"
             fi
 
-            SED_SCRIPT="s|{{VERSION}}|$VERSION|g;s|{{languages}}|$LANG_BAR|g;s|{{icon_prefix}}|$ICON_PREFIX|g"
+            SED_SCRIPT="s#{{VERSION}}#$VERSION#g;s#{{languages}}#$LANG_BAR#g;s#{{icon_prefix}}#$ICON_PREFIX#g"
             while IFS='=' read -r key value; do
               key=$(echo "$key" | xargs)
               value=$(echo "$value" | xargs)
               [ -z "$key" ] && continue
               case "$key" in lang|langCode|langRegion|langRegionCode|title) continue ;; esac
-              value_esc=$(echo "$value" | sed 's/[\/&]/\\&/g')
-              SED_SCRIPT="$SED_SCRIPT;s|{{${key}}}|${value_esc}|g"
+              value_esc=$(echo "$value" | sed 's/[#\\&]/\\&/g')
+              SED_SCRIPT="$SED_SCRIPT;s#{{${key}}}#${value_esc}#g"
             done < "$DOC"
 
             sed "$SED_SCRIPT" "$TEMPLATE" > "$OUT"
