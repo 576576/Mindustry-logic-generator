@@ -1,0 +1,90 @@
+{
+  "_comment_meta": "── 元數據 ──",
+  "lang": "中文",
+  "langCode": "zh",
+  "langRegion": "繁體",
+  "langRegionCode": ["Hant", "HK", "TW", "MO"],
+  "title": "MdtC",
+
+  "_comment_headings": "── 章節標題 ──",
+  "headings": {
+    "quickstart": "快速開始",
+    "mod": "Mindustry 模組",
+    "cli": "命令列使用",
+    "features": "特性",
+    "docs": "文件",
+    "i18n": "多語言",
+    "contributing": "貢獻翻譯",
+    "structure": "專案結構",
+    "license": "授權條款"
+  },
+
+  "_comment_descriptions": "── 描述 ──",
+  "descriptions": {
+    "tagline": "一種類似 Java 的高階語言，可編譯為 Mindustry 原生邏輯組合語言（`.mdtc` → `.mdtcode`），支援完整的雙向轉換。提供 **CLI** 工具和**遊戲內模組**兩種使用方式。",
+    "i18n": "MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](docs/i18n.md)。"
+  },
+
+  "_comment_mod": "── 模組安裝章節 ──",
+  "mod": {
+    "browser_title": "從模組瀏覽器",
+    "browser_step1": "在 Mindustry 中選擇 **模組** → **模組瀏覽器**",
+    "browser_step2": "搜尋 **MdtC** → **安裝**",
+    "browser_step3": "開啟任意處理器 → 點擊底部工具列的 **MdtC**",
+    "browser_step4": "在左側編輯 `.mdtc`，右側預覽 `.mdtcode`",
+    "manual_title": "手動匯入",
+    "manual_step1": "[下載](https://github.com/576576/mdtC/releases) `mdtc-{version}-Desktop.jar`",
+    "manual_step2": "在 Mindustry 中選擇 **模組** → **匯入模組** → 選擇 JAR 檔案",
+    "manual_step3": "之後步驟與上方 3–4 相同"
+  },
+
+  "_comment_cli": "── CLI 章節 ──",
+  "cli_ref": "詳見 [CLI 參考](docs/CLI.md)。",
+
+  "_comment_features": "── 特性表格 ──",
+  "features": {
+    "title": ["特性", "描述"],
+    "feat1": ["完整雙向轉換", "編譯 `.mdtc` → `.mdtcode` 並支援無損反編譯"],
+    "feat2": ["雙欄編輯器", "在 Mindustry 遊戲內邊編輯邊預覽"],
+    "feat3": ["多語言", "自動偵測遊戲語言"],
+    "feat4": ["豐富語法", "函數、巨集、命名參數、可匯入的函式庫"]
+  },
+
+  "_comment_docs": "── 文件表格 ──",
+  "docsTable": {
+    "col_doc": "文件",
+    "col_content": "內容",
+    "syntax": "語法指南",
+    "syntax_desc": "完整語法說明與範例",
+    "cli": "CLI 參考",
+    "cli_desc": "命令列參數與用法",
+    "mod": "模組指南",
+    "mod_desc": "遊戲內模組功能與設定",
+    "building": "建置指南",
+    "building_desc": "如何從原始碼建置",
+    "i18n": "i18n 狀態",
+    "i18n_desc": "翻譯覆蓋率與貢獻指南"
+  },
+
+  "_comment_contrib": "── 貢獻翻譯 ──",
+  "contrib": {
+    "step1": "複製 `assets/bundles/en.properties` 為 `assets/bundles/[langCode]-[regionCode].properties`",
+    "step2": "翻譯所有值 — **鍵名不可更改**",
+    "step3": "（可選）複製 `assets/docs/en.json` 為 `assets/docs/[langCode].json` 並翻譯文件",
+    "step4": "提交 Pull Request — CI 合併後自動更新 [docs/i18n.md](docs/i18n.md)"
+  },
+
+  "_comment_archTree": "── 專案結構樹 ──",
+  "archTree": {
+    "title": "src/main/java/cn/sumitm/mdtc",
+    "dir1": ["cli", "CLI entry (Main, CliHelper)"],
+    "dir2": ["compiler", "Compiler & decompiler (CodeCompiler, CodeDecompiler, LangRegistry)"],
+    "dir3": ["core", "Data structures & utilities (Constants, Utils, LangBuiltins, WrappedList)"],
+    "dir4": ["formatter", "Code formatter (CodeFormatter)"],
+    "dir5": ["mod", "Mindustry mod (ModInterface, LogicEditorDialog, I18n)"],
+    "dir6": ["resources", "Bundled assets"]
+  },
+
+  "_comment_license": "── 授權條款 ──",
+  "license_text": "本專案使用 [GNU General Public License v3.0](LICENSE) 授權。"
+}

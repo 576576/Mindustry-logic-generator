@@ -1,0 +1,90 @@
+{
+  "_comment_meta": "── Meta ──",
+  "lang": "English",
+  "langCode": "en",
+  "langRegion": "US",
+  "langRegionCode": ["US", "GB"],
+  "title": "MdtC",
+
+  "_comment_headings": "── Section Headings ──",
+  "headings": {
+    "quickstart": "Quick Start",
+    "mod": "Mindustry Mod",
+    "cli": "CLI",
+    "features": "Features",
+    "docs": "Documentation",
+    "i18n": "I18n",
+    "contributing": "Contributing a Translation",
+    "structure": "Project Structure",
+    "license": "License"
+  },
+
+  "_comment_descriptions": "── Descriptions ──",
+  "descriptions": {
+    "tagline": "A Java-like high-level language that compiles to Mindustry's native logic assembly (`.mdtc` → `.mdtcode`), with full round-trip decompilation support. Available as a **CLI** tool and an **in-game mod**.",
+    "i18n": "MdtC auto-detects the game locale for its in-game UI. See [i18n.md](docs/i18n.md) for the current translation status."
+  },
+
+  "_comment_mod": "── Mod install section ──",
+  "mod": {
+    "browser_title": "From Mod Browser",
+    "browser_step1": "In Mindustry, go to **Mods** → **Mod Browser**",
+    "browser_step2": "Search for **MdtC** → **Install**",
+    "browser_step3": "Open any processor → click **MdtC** at the bottom toolbar",
+    "browser_step4": "Edit `.mdtc` in the left pane, preview `.mdtcode` in the right pane",
+    "manual_title": "Manual Import",
+    "manual_step1": "[Download](https://github.com/576576/mdtC/releases) `mdtc-{version}-Desktop.jar`",
+    "manual_step2": "In Mindustry, go to **Mods** → **Import Mod** → select the JAR file",
+    "manual_step3": "Then same as steps 3–4 above"
+  },
+
+  "_comment_cli": "── CLI section ──",
+  "cli_ref": "See [CLI Reference](docs/CLI.md) for instructions.",
+
+  "_comment_features": "── Features table ──",
+  "features": {
+    "title": ["Feature", "Description"],
+    "feat1": ["Full Round-Trip", "Compile `.mdtc` → `.mdtcode` and decompile back losslessly"],
+    "feat2": ["Dual-Pane Editor", "Side-by-side edit & preview, directly inside Mindustry"],
+    "feat3": ["Multi-Language", "Auto-detects game locale"],
+    "feat4": ["Rich Syntax", "Functions, macros, named arguments, importable libraries"]
+  },
+
+  "_comment_docs": "── Documentation table ──",
+  "docsTable": {
+    "col_doc": "Document",
+    "col_content": "Content",
+    "syntax": "Syntax Guide",
+    "syntax_desc": "Full language syntax with examples",
+    "cli": "CLI Reference",
+    "cli_desc": "Command-line arguments and usage",
+    "mod": "Mod Guide",
+    "mod_desc": "In-game mod features and settings",
+    "building": "Building",
+    "building_desc": "How to build from source",
+    "i18n": "i18n Status",
+    "i18n_desc": "Translation coverage & contributing"
+  },
+
+  "_comment_contrib": "── Contributing a Translation ──",
+  "contrib": {
+    "step1": "Copy `assets/bundles/en.properties` to `assets/bundles/[langCode]-[regionCode].properties`",
+    "step2": "Translate all values — **keys must stay unchanged**",
+    "step3": "(Optional) Copy `assets/docs/en.json` to `assets/docs/[langCode].json` and translate the documentation",
+    "step4": "Submit a Pull Request — CI will auto-update [docs/i18n.md](docs/i18n.md) on merge"
+  },
+
+  "_comment_archTree": "── Project structure tree ──",
+  "archTree": {
+    "title": "src/main/java/cn/sumitm/mdtc",
+    "dir1": ["cli", "CLI entry (Main, CliHelper)"],
+    "dir2": ["compiler", "Compiler & decompiler (CodeCompiler, CodeDecompiler, LangRegistry)"],
+    "dir3": ["core", "Data structures & utilities (Constants, Utils, LangBuiltins, WrappedList)"],
+    "dir4": ["formatter", "Code formatter (CodeFormatter)"],
+    "dir5": ["mod", "Mindustry mod (ModInterface, LogicEditorDialog, I18n)"],
+    "dir6": ["resources", "Bundled assets"]
+  },
+
+  "_comment_license": "── License ──",
+  "license_text": "This project is licensed under [GNU General Public License v3.0](LICENSE)."
+}

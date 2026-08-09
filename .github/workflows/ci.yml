@@ -26,6 +26,7 @@ jobs:
       bundles_hash: ${{ steps.hash-check.outputs.bundles_hash }}
       docs_hash: ${{ steps.hash-check.outputs.docs_hash }}
       templates_hash: ${{ steps.hash-check.outputs.templates_hash }}
+      root_lang: ${{ steps.hash-check.outputs.root_lang }}
     steps:
       - uses: actions/checkout@v4
 
@@ -72,8 +73,13 @@ jobs:
           MSG: ${{ github.event.head_commit.message || '' }}
         run: |
           BUNDLES_HASH=$(find assets/bundles -type f -name '*.properties' ! -name 'bundle.properties' -exec sha256sum {} \; | sort | sha256sum | cut -c1-8)
-          DOCS_HASH=$(find assets/docs -type f -name '*.properties' -exec sha256sum {} \; | sort | sha256sum | cut -c1-8)
-          TEMPLATES_HASH=$(find assets/templates -type f -exec sha256sum {} \; | sort | sha256sum | cut -c1-8)
+          DOCS_HASH=$(find assets/docs -type f -name '*.json' -exec sha256sum {} \; | sort | sha256sum | cut -c1-8)
+          TEMPLATES_HASH=$(find assets/templates assets/.i18n_config -type f -exec sha256sum {} \; 2>/dev/null | sort | sha256sum | cut -c1-8)
+
+          # Read root_lang from independent i18n config (default: en)
+          ROOT_LANG=$(awk -F: '/^[[:space:]]*root_lang[[:space:]]*:/{gsub(/[[:space:]"]/,"",$2); print $2; exit}' assets/.i18n_config/i18n.yml 2>/dev/null)
+          ROOT_LANG=${ROOT_LANG:-en}
+          echo "root_lang=$ROOT_LANG" >> $GITHUB_OUTPUT
 
           # b-doc: force i18n + docs regeneration
           if echo "$MSG" | grep -qE '\bb-doc\b'; then
@@ -125,7 +131,7 @@ jobs:
 
   i18n:
     needs: prebuild
-    if: always() && !failure() && !cancelled() && (needs.prebuild.outputs.i18n_do == 'true' || needs.prebuild.outputs.docs_do == 'true')
+    if: needs.prebuild.result == 'success' && (needs.prebuild.outputs.i18n_do == 'true' || needs.prebuild.outputs.docs_do == 'true')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -139,6 +145,8 @@ jobs:
           OUTPUT="docs/i18n.md"
           DEFAULT="assets/bundles/en.properties"
           NOW=$(date -u +'%Y-%m-%d %H:%M UTC')
+          ROOT_LANG="${{ needs.prebuild.outputs.root_lang }}"
+          ROOT_LANG=${ROOT_LANG:-en}
 
           HEADER_KEYS=4
           DEFAULT_TOTAL=$(grep -c '^mdtc\.' "$DEFAULT" || echo 0)
@@ -158,18 +166,17 @@ jobs:
             [ "$PCT" -gt 100 ] && PCT=100
 
             DOCS=0
-            if [ "$CODE" = "en" ]; then
+            if [ "$BASENAME" = "$ROOT_LANG" ]; then
               DOCS=$(ls docs/*.md 2>/dev/null | wc -l)
               [ -f README.md ] && DOCS=$((DOCS + 1))
-            elif [ -d "docs/$BASENAME" ]; then
-              DOCS=$(find "docs/$BASENAME" -name '*.md' 2>/dev/null | wc -l)
+            fi
+            if [ -d "docs/$BASENAME" ]; then
+              DOCS=$((DOCS + $(find "docs/$BASENAME" -name '*.md' 2>/dev/null | wc -l)))
             fi
             HAS_DOC=""
-            [ -f "assets/docs/$BASENAME.properties" ] && HAS_DOC=" 📄"
+            [ -f "assets/docs/$BASENAME.json" ] && HAS_DOC=" 📄"
 
-            if [ "$CODE" = "en" ]; then README_LINK="../README.md"
-            else README_LINK="$BASENAME/README.md"
-            fi
+            README_LINK="$BASENAME/README.md"
 
             ROWS="$ROWS| [$LANG]($README_LINK) | \`$CODE\` | $REGION | $KEYS/$DEFAULT_TOTAL ($PCT%) | $DOCS$HAS_DOC |\n"
           done
@@ -184,59 +191,9 @@ jobs:
 
       - name: Generate READMEs
         if: needs.prebuild.outputs.docs_do == 'true'
-        run: |
-          TEMPLATE="assets/templates/README.md"
-          VERSION="${{ needs.prebuild.outputs.version }}"
-
-          for DATA in assets/docs/*.properties; do
-            LANG=$(basename "$DATA" .properties)
-            if [ "$LANG" = "en" ]; then OUTPUT="README.md"
-            else mkdir -p "docs/$LANG"; OUTPUT="docs/$LANG/README.md"
-            fi
-            echo "Generating $OUTPUT from $DATA"
-
-            # Build HTML language bar
-            LANGS_HTML=""
-            for doc in $(ls assets/docs/*.properties | sort -r); do
-              code=$(basename "$doc" .properties)
-              label=$(grep '^lang = ' "$doc" | sed 's/^lang = //')
-              region=$(grep '^langRegion = ' "$doc" | sed 's/^langRegion = //')
-              base=$(echo "$code" | cut -d- -f1)
-              other_count=$(grep '^lang = ' assets/docs/*.properties | sed 's/.*lang = //' | grep -cFx "$label" || echo 0)
-              if [ "$other_count" -gt 1 ]; then label="$label ($region)"; fi
-
-              if [ "$OUTPUT" = "README.md" ]; then
-                [ "$code" = "en" ] && path="README.md" || path="docs/$code/README.md"
-              else
-                [ "$code" = "en" ] && path="../../README.md" || path="../$code/README.md"
-              fi
-              [ -n "$LANGS_HTML" ] && LANGS_HTML="$LANGS_HTML &nbsp;|&nbsp; "
-              if [ "$code" = "$LANG" ]; then LANGS_HTML="$LANGS_HTML$label"
-              else LANGS_HTML="$LANGS_HTML<a href=\"$path\">$label</a>"
-              fi
-            done
-
-            ICON_PREFIX=""; [ "$OUTPUT" != "README.md" ] && ICON_PREFIX="../../"
-            DOC_PREFIX=""; [ "$OUTPUT" != "README.md" ] && DOC_PREFIX="../"
-
-            cp "$TEMPLATE" "$OUTPUT"
-            sed -i "s#{{icon_prefix}}#$ICON_PREFIX#" "$OUTPUT"
-            LANGS_ESC=$(echo "$LANGS_HTML" | sed 's/&/\\&/g')
-            sed -i "s#{{languages}}#$LANGS_ESC#" "$OUTPUT"
-            sed -i "s#{{VERSION}}#$VERSION#" "$OUTPUT"
-
-            while IFS='=' read -r key value; do
-              key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-              value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-              [ -z "$key" ] && continue
-              case "$key" in lang|langCode|langRegion|langRegionCode|title) continue ;; esac
-              value_esc=$(echo "$value" | sed 's/[#\\&]/\\&/g')
-              sed -i "s#{{${key}}}#${value_esc}#g" "$OUTPUT"
-            done < "$DATA"
-
-            # Fix doc links: docs/ -> relative for subdirectory READMEs
-            [ "$OUTPUT" != "README.md" ] && sed -i "s|](docs/|]($DOC_PREFIX|g" "$OUTPUT"
-          done
+        env:
+          ROOT_LANG: ${{ needs.prebuild.outputs.root_lang }}
+        run: python3 .github/workflows/render_readme.py
 
       - name: Generate bundle.properties
         if: needs.prebuild.outputs.i18n_do == 'true'
@@ -295,8 +252,8 @@ jobs:
             docs/*/README.md
 
   commit:
-    needs: i18n
-    if: always() && !failure() && !cancelled() && (needs.prebuild.outputs.i18n_do == 'true' || needs.prebuild.outputs.docs_do == 'true')
+    needs: [i18n, prebuild]
+    if: needs.i18n.result == 'success' && (needs.prebuild.outputs.i18n_do == 'true' || needs.prebuild.outputs.docs_do == 'true')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -326,8 +283,8 @@ jobs:
           fi
 
   build:
-    needs: commit
-    if: always() && !cancelled() && (needs.prebuild.outputs.build_cli == 'true' || needs.prebuild.outputs.build_mod == 'true')
+    needs: [commit, prebuild]
+    if: ${{ !cancelled() && (needs.prebuild.outputs.build_cli == 'true' || needs.prebuild.outputs.build_mod == 'true') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -382,8 +339,8 @@ jobs:
           path: build/test-results/
 
   release:
-    needs: build
-    if: success() && needs.prebuild.outputs.is_stable == 'true'
+    needs: [build, prebuild]
+    if: needs.build.result == 'success' && needs.prebuild.outputs.is_stable == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -419,8 +376,8 @@ jobs:
           make_latest: true
 
   nightly:
-    needs: build
-    if: success() && needs.prebuild.outputs.is_stable == 'false' && github.event_name == 'push'
+    needs: [build, prebuild]
+    if: needs.build.result == 'success' && needs.prebuild.outputs.is_stable == 'false' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write

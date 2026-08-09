@@ -10,97 +10,95 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-{{VERSION}}-informational" />
+  <img alt="version" src="https://img.shields.io/badge/version-{version}-informational" />
   <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
   <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
 </p>
 
-<p align="center"><em>{{tagline}}</em></p>
+<p align="center"><em>{{descriptions.tagline}}</em></p>
 
----
+## {{headings.quickstart}}
 
-## {{heading_quickstart}}
+### {{headings.mod}}
 
-### {{heading_mod}}
+#### {{mod.browser_title}}
 
-**{{mod_browser_title}}**
+1. {{mod.browser_step1}}
 
-1. {{mod_browser_step1}}
+2. {{mod.browser_step2}}
 
-2. {{mod_browser_step2}}
+3. {{mod.browser_step3}}
 
-3. {{mod_browser_step3}}
+4. {{mod.browser_step4}}
 
-4. {{mod_browser_step4}}
+#### {{mod.manual_title}}
 
-**{{manual_import_title}}**
+1. {{mod.manual_step1}}
 
-1. {{manual_import_step1}}
+2. {{mod.manual_step2}}
 
-2. {{manual_import_step2}}
+3. {{mod.manual_step3}}
 
-3. {{manual_import_step3}}
-
-### {{heading_cli}}
+### {{headings.cli}}
 
 ```bash
-java -jar mdtc-{{VERSION}}-Cli.jar [options]
+java -jar mdtc-{version}-Desktop.jar [options]
 ```
 
 > {{cli_ref}}
 
 ---
 
-## {{heading_features}}
+## {{headings.features}}
 
-| | |
-|---|---|
-| 🔄 **{{feat_roundtrip}}** | {{feat_roundtrip_desc}} |
-| 🖥️ **{{feat_editor}}** | {{feat_editor_desc}} |
-| 🌍 **{{feat_i18n}}** | {{feat_i18n_desc}} |
-| 🧩 **{{feat_syntax}}** | {{feat_syntax_desc}} |
+{{features.title.0}} | {{features.title.1}}
+--- | ---
+🔄 **{{features.feat1.0}}** | {{features.feat1.1}}
+🖥️ **{{features.feat2.0}}** | {{features.feat2.1}}
+🌍 **{{features.feat3.0}}** | {{features.feat3.1}}
+🧩 **{{features.feat4.0}}** | {{features.feat4.1}}
 
-## {{heading_docs}}
+## {{headings.docs}}
 
-| {{doc_col_doc}} | {{doc_col_content}} |
-|----------|---------|
-| [{{doc_syntax}}](docs/SYNTAX.md) | {{doc_syntax_desc}} |
-| [{{doc_cli}}](docs/CLI.md) | {{doc_cli_desc}} |
-| [{{doc_mod}}](docs/MOD.md) | {{doc_mod_desc}} |
-| [{{doc_building}}](docs/BUILDING.md) | {{doc_building_desc}} |
-| [{{doc_i18n}}](docs/i18n.md) | {{doc_i18n_desc}} |
-
----
-
-## {{heading_i18n}}
-
-{{i18n_desc}}
-
-### {{heading_contributing}}
-
-1. {{contrib_step1}}
-
-2. {{contrib_step2}}
-
-3. {{contrib_step3}}
-
-4. {{contrib_step4}}
+{{docsTable.col_doc}} | {{docsTable.col_content}}
+----------|---------
+[{{docsTable.syntax}}](docs/SYNTAX.md) | {{docsTable.syntax_desc}}
+[{{docsTable.cli}}](docs/CLI.md) | {{docsTable.cli_desc}}
+[{{docsTable.mod}}](docs/MOD.md) | {{docsTable.mod_desc}}
+[{{docsTable.building}}](docs/BUILDING.md) | {{docsTable.building_desc}}
+[{{docsTable.i18n}}](docs/i18n.md) | {{docsTable.i18n_desc}}
 
 ---
 
-## {{heading_structure}}
+## {{headings.i18n}}
 
-```
-src/main/java/cn/sumitm/mdtc/
-├── cli/           CLI entry (Main, CliHelper)
-├── compiler/      Compiler & decompiler (CodeCompiler, CodeDecompiler, LangRegistry)
-├── core/          Data structures & utilities (Constants, Utils, LangBuiltins, WrappedList)
-├── formatter/     Code formatter (CodeFormatter)
-├── mod/           Mindustry mod (ModInterface, LogicEditorDialog, I18n)
-└── resources/     Bundled assets
+{{descriptions.i18n}}
+
+### {{headings.contributing}}
+
+1. {{contrib.step1}}
+
+2. {{contrib.step2}}
+
+3. {{contrib.step3}}
+
+4. {{contrib.step4}}
+
+---
+
+## {{headings.structure}}
+
+```text
+{{archTree.title}}/
+├── {{archTree.dir1.0}}/               {{archTree.dir1.1}}
+├── {{archTree.dir2.0}}/               {{archTree.dir2.1}}
+├── {{archTree.dir3.0}}/               {{archTree.dir3.1}}
+├── {{archTree.dir4.0}}/               {{archTree.dir4.1}}
+├── {{archTree.dir5.0}}/               {{archTree.dir5.1}}
+└── {{archTree.dir6.0}}/               {{archTree.dir6.1}}
 ```
 
-## {{heading_license}}
+## {{headings.license}}
 
 {{license_text}}
 
