@@ -1,21 +1,14 @@
-<p align="center">
-  <img src="assets/sprites/icon.png" width="64" alt="MdtC">
-</p>
+![MdtC](assets/sprites/icon_head.png)
 
-<h1 align="center">MdtC</h1>
+# MdtC
 
-<p align="center">
 中文 (简体) &nbsp;|&nbsp; <a href="docs/zh-Hant/README.md">中文 (繁體)</a> &nbsp;|&nbsp; <a href="docs/en/README.md">English</a>
-</p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-{version}-informational" />
-  <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
-  <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
-</p>
+![JDK](https://img.shields.io/badge/JDK-25-red) ![Version](https://img.shields.io/badge/version-{version}-informational) ![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange) ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 
-<p align="center"><em>一种类 Java 的高级语言，可编译为 Mindustry 原生逻辑汇编（`.mdtc` → `.mdtcode`），支持完整的双向转换。提供 **CLI** 工具和**游戏内 Mod** 两种使用方式。</em></p>
+## 简介
+
+一种和 C 相似的高级语言，可编译为 Mindustry 原生逻辑汇编，支持完整的双向转换。提供**Mod**和 **CLI** 工具两种使用方式。
 
 ## 快速开始
 

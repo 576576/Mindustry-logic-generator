@@ -1,21 +1,14 @@
-<p align="center">
-  <img src="../../assets/sprites/icon.png" width="64" alt="MdtC">
-</p>
+![MdtC](../../assets/sprites/icon_head.png)
 
-<h1 align="center">MdtC</h1>
+# MdtC
 
-<p align="center">
 <a href="../zh/README.md">中文 (简体)</a> &nbsp;|&nbsp; 中文 (繁體) &nbsp;|&nbsp; <a href="../en/README.md">English</a>
-</p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-{version}-informational" />
-  <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
-  <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
-</p>
+![JDK](https://img.shields.io/badge/JDK-25-red) ![Version](https://img.shields.io/badge/version-{version}-informational) ![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange) ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 
-<p align="center"><em>一種類似 Java 的高階語言，可編譯為 Mindustry 原生邏輯組合語言（`.mdtc` → `.mdtcode`），支援完整的雙向轉換。提供 **CLI** 工具和**遊戲內模組**兩種使用方式。</em></p>
+## 簡介
+
+一種類似 C 的高階語言，可編譯為 Mindustry 原生邏輯組合語言，支援完整的雙向轉換。提供**模組**和 **CLI** 工具兩種使用方式。
 
 ## 快速開始
 

@@ -1,21 +1,14 @@
-<p align="center">
-  <img src="{{icon_prefix}}assets/sprites/icon.png" width="64" alt="MdtC">
-</p>
+![MdtC]({{icon_prefix}}assets/sprites/icon_head.png)
 
-<h1 align="center">MdtC</h1>
+# MdtC
 
-<p align="center">
 {{languages}}
-</p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-{version}-informational" />
-  <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
-  <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
-</p>
+![JDK](https://img.shields.io/badge/JDK-25-red) ![Version](https://img.shields.io/badge/version-{version}-informational) ![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange) ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 
-<p align="center"><em>{{descriptions.tagline}}</em></p>
+## {{headings.block1}}
+
+{{descriptions.desc1}}
 
 ## {{headings.quickstart}}
 

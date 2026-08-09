@@ -8,6 +8,7 @@
 
   "_comment_headings": "── 章節標題 ──",
   "headings": {
+    "block1": "簡介",
     "quickstart": "快速開始",
     "mod": "Mindustry 模組",
     "cli": "命令列使用",
@@ -21,7 +22,7 @@
 
   "_comment_descriptions": "── 描述 ──",
   "descriptions": {
-    "tagline": "一種類似 Java 的高階語言，可編譯為 Mindustry 原生邏輯組合語言（`.mdtc` → `.mdtcode`），支援完整的雙向轉換。提供 **CLI** 工具和**遊戲內模組**兩種使用方式。",
+    "desc1": "一種類似 C 的高階語言，可編譯為 Mindustry 原生邏輯組合語言，支援完整的雙向轉換。提供**模組**和 **CLI** 工具兩種使用方式。",
     "i18n": "MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](docs/i18n.md)。"
   },
 

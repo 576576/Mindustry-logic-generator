@@ -1,21 +1,14 @@
-<p align="center">
-  <img src="../../assets/sprites/icon.png" width="64" alt="MdtC">
-</p>
+![MdtC](../../assets/sprites/icon_head.png)
 
-<h1 align="center">MdtC</h1>
+# MdtC
 
-<p align="center">
 <a href="../zh/README.md">中文 (简体)</a> &nbsp;|&nbsp; <a href="../zh-Hant/README.md">中文 (繁體)</a> &nbsp;|&nbsp; English
-</p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/JDK-25-red" alt="JDK">
-  <img alt="version" src="https://img.shields.io/badge/version-{version}-informational" />
-  <img src="https://img.shields.io/badge/Mindustry-v157-orange" alt="Mindustry">
-  <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
-</p>
+![JDK](https://img.shields.io/badge/JDK-25-red) ![Version](https://img.shields.io/badge/version-{version}-informational) ![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange) ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 
-<p align="center"><em>A Java-like high-level language that compiles to Mindustry's native logic assembly (`.mdtc` → `.mdtcode`), with full round-trip decompilation support. Available as a **CLI** tool and an **in-game mod**.</em></p>
+## About
+
+A C-like high-level language that compiles to Mindustry's native logic assembly, with full round-trip decompilation support. Available as a **mod** and a **CLI** tool.
 
 ## Quick Start
 

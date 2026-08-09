@@ -8,6 +8,7 @@
 
   "_comment_headings": "── Section Headings ──",
   "headings": {
+    "block1": "About",
     "quickstart": "Quick Start",
     "mod": "Mindustry Mod",
     "cli": "CLI",
@@ -21,7 +22,7 @@
 
   "_comment_descriptions": "── Descriptions ──",
   "descriptions": {
-    "tagline": "A Java-like high-level language that compiles to Mindustry's native logic assembly (`.mdtc` → `.mdtcode`), with full round-trip decompilation support. Available as a **CLI** tool and an **in-game mod**.",
+    "desc1": "A C-like high-level language that compiles to Mindustry's native logic assembly, with full round-trip decompilation support. Available as a **mod** and a **CLI** tool.",
     "i18n": "MdtC auto-detects the game locale for its in-game UI. See [i18n.md](docs/i18n.md) for the current translation status."
   },
 
