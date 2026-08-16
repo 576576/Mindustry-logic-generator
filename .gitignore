@@ -46,6 +46,10 @@ bin/
 ### Expanded-code temp files (compile-time) ###
 *.d.mdtc
 
+### 用户自由测试文件(工作区保留,不入版本控制) ###
+sample_cases/testcase.mdtc
+sample_cases/testcase.mdtcode
+
 ### VSCode extension (mdtc-lsp) ###
 vscode-mdtc/node_modules/
 vscode-mdtc/out/

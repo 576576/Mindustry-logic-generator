@@ -1,9 +1,0 @@
-set 1 1
-jump 0 always 0 0
-jump 8 always 0 0
-jump 8 always 0 0
-jump 8 always 0 0
-jump 7 always 0 0
-set e 1
-set e 2
-set e 3
