@@ -18,6 +18,8 @@ export interface InstrInfo {
   chain: ChainKeyInfo[];
   /** mdtcode 行首指令字(如 "op" / "control" / "sensor") */
   mcode: string;
+  /** mcodeSelect 分派名(如 shoot 的 [shoot, shootp]) */
+  select: string[];
 }
 
 export interface InstructionData {
@@ -29,6 +31,8 @@ export interface InstructionData {
   mcodes: Set<string>;
   /** op 指令的运算符名集合(如 equal / abs / sin) */
   opNames: Set<string>;
+  /** mcode → 分派名集合(如 control → enabled/config/color/shoot/shootp) */
+  selectsByMcode: Map<string, Set<string>>;
 }
 
 /** 编译器会输出但 builtins 未声明的 mdtcode 指令字 */
@@ -64,6 +68,7 @@ export function loadData(builtinsJsPath: string): InstructionData {
   const chainByParent = new Map<string, ChainKeyInfo[]>();
   const mcodes = new Set<string>(EXTRA_MCODES);
   const opNames = new Set<string>();
+  const selectsByMcode = new Map<string, Set<string>>();
   for (const [ns, cat, label] of categories) {
     if (cat?.defs) {
       for (const d of cat.defs) {
@@ -85,6 +90,11 @@ export function loadData(builtinsJsPath: string): InstructionData {
           }
         }
         if (mcode) mcodes.add(mcode);
+        if (Array.isArray(d.mcodeSelect) && d.mcodeSelect.length > 0) {
+          const sel = selectsByMcode.get(mcode) ?? new Set<string>();
+          for (const s of d.mcodeSelect) sel.add(s);
+          selectsByMcode.set(mcode, sel);
+        }
         items.push({
           key: d.key,
           fullKey,
@@ -93,6 +103,7 @@ export function loadData(builtinsJsPath: string): InstructionData {
           params: d.params ?? [],
           chain,
           mcode,
+          select: d.mcodeSelect ?? [],
         });
       }
     }
@@ -102,6 +113,6 @@ export function loadData(builtinsJsPath: string): InstructionData {
     if (o?.name) opNames.add(o.name);
   }
   const operators: string[] = (B?.Operators?.list ?? []).map((o: any) => o.value);
-  cached = { items, operators, chainByParent, mcodes, opNames };
+  cached = { items, operators, chainByParent, mcodes, opNames, selectsByMcode };
   return cached;
 }

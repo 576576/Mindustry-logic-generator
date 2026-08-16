@@ -42,6 +42,9 @@ export function mdtcodeSemanticTokens(doc: TextDocument, data: InstructionData):
     let pos = 0;
     const len = line.length;
     let first = true;
+    let tokIdx = 0;
+    const head = headToken(line);
+    const headSelects = data.selectsByMcode.get(head);
     while (pos < len) {
       const c = line[pos];
       if (/\s/.test(c)) { pos++; continue; }
@@ -68,8 +71,12 @@ export function mdtcodeSemanticTokens(doc: TextDocument, data: InstructionData):
       const w = line.slice(pos, e);
       if (e > pos) {
         if (first && data.mcodes.has(w)) add(li, pos, e - pos, T.FUNCTION);
-        else add(li, pos, e - pos, T.VARIABLE);
+        else if (tokIdx === 1 && (data.opNames.has(w) || headSelects?.has(w))) {
+          // op 运算符名 / control·lookup·ucontrol 等分派名
+          add(li, pos, e - pos, T.FUNCTION);
+        } else add(li, pos, e - pos, T.VARIABLE);
         first = false;
+        tokIdx++;
         pos = e;
         continue;
       }
@@ -148,8 +155,12 @@ export function mdtcodeHover(doc: TextDocument, pos: Position, data: Instruction
   const word = wordAt(line, pos.character);
   if (!word) return null;
   let cands: InstrInfo[] = [];
-  if (headToken(line) === "op" && data.opNames.has(word)) {
+  const head = headToken(line);
+  if (head === "op" && data.opNames.has(word)) {
     cands = data.items.filter((i) => i.key === word); // op 运算符名 → front 指令
+  } else if (data.selectsByMcode.get(head)?.has(word)) {
+    // control/lookup/ucontrol 分派名 → 对应指令(如 enabled → enable)
+    cands = data.items.filter((i) => i.select.includes(word));
   } else {
     cands = data.items.filter((i) => i.mcode === word);
   }

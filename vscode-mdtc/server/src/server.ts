@@ -36,7 +36,7 @@ const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
 
 let cliJar = "";
-let instructionData: InstructionData = { items: [], operators: [], chainByParent: new Map(), mcodes: new Set(), opNames: new Set() };
+let instructionData: InstructionData = { items: [], operators: [], chainByParent: new Map(), mcodes: new Set(), opNames: new Set(), selectsByMcode: new Map() };
 
 // 开发模式(MDTC_LSP_WATCH=1):源码修改自动重启(由客户端 restart 拉起)
 import * as fs from "node:fs";
