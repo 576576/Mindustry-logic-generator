@@ -28,7 +28,7 @@ public final class CodeFormatter {
                     break;
                 }
             if (matchIndex < 0) {
-                Utils.printError("Match brackets fail.\nat line" + i + ". " + line);
+                Utils.printError("Syntax error on token \"}\", delete this token\n> " + line);
                 return "";
             }
 

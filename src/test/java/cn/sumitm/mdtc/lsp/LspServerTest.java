@@ -129,6 +129,31 @@ class LspServerTest {
         assertThat(warn.getRange().getEnd().getLine()).isEqualTo(5);
     }
 
+    // ==================== 括号语法错误(Syntax error on token) ====================
+
+    @Test
+    void diagnostics_unclosedParen_syntaxErrorOnLeftParen() {
+        open("file:///test.mdtc", "print(hello");
+        Diagnostic err = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Error)
+            .findFirst().orElse(null);
+        assertThat(err).isNotNull();
+        assertThat(err.getMessage()).contains("Syntax error on token \"(\", delete this token");
+        assertThat(err.getRange().getStart().getLine()).isEqualTo(0);
+    }
+
+    @Test
+    void diagnostics_unclosedBrace_syntaxErrorOnLeftBrace() {
+        // if { 未闭合 → 大括号语法错误,定位到 if 行
+        open("file:///test.mdtc", "print(flush)\nif(x==0){\n\tx=1");
+        Diagnostic err = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Error)
+            .findFirst().orElse(null);
+        assertThat(err).isNotNull();
+        assertThat(err.getMessage()).contains("Syntax error on token \"{\", delete this token");
+        assertThat(err.getRange().getStart().getLine()).isEqualTo(1);
+    }
+
     @Test
     void diagnostics_cleanCode_noDiagnostics() {
         open("file:///test.mdtc", "x=1 + 2\nprint(flush)");

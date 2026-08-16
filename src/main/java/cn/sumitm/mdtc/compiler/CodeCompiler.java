@@ -269,7 +269,7 @@ public final class CodeCompiler {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 if (end == -1) {
-                    Utils.printError("Bracket unmatched of ctrlCode:\n> " + expr);
+                    Utils.printError("Syntax error on token \"(\", delete this token\n> " + expr);
                     return stream;
                 }
                 String s = expr.substring(start + entry.getKey().length(), end).trim();
@@ -311,7 +311,7 @@ public final class CodeCompiler {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 if (end == -1) {
-                    Utils.printError("Bracket unmatched of dotCtrlCode:\n> " + expr);
+                    Utils.printError("Syntax error on token \"(\", delete this token\n> " + expr);
                     return stream;
                 }
                 String s = expr.substring(start + entry.getKey().length(), end).trim();
@@ -399,7 +399,7 @@ public final class CodeCompiler {
                 while (expr.contains(entry.getKey())) {
                     int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                     if (end == -1) {
-                        Utils.printError("Bracket unmatched of frontCode:\n> " + expr);
+                        Utils.printError("Syntax error on token \"(\", delete this token\n> " + expr);
                         return stream;
                     }
                     String s = expr.substring(start + entry.getKey().length(), end).trim();
@@ -535,8 +535,7 @@ public final class CodeCompiler {
             }
             if (line2Index == -1) {
                 if (lineIndex != -1) {
-                    Utils.printError("Error: {} not match at line " + lineIndex);
-                    Utils.printError(lineIndex + " " + bashList.get(lineIndex));
+                    Utils.printError("Syntax error on token \"{\", delete this token\n> " + bashList.get(lineIndex));
                     return stdCodeStream.of();
                 } else break;
             }
@@ -564,7 +563,7 @@ public final class CodeCompiler {
 
                 String endIfLine = bashList.get(lineIndex - 1);
                 if (!endIfLine.startsWith("::") || !endIfLine.endsWith("_endIf")) {
-                    Utils.printError("Error: else not match at line " + lineIndex);
+                    Utils.printError("Syntax error on token \"else\", delete this token\n> " + line);
                     return stdCodeStream.of();
                 }
                 String jumpString = "jump " + tagTo + " always 0 0";
