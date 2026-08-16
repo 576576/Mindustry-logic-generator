@@ -114,7 +114,7 @@ ushoot(x, y, shoot).target(target)
 reactor = link(id)
 
 :: Control
-reactor.enabled(0|1)
+reactor.enable(0|1)
 reactor.config(value)
 reactor.color(r, g, b, a)
 

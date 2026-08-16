@@ -114,7 +114,7 @@ ushoot(x, y, 射击开关).target(目标)
 reactor = link(id)
 
 :: 控制
-reactor.enabled(0|1)
+reactor.enable(0|1)
 reactor.config(值)
 reactor.color(r, g, b, a)
 
