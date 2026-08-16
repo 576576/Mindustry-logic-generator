@@ -71,9 +71,10 @@ export function mdtcodeSemanticTokens(doc: TextDocument, data: InstructionData):
       const w = line.slice(pos, e);
       if (e > pos) {
         if (first && data.mcodes.has(w)) add(li, pos, e - pos, T.FUNCTION);
-        else if (tokIdx === 1 && (data.opNames.has(w) || headSelects?.has(w))) {
-          // op 运算符名 / control·lookup·ucontrol 等分派名
-          add(li, pos, e - pos, T.FUNCTION);
+        else if (tokIdx === 1 && data.opNames.has(w)) {
+          add(li, pos, e - pos, T.OPERATOR); // op 运算符名:运算符色
+        } else if (tokIdx === 1 && headSelects?.has(w)) {
+          add(li, pos, e - pos, T.KEYWORD); // control/lookup/ucontrol 分派名:关键字色
         } else add(li, pos, e - pos, T.VARIABLE);
         first = false;
         tokIdx++;
