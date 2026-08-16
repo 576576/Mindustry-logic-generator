@@ -17,6 +17,12 @@ that compiles to Mindustry logic assembly (`.mdtc` → `.mdtcode`).
 - **Semantic highlighting** — comments / strings / numbers / operators /
   instructions / @constants / labels / variables
 - **Go to definition** — `jump` / `jump2` label ↔ `::label`
+- **`.mdtcode` support** — the compiled Mindustry assembly format gets its own
+  grammar plus LSP: instruction/`@const`/label/string semantic highlighting,
+  diagnostics (unknown instruction, `jump N` out of range, undefined
+  `@counter` label, unknown `op` operator), hover on instruction words,
+  goto (`::label` ↔ `set @counter label`, `jump N` → target line) and
+  instruction-word completion
 
 The language server itself is **TypeScript** (`server/src`, runs on Node via
 `vscode-languageserver`); only the compile step shells out to the Java CLI jar.

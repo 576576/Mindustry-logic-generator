@@ -26,6 +26,7 @@ import { loadData, InstructionData } from "./data";
 import { loadDocs, lookupDoc } from "./hover";
 import { buildCompletion } from "./completion";
 import { signatureAt } from "./signature";
+import { mdtcodeSemanticTokens, mdtcodeDiagnostics, mdtcodeHover, mdtcodeDefinitionAt, mdtcodeCompletion } from "./mdtcode";
 import { formatDocument } from "./formatting";
 import { encodeSemanticTokens, TOKEN_TYPES } from "./semantic";
 import { definitionAt } from "./goto";
@@ -35,7 +36,7 @@ const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
 
 let cliJar = "";
-let instructionData: InstructionData = { items: [], operators: [], chainByParent: new Map() };
+let instructionData: InstructionData = { items: [], operators: [], chainByParent: new Map(), mcodes: new Set(), opNames: new Set() };
 
 // 开发模式(MDTC_LSP_WATCH=1):源码修改自动重启(由客户端 restart 拉起)
 import * as fs from "node:fs";
@@ -78,7 +79,9 @@ connection.onInitialize((params: InitializeParams) => {
 // ==================== 诊断 ====================
 
 async function validate(doc: TextDocument): Promise<void> {
-  const { diagnostics } = validateDocument(doc, cliJar);
+  const diagnostics = doc.languageId === "mdtcode"
+    ? mdtcodeDiagnostics(doc, instructionData)
+    : validateDocument(doc, cliJar).diagnostics;
   connection.sendDiagnostics({ uri: doc.uri, diagnostics });
 }
 
@@ -95,6 +98,9 @@ documents.listen(connection);
 
 connection.onCompletion((params): CompletionList => {
   const doc = documents.get(params.textDocument.uri);
+  if (doc?.languageId === "mdtcode") {
+    return CompletionList.create(mdtcodeCompletion(instructionData));
+  }
   return CompletionList.create(
     buildCompletion(instructionData, doc ?? undefined, params.position)
   );
@@ -121,6 +127,7 @@ connection.onDocumentFormatting((params: DocumentFormattingParams): TextEdit[] =
 connection.onHover((params: HoverParams): Hover | null => {
   const doc = documents.get(params.textDocument.uri);
   if (!doc) return null;
+  if (doc.languageId === "mdtcode") return mdtcodeHover(doc, params.position, instructionData);
   const lines = doc.getText().split("\n");
   const pos = params.position;
   if (pos.line < 0 || pos.line >= lines.length) return null;
@@ -148,7 +155,9 @@ function wordAt(line: string, column: number): string {
 connection.languages.semanticTokens.on((params: SemanticTokensParams): SemanticTokens => {
   const doc = documents.get(params.textDocument.uri);
   if (!doc) return { data: [] };
-  return { data: encodeSemanticTokens(doc, instructionData) };
+  return { data: doc.languageId === "mdtcode"
+    ? mdtcodeSemanticTokens(doc, instructionData)
+    : encodeSemanticTokens(doc, instructionData) };
 });
 
 // ==================== goto(jump/jump2 标签) ====================
@@ -156,7 +165,9 @@ connection.languages.semanticTokens.on((params: SemanticTokensParams): SemanticT
 connection.onDefinition((params: DefinitionParams): Location[] => {
   const doc = documents.get(params.textDocument.uri);
   if (!doc) return [];
-  const locs = definitionAt(doc, params.position.line, params.position.character);
+  const locs = doc.languageId === "mdtcode"
+    ? mdtcodeDefinitionAt(doc, params.position.line, params.position.character, instructionData)
+    : definitionAt(doc, params.position.line, params.position.character);
   return locs.map((l) => ({ ...l, uri: doc.uri }));
 });
 

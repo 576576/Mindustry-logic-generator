@@ -25,6 +25,27 @@ export function bracketError(ch: string): string {
     : `Syntax error on token "${ch}", delete this token`;
 }
 
+export type MdtcodeErrorKind = "unknownInstr" | "jumpRange" | "labelNotFound" | "unknownOp";
+
+/** mdtcode 诊断错误(按 locale) */
+export function mdtcodeError(kind: MdtcodeErrorKind, arg: string): string {
+  if (isZh()) {
+    switch (kind) {
+      case "unknownInstr": return `未知指令: ${arg}`;
+      case "jumpRange": return `跳转目标超出范围: jump ${arg}`;
+      case "labelNotFound": return `标签未定义: ${arg}`;
+      case "unknownOp": return `未知运算符: ${arg}`;
+    }
+  }
+  switch (kind) {
+    case "unknownInstr": return `Unknown instruction: ${arg}`;
+    case "jumpRange": return `Jump target out of range: jump ${arg}`;
+    case "labelNotFound": return `Label not defined: ${arg}`;
+    case "unknownOp": return `Unknown operator: ${arg}`;
+  }
+  return arg;
+}
+
 /** 编译异常兜底(按 locale) */
 export function compileException(err: unknown): string {
   const detail = err instanceof Error ? err.message : String(err);

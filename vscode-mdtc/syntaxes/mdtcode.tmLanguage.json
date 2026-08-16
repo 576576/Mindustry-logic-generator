@@ -1,0 +1,55 @@
+{
+ "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+ "name": "MdtCode",
+ "scopeName": "source.mdtcode",
+ "patterns": [
+  {
+   "match": "^\\s*(::\\S*)",
+   "name": "entity.name.label.mdtcode"
+  },
+  {
+   "include": "#strings"
+  },
+  {
+   "include": "#constants"
+  },
+  {
+   "include": "#numbers"
+  },
+  {
+   "include": "#instructions"
+  },
+  {
+   "include": "#words"
+  }
+ ],
+ "repository": {
+  "strings": {
+   "name": "string.quoted.double.mdtcode",
+   "begin": "\"",
+   "end": "\"",
+   "patterns": [
+    {
+     "name": "constant.character.escape.mdtcode",
+     "match": "\\\\."
+    }
+   ]
+  },
+  "constants": {
+   "match": "@[A-Za-z0-9_.]+",
+   "name": "constant.other.mdtcode.constant"
+  },
+  "numbers": {
+   "match": "\\b-?\\d+(\\.\\d+)?\\b",
+   "name": "constant.numeric.mdtcode"
+  },
+  "instructions": {
+   "match": "^\\s*(print|printchar|format|wait|stop|end|ubind|ucontrol|draw|jump|jump2|printf|tag|raw|op|set|getlink|getblock|setprop|unitlocate|lookup|packcolor|unpackcolor|radar|uradar|control|ulocate|printflush|drawflush|write|sensor|read)\\b",
+   "name": "keyword.control.mdtcode.instruction"
+  },
+  "words": {
+   "match": "[A-Za-z_][A-Za-z0-9_.-]*",
+   "name": "variable.other.mdtcode"
+  }
+ }
+}

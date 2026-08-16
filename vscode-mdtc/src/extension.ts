@@ -29,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: "file", language: "mdtc" }],
+    documentSelector: [{ scheme: "file", language: "mdtc" }, { scheme: "file", language: "mdtcode" }],
     outputChannelName: "MdtC Language Server",
     diagnosticCollectionName: "mdtc",
     traceOutputChannel: vscode.window.createOutputChannel("MdtC LSP Trace"),

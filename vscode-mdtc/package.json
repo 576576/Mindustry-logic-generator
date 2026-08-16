@@ -14,7 +14,8 @@
     "Formatters"
   ],
   "activationEvents": [
-    "onLanguage:mdtc"
+    "onLanguage:mdtc",
+    "onLanguage:mdtcode"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -30,6 +31,16 @@
           ".libmdtc"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "mdtcode",
+        "aliases": [
+          "MdtCode",
+          "mdtcode"
+        ],
+        "extensions": [
+          ".mdtcode"
+        ]
       }
     ],
     "configuration": {
@@ -57,6 +68,11 @@
         "language": "mdtc",
         "scopeName": "source.mdtc",
         "path": "./syntaxes/mdtc.tmLanguage.json"
+      },
+      {
+        "language": "mdtcode",
+        "scopeName": "source.mdtcode",
+        "path": "./syntaxes/mdtcode.tmLanguage.json"
       }
     ]
   },
