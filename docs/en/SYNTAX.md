@@ -1,6 +1,6 @@
 # MdtC Syntax Guide
 
-> [← Back to README](../../README.md) · [内置指令规范 →](../instructions/README.md)
+> [← Back to README](README.md) · [Instruction Spec →](../instructions/README.md)
 
 ## File Types
 
@@ -126,8 +126,8 @@ turret.shoot(shoot).target(x, y)
 result = core.ulocate(type).ore(ore).building(bld).enemy(enemy)
 
 :: Read / sense
-core.sensor(result, @block_type)
-cell1.read(result, cell_number)
+result = core.sensor(@block_type)
+result = cell1.read(cell_number)
 ```
 
 ### Supported `.ulocate` Types
@@ -147,11 +147,10 @@ value = liquid(type, index)            :: lookup liquid
 value = team(type, index)              :: lookup team
 value = lookup(type, index)            :: generic lookup
 color = pack(r, g, b, a)              :: packcolor
-
-block.sensor(result, @property)        :: sensor
-block.read(result, cell_number)        :: read
-value = expr.sensor(result, @prop)     :: dot-chain sensor
-value = expr.read(result, cell)        :: dot-chain read
+result = block.sensor(@property)       :: sensor
+result = block.read(cell_number)       :: read
+result = expr.sensor(@prop)            :: dot-chain sensor
+result = expr.read(cell)               :: dot-chain read
 result = expr.orElse(fallback).when(cond)  :: conditional select
 ```
 
@@ -219,8 +218,8 @@ function println(str){
 
 :: Returning function
 function isReactorSafe(reactor){
-    reactor.sensor(heat, @heat)
-    reactor.sensor(thorium, @thorium)
+    heat = reactor.sensor(@heat)
+    thorium = reactor.sensor(@thorium)
     return heat < 0.5 && thorium < 5
 }
 

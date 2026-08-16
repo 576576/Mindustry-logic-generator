@@ -126,6 +126,24 @@ def main():
             write_text(out, tpl)
             print(f"Rendered {out}")
 
+    # ---- 其他文档模板(assets/templates/*.md,如 SYNTAX.md)----
+    # 渲染到 docs/{lang}/{模板名}.md;语言 json 缺少对应段(如 syntax)则跳过
+    for tpl_path in sorted(glob.glob("assets/templates/*.md")):
+        base = os.path.splitext(os.path.basename(tpl_path))[0]
+        if base == "README":
+            continue
+        section_name = base.lower()
+        tpl = read_text(tpl_path)
+        for stem in stems:
+            section = docs[stem].get(section_name)
+            if not section:
+                continue
+            out = tpl
+            for token, value in collect_tokens(section).items():
+                out = out.replace("{{" + section_name + "." + token + "}}", value)
+            write_text(f"docs/{stem}/{base}.md", out)
+            print(f"Rendered docs/{stem}/{base}.md")
+
     return 0
 
 

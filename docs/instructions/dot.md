@@ -72,13 +72,14 @@
 ## Dot(读取/选择类,3 个)
 
 ### .sensor(
-- 语法:`<block>.sensor(<结果>,<属性>)`
+- 语法:`<结果> = <block>.sensor(<属性>)`(sensor 为表达式,结果变量在等号左侧)
 - 输出:`sensor mid.<ref> <block> <s>`;调用方随后把 `mid.<ref>`
   代入表达式并递增 ref。
+- 示例:`heat = reactor.sensor(@heat)`
 - 反编译:见 `sensor `(还原为 `<结果>=<block>.sensor(<属性>)`)
 
 ### .read(
-- 语法:`<block>.read(<结果>,<单元号>)`
+- 语法:`<结果> = <block>.read(<单元号>)`(read 为表达式,结果变量在等号左侧)
 - 输出:`read mid.<ref> <block> <s>`
 
 ### .orElse(

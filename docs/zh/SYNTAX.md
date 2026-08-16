@@ -1,11 +1,11 @@
 # MdtC 语法指南
 
-> [← 返回 README](README.md)
+> [← 返回 README](README.md) · [内置指令规范 →](../instructions/README.md)
 
 ## 文件类型
 
 | 扩展名 | 用途 |
-|--------|------|
+|-----------|---------|
 | `.mdtc` | MdtC 源码 — 高级逻辑代码 |
 | `.mdtcode` | Mindustry 逻辑汇编 — 编译输出 |
 | `.libmdtc` | 可复用函数库 |
@@ -28,7 +28,7 @@ tag(全局标签)
 ```
 x = 1 + 2
 y = a .- b           :: 减法用 .-（连字符是分隔符）
-z = -5               :: 负数直接书写
+z = -5                :: 负数直接书写
 
 :: 支持的运算符
 x = 1 + 2              :: add 加
@@ -115,19 +115,19 @@ reactor = link(id)
 
 :: 控制
 reactor.enable(0|1)
-reactor.config(值)
+reactor.config(value)
 reactor.color(r, g, b, a)
 
 :: 射击 — shoot() 只带射击开关
 :: target:双参 (x,y) 为坐标,单参为设计目标
-turret.shoot(射击开关).target(x, y)
+turret.shoot(shoot).target(x, y)
 
 :: 定位
 result = core.ulocate(类型).ore(矿物).building(建筑).enemy(敌方)
 
 :: 读取/感知
-core.sensor(result, @方块类型)
-cell1.read(result, 单元号)
+result = core.sensor(@方块类型)
+result = cell1.read(单元号)
 ```
 
 ### 支持的 `.ulocate` 类型
@@ -147,11 +147,10 @@ value = liquid(类型, 索引)            :: lookup 液体
 value = team(类型, 索引)              :: lookup 队伍
 value = lookup(类型, 索引)            :: 通用 lookup
 color = pack(r, g, b, a)             :: packcolor
-
-block.sensor(result, @属性)          :: sensor
-block.read(result, 单元号)           :: read
-value = expr.sensor(result, @属性)    :: 点链 sensor
-value = expr.read(result, 单元号)     :: 点链 read
+result = block.sensor(@属性)          :: sensor
+result = block.read(单元号)           :: read
+result = expr.sensor(@属性)            :: 点链 sensor
+result = expr.read(单元号)           :: 点链 read
 result = expr.orElse(备用值).when(条件) :: 条件选择
 ```
 
@@ -219,8 +218,8 @@ function println(str){
 
 :: 有返回值函数
 function isReactorSafe(reactor){
-    reactor.sensor(heat, @heat)
-    reactor.sensor(thorium, @thorium)
+    heat = reactor.sensor(@heat)
+    thorium = reactor.sensor(@thorium)
     return heat < 0.5 && thorium < 5
 }
 
@@ -261,7 +260,7 @@ raw("这里是原始 Mindustry 逻辑指令")
 完整可运行样例见 [`sample_cases/`](../../sample_cases/)：
 
 | 文件 | 说明 |
-|------|------|
+|------|-------------|
 | `case1.mdtc` | 所有运算符与数学函数 |
 | `case2.mdtc` | 控制语句 |
 | `case3.mdtc` | 方块/单位/物品/液体/队伍查找 |
