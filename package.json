@@ -1,0 +1,12 @@
+{
+  "name": "mdtc-builtins",
+  "version": "2.0.0",
+  "private": true,
+  "description": "MdtC built-in instruction modules (.ts source of truth) + generator toolchain",
+  "scripts": {
+    "sync": "node tools/sync-js.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

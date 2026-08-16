@@ -62,6 +62,42 @@ application {
     mainClass.set("cn.sumitm.mdtc.cli.Main")
 }
 
+tasks.register("syncBuiltinJs") {
+    group = "mdtc builtins"
+    description = "Compile builtins/*.ts to builtins/gen/builtins.js (requires node + typescript)"
+    doLast {
+        if (!file("node_modules/typescript/bin/tsc").exists()) {
+            logger.warn("syncBuiltinJs: typescript 未安装——使用已提交的 builtins/gen/builtins.js")
+            return@doLast
+        }
+        try {
+            val nodeCmd = if (isWindows) "node.exe" else "node"
+            val pb = ProcessBuilder(listOf(nodeCmd, "tools/sync-js.mjs"))
+            pb.directory(rootDir)
+            pb.inheritIO()
+            val exit = pb.start().waitFor()
+            if (exit != 0) {
+                throw GradleException("syncBuiltinJs failed with exit code " + exit)
+            }
+        } catch (e: Exception) {
+            logger.warn("syncBuiltinJs failed")
+        }
+    }
+}
+
+tasks.register<Sync>("extractRhino") {
+    group = "mdtc builtins"
+    description = "Extract rhino/* classes from the Mindustry jar (CLI/run/test classpaths only)"
+    into(layout.buildDirectory.dir("generated/rhino"))
+    // compileOnly 不可解析;这里惰性使用可解析的 compileClasspath(包含 compileOnly)
+    from({
+        val jar = configurations.compileClasspath.get().find { it.name.startsWith("Mindustry") }
+        jar?.let { zipTree(it) } ?: emptySet<File>()
+    }) {
+        include("rhino/**")
+    }
+}
+
 // ==================== CLI 工具构建 ====================
 
 tasks.shadowJar {
@@ -69,9 +105,15 @@ tasks.shadowJar {
         attributes["Main-Class"] = "cn.sumitm.mdtc.cli.Main"
     }
     archiveFileName.set("${project.name}-${project.version}-Cli.jar")
+    dependsOn("extractRhino")
+    from(layout.buildDirectory.dir("generated/rhino"))
 }
 
 tasks.processResources {
+    dependsOn("syncBuiltinJs")
+    from("builtins/gen") {
+        into("builtins/gen")
+    }
     filesMatching("**/version.properties") {
         expand("version" to project.version)
     }
@@ -90,6 +132,15 @@ tasks.register<Copy>("processModHjson") {
 
 tasks.test {
     useJUnitPlatform()
+    // 测试运行期需要 rhino 类(由 extractRhino 提供)
+    dependsOn("extractRhino")
+    classpath += files(layout.buildDirectory.dir("generated/rhino"))
+}
+
+// CLI 开发运行(gradle run)同样需要 rhino 类
+tasks.named<JavaExec>("run") {
+    dependsOn("extractRhino")
+    classpath += files(layout.buildDirectory.dir("generated/rhino"))
 }
 
 tasks.register<Jar>("sourcesJar") {

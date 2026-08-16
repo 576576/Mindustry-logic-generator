@@ -7,35 +7,39 @@ class ConstantsTest {
 
     @Test
     void operatorMapsAreBuilt() {
-        assertThat(Constants.midOpKeysMap).isNotEmpty();
-        assertThat(Constants.midOpValueMap).isNotEmpty();
+        assertThat(BuiltinEngine.get().midOpKeysMap()).isNotEmpty();
+        assertThat(BuiltinEngine.get().midOpValueMap()).isNotEmpty();
     }
 
     @Test
     void midOpKeysMap_containsBasicOps() {
-        assertThat(Constants.midOpKeysMap).containsKeys("+", ".-", "==", "!=", ">=");
-        assertThat(Constants.midOpKeysMap.get("+")).isEqualTo("add");
-        assertThat(Constants.midOpKeysMap.get(".-")).isEqualTo("sub");
+        var m = BuiltinEngine.get().midOpKeysMap();
+        assertThat(m).containsKeys("+", ".-", "==", "!=", ">=");
+        assertThat(m.get("+")).isEqualTo("add");
+        assertThat(m.get(".-")).isEqualTo("sub");
     }
 
     @Test
     void midOpValueMap_isReverse() {
-        assertThat(Constants.midOpValueMap.get("add")).isEqualTo("+");
-        assertThat(Constants.midOpValueMap.get("equal")).isEqualTo("==");
+        var m = BuiltinEngine.get().midOpValueMap();
+        assertThat(m.get("add")).isEqualTo("+");
+        assertThat(m.get("equal")).isEqualTo("==");
     }
 
     @Test
     void operatorReverseMap_hasOpposites() {
-        assertThat(Constants.operatorReverseMap.get("equal")).isEqualTo("notEqual");
-        assertThat(Constants.operatorReverseMap.get("notEqual")).isEqualTo("equal");
-        assertThat(Constants.operatorReverseMap.get("always")).isEqualTo("never");
+        var m = BuiltinEngine.get().operatorReverseMap();
+        assertThat(m.get("equal")).isEqualTo("notEqual");
+        assertThat(m.get("notEqual")).isEqualTo("equal");
+        assertThat(m.get("always")).isEqualTo("never");
     }
 
     @Test
     void midOpPriorityMap_hasAllOperators() {
-        assertThat(Constants.midOpPriorityMap).containsKeys("+", "*", "/");
-        assertThat(Constants.midOpPriorityMap.get("*")).isEqualTo(5);
-        assertThat(Constants.midOpPriorityMap.get("+")).isEqualTo(4);
+        var m = BuiltinEngine.get().midOpPriorityMap();
+        assertThat(m).containsKeys("+", "*", "/");
+        assertThat(m.get("*")).isEqualTo(5);
+        assertThat(m.get("+")).isEqualTo(4);
     }
 
     @Test
@@ -45,12 +49,12 @@ class ConstantsTest {
 
     @Test
     void dotCtrlCodes_containsExpected() {
-        assertThat(Constants.dotCtrlCodes).contains(".enable(", ".shoot(", ".color(");
+        assertThat(BuiltinEngine.get().dotCtrlCodes()).contains(".enable(", ".shoot(", ".color(");
     }
 
     @Test
     void ctrlCodes_containsExpected() {
-        assertThat(Constants.ctrlCodes).contains("print(", "jump(", "wait(");
+        assertThat(BuiltinEngine.get().ctrlCodes()).contains("print(", "jump(", "wait(");
     }
 
     @Test

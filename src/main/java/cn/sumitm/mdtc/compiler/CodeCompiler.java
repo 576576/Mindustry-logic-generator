@@ -6,10 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-
 import cn.sumitm.mdtc.cli.Main;
-import cn.sumitm.mdtc.core.Constants;
+import cn.sumitm.mdtc.core.BuiltinEngine;
+import cn.sumitm.mdtc.core.BuiltinHandler;
 import cn.sumitm.mdtc.core.Utils;
 import cn.sumitm.mdtc.core.stdCodeStream;
 import cn.sumitm.mdtc.core.stdFuncStream;
@@ -246,11 +245,11 @@ public final class CodeCompiler {
         String expr = stream.expr();
         int[] ref = {stream.stat()};
 
-        LangRegistry.SubCompiler sub = (e, r) -> convertCodeLine(stdCodeStream.of(e, r[0]));
-        Map<String, Function<String, String>> funcHandlers = LangRegistry.ctrlHandlers(bashList, ref, sub);
+        EmitCtx ctx = new EmitCtx(bashList, ref, null, BuiltinEngine.get().scope());
+        Map<String, BuiltinHandler> funcHandlers = BuiltinEngine.get().ctrl();
 
         final List<String> ignoreKeys = List.of("jump(", "jump2(", "draw(", "ushoot(", "tag(", "raw(", "print(", "printf(");
-        for (Map.Entry<String, Function<String, String>> entry : funcHandlers.entrySet()) {
+        for (Map.Entry<String, BuiltinHandler> entry : funcHandlers.entrySet()) {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 if (end == -1) {
@@ -270,8 +269,8 @@ public final class CodeCompiler {
                     }
                     s = String.join(",", splitParts);
                 }
-                String result = entry.getValue().apply(s);
-                bashList.add(result);
+                String result = entry.getValue().apply(s, ctx);
+                for (String line : result.split("\n", -1)) bashList.add(line);
                 expr = "";
             }
         }
@@ -288,10 +287,11 @@ public final class CodeCompiler {
         String[] blockRef = {Utils.getDotBlock(finalExpr)};
         int[] ref = {stream.stat()};
 
-        Map<String, Function<String, String>> funcHandlers = LangRegistry.dotCtrlHandlers(bashList, blockRef, ref);
+        EmitCtx ctx = new EmitCtx(bashList, ref, blockRef, BuiltinEngine.get().scope());
+        Map<String, BuiltinHandler> funcHandlers = BuiltinEngine.get().dotCtrl();
 
         final List<String> ignoreKeys = List.of(".shoot(", ".ulocate(");
-        for (Map.Entry<String, Function<String, String>> entry : funcHandlers.entrySet()) {
+        for (Map.Entry<String, BuiltinHandler> entry : funcHandlers.entrySet()) {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 if (end == -1) {
@@ -314,8 +314,8 @@ public final class CodeCompiler {
                     end = Utils.getEndDotChain(expr, start);
                     s = reduceContent;
                 }
-                String result = entry.getValue().apply(s);
-                bashList.add(result);
+                String result = entry.getValue().apply(s, ctx);
+                for (String line : result.split("\n", -1)) bashList.add(line);
                 expr = expr.substring(0, start) + expr.substring(end + 1);
             }
         }
@@ -332,11 +332,11 @@ public final class CodeCompiler {
         int[] ref = {stream.stat()};
         String[] blockRef = {""};
 
-        LangRegistry.SubCompiler sub = (e, r) -> convertCodeLine(stdCodeStream.of(e, r[0]));
-        Map<String, Function<String, String>> funcHandlers = LangRegistry.dotHandlers(bashList, blockRef, ref, sub);
+        EmitCtx ctx = new EmitCtx(bashList, ref, blockRef, BuiltinEngine.get().scope());
+        Map<String, BuiltinHandler> funcHandlers = BuiltinEngine.get().dot();
 
         final List<String> ignoreKeys = List.of(".orElse(");
-        for (Map.Entry<String, Function<String, String>> entry : funcHandlers.entrySet()) {
+        for (Map.Entry<String, BuiltinHandler> entry : funcHandlers.entrySet()) {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 List<String> splitList = Utils.stringSplit(expr.substring(0, start));
@@ -354,8 +354,8 @@ public final class CodeCompiler {
                         s = midVariable;
                     }
                 }
-                String result = entry.getValue().apply(s.trim());
-                bashList.add(result);
+                String result = entry.getValue().apply(s.trim(), ctx);
+                for (String line : result.split("\n", -1)) bashList.add(line);
                 expr = expr.substring(0, start - blockRef[0].length())
                     + "mid." + ref[0] + expr.substring(end + 1);
                 ref[0]++;
@@ -371,14 +371,15 @@ public final class CodeCompiler {
         ArrayList<String> bashList = new ArrayList<>(stream.bash());
         int[] ref = {stream.stat()};
 
-        Map<String, Function<String, String>> funcHandlers_high = LangRegistry.frontHandlersHigh(ref);
-        Map<String, Function<String, String>> funcHandlers_low = LangRegistry.frontHandlersLow(ref);
+        EmitCtx ctx = new EmitCtx(bashList, ref, null, BuiltinEngine.get().scope());
+        Map<String, BuiltinHandler> funcHandlers_high = BuiltinEngine.get().frontHigh();
+        Map<String, BuiltinHandler> funcHandlers_low = BuiltinEngine.get().frontLow();
 
         String expr = stream.expr();
 
         final List<String> ignoreKeys = List.of("radar(", "uradar(");
-        for (Map<String, Function<String, String>> handlers : List.of(funcHandlers_high, funcHandlers_low)) {
-            for (Map.Entry<String, Function<String, String>> entry : handlers.entrySet()) {
+        for (Map<String, BuiltinHandler> handlers : List.of(funcHandlers_high, funcHandlers_low)) {
+            for (Map.Entry<String, BuiltinHandler> entry : handlers.entrySet()) {
                 while (expr.contains(entry.getKey())) {
                     int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                     if (end == -1) {
@@ -401,8 +402,8 @@ public final class CodeCompiler {
                         end = Utils.getEndDotChain(expr, start);
                         s = reduceContent;
                     }
-                    String result = entry.getValue().apply(s);
-                    bashList.add(result);
+                    String result = entry.getValue().apply(s, ctx);
+                    for (String line : result.split("\n", -1)) bashList.add(line);
 
                     String regex = expr.substring(start, end + 1);
                     expr = expr.replace(regex, "mid." + ref[0]);
@@ -422,8 +423,8 @@ public final class CodeCompiler {
         ArrayList<String> stack = new ArrayList<>();
         ArrayList<String> bashList = stream.bash();
         int[] ref = {stream.stat()};
-        final Map<String, String> operatorMap = Constants.midOpKeysMap;
-        final Map<String, Integer> offsetMap = Constants.operatorOffsetMap;
+        final Map<String, String> operatorMap = BuiltinEngine.get().midOpKeysMap();
+        final Map<String, Integer> offsetMap = BuiltinEngine.get().operatorOffsetMap();
 
         for (String token : rpnArray) {
             if (operatorMap.containsKey(token)) {
@@ -470,7 +471,7 @@ public final class CodeCompiler {
      * 转换{@code set}类型函数的非孤立行
      */
     static stdCodeStream convertSet(stdCodeStream stream) {
-        final Map<String, Integer> offsetMap = Constants.operatorOffsetMap;
+        final Map<String, Integer> offsetMap = BuiltinEngine.get().operatorOffsetMap();
         ArrayList<String> bashList = stream.bash();
         String expr = stream.expr();
 

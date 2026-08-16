@@ -3,7 +3,7 @@ package cn.sumitm.mdtc.mod;
 import arc.Events;
 import arc.util.Log;
 import arc.util.Time;
-import cn.sumitm.mdtc.core.LangBuiltins;
+import cn.sumitm.mdtc.core.BuiltinDomain;
 import cn.sumitm.mdtc.mod.ui.LogicEditorDialog;
 import mindustry.Vars;
 import mindustry.game.EventType.ClientLoadEvent;
@@ -16,7 +16,7 @@ public class ModInterface extends Mod {
 
         Events.on(ClientLoadEvent.class, e -> {
             I18n.init();
-            LangBuiltins.init();
+            BuiltinDomain.init();
             Time.runTask(10f, () -> {
                 // 在处理器代码编辑菜单中添加 MdtC 按钮
                 Vars.ui.logic.shown(() -> {

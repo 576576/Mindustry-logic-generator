@@ -14,6 +14,11 @@ import java.util.Stack;
 public final class Utils {
     private Utils() {}
 
+    /** 内置指令引擎(指令/运算符/领域数据的运行期提供者) */
+    private static BuiltinEngine eng() {
+        return BuiltinEngine.get();
+    }
+
     public static String readFile(String filePath) {
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
@@ -98,16 +103,16 @@ public final class Utils {
         return switch (params[0]) {
             case "always" -> "always";
             case "never"  -> "never";
-            default       -> params[1] + Constants.midOpValueMap.get(params[0]) + params[2].trim();
+            default       -> params[1] + eng().midOpValueMap().get(params[0]) + params[2].trim();
         };
     }
 
     public static boolean isDotCtrlCode(String codeLine) {
-        return Constants.dotCtrlCodes.stream().anyMatch(codeLine::contains);
+        return eng().dotCtrlCodes().stream().anyMatch(codeLine::contains);
     }
 
     public static boolean isCtrlCode(String codeLine) {
-        return Constants.ctrlCodes.stream().anyMatch(codeLine::startsWith);
+        return eng().ctrlCodes().stream().anyMatch(codeLine::startsWith);
     }
 
     public static void printError(String message) {
@@ -119,8 +124,8 @@ public final class Utils {
         while (end < expr.length() - 1 && expr.charAt(end + 1) == '.') {
             int pos = end + 1;
             if (expr.startsWith(".^", pos)) return end;
-            if (Constants.dotCtrlCodes.stream().anyMatch(k -> expr.startsWith(k, pos))) return end;
-            if (Constants.dotCodes.stream().anyMatch(k -> expr.startsWith(k, pos))) return end;
+            if (eng().dotCtrlCodes().stream().anyMatch(k -> expr.startsWith(k, pos))) return end;
+            if (eng().dotCodes().stream().anyMatch(k -> expr.startsWith(k, pos))) return end;
             int endNext = getEndBracket(expr, pos);
             if (endNext == -1) return end;
             end = endNext;
@@ -130,7 +135,7 @@ public final class Utils {
 
     public static String getDotBlock(String expr) {
         int index = expr.length() - 1;
-        for (String key : Constants.dotCtrlCodes) {
+        for (String key : eng().dotCtrlCodes()) {
             int keyIndex = expr.indexOf(key);
             if (keyIndex != -1 && keyIndex < index) index = keyIndex;
         }
@@ -160,14 +165,14 @@ public final class Utils {
                 continue;
             }
             boolean isOperator = false;
-            for (Constants.Operator o : Constants.Operator.values()) {
-                if (str.startsWith(o.value, i)) {
+            for (String opValue : eng().operatorValues()) {
+                if (str.startsWith(opValue, i)) {
                     if (!tokenBuilder.toString().trim().isEmpty()) {
                         tokens.add(tokenBuilder.toString().trim());
                         tokenBuilder = new StringBuilder();
                     }
-                    tokens.add(o.value);
-                    i += o.value.length() - 1;
+                    tokens.add(opValue);
+                    i += opValue.length() - 1;
                     isOperator = true;
                     break;
                 }
@@ -180,7 +185,7 @@ public final class Utils {
         for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);
             if (token.startsWith("-") && !isNumeric(token)) {
-                List<String> tokenTo = List.of("(", "0", Constants.Operator.sub.value, token.substring(1), ")");
+                List<String> tokenTo = List.of("(", "0", eng().subOperatorValue(), token.substring(1), ")");
                 tokens.remove(i);
                 tokens.addAll(i, tokenTo);
                 i += tokenTo.size() - 1;
@@ -193,7 +198,7 @@ public final class Utils {
 
             if (token.equals("(")) {
                 String tokenNow = tokens.get(i - 1);
-                if (Constants.dotOpReduced.contains(tokenNow)) {
+                if (eng().dotOpReduced().contains(tokenNow)) {
                     tokenBuilder.append(tokenNow).append(token);
                     int matchIndex = 0;
                     for (int j = i + 1; j < tokens.size(); j++) {
@@ -201,7 +206,7 @@ public final class Utils {
                         if (tokenNow.equals("(")) matchIndex++;
                         if (tokenNow.equals(")")) matchIndex--;
                         if (matchIndex != 0) continue;
-                        if (Constants.dotOpReduced.contains(tokenNow) || j == tokens.size() - 1) {
+                        if (eng().dotOpReduced().contains(tokenNow) || j == tokens.size() - 1) {
                             String tokenTo = stringOf(tokens.subList(i - 1, j));
                             tokens.subList(i - 1, j).clear();
                             tokens.add(i - 1, tokenTo);
@@ -286,7 +291,7 @@ public final class Utils {
     }
 
     public static String reverseCondition(String codeLine) {
-        final Map<String, String> reMap = Constants.operatorReverseMap;
+        final Map<String, String> reMap = eng().operatorReverseMap();
         String[] splitList = codeLine.split(" ");
         for (int i = 0; i < splitList.length; i++) {
             String part = splitList[i];
@@ -324,13 +329,13 @@ public final class Utils {
         if (params.length == 0) return defaultCondition;
         String key = params[0];
         if (key.equals("op")) {
-            if (!Constants.operatorReverseMap.containsKey((params[1]))) {
-                String target = params[Constants.operatorOffsetMap.get(key)];
+            if (!eng().operatorReverseMap().containsKey((params[1]))) {
+                String target = params[eng().operatorOffsetMap().get(key)];
                 return String.join(" ", "notEqual", target, "0");
             }
             return String.join(" ", params[1], params[3], params[4]);
-        } else if (Constants.operatorOffsetMap.containsKey(key)) {
-            String target = params[Constants.operatorOffsetMap.get(key)];
+        } else if (eng().operatorOffsetMap().containsKey(key)) {
+            String target = params[eng().operatorOffsetMap().get(key)];
             return String.join(" ", "notEqual", target, "0");
         }
         return defaultCondition;
@@ -428,8 +433,8 @@ public final class Utils {
      * @return c1的优先级是否比c2的高，高则返回正数，等于返回0，小于返回负数
      */
     public static int cmp(String c1, String c2) {
-        int p1 = Constants.midOpPriorityMap.getOrDefault(c1, 0);
-        int p2 = Constants.midOpPriorityMap.getOrDefault(c2, 0);
+        int p1 = eng().midOpPriorityMap().getOrDefault(c1, 0);
+        int p2 = eng().midOpPriorityMap().getOrDefault(c2, 0);
         return p1 - p2;
     }
 
@@ -439,11 +444,11 @@ public final class Utils {
      * @return 运算符合法性
      */
     public static boolean isOperator(String c) {
-        return Constants.midOpPriorityMap.containsKey(c);
+        return eng().midOpPriorityMap().containsKey(c);
     }
 
     public static int getPriority(String c) {
-        int priority = Constants.midOpPriorityMap.getOrDefault(c, 11);
+        int priority = eng().midOpPriorityMap().getOrDefault(c, 11);
         if (priority == 10) priority = 0;
         return priority;
     }
