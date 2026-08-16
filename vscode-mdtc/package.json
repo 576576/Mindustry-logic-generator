@@ -101,5 +101,9 @@
     "language-configuration.json",
     "syntaxes/**",
     "node_modules/**"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/576576/mdtc-lsp.git"
+  }
 }
