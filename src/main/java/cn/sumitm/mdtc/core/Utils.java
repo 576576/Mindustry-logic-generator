@@ -261,20 +261,26 @@ public final class Utils {
     }
 
     /**
-     * 检测一行中"中置运算符后无空格负数"的 token(供 LSP 按原文行精确定位警告)。
+     * 检测一行中"中置运算符后无空格负数"的 token 区间(供 LSP 精确标黄该负数)。
      *
-     * @return 命中时返回负数 token(如 "-1");否则返回 null
+     * @return {起始列, 结束列} 列表(可能多个);无命中返回空列表
      */
-    public static String findInfixNegative(String line) {
+    public static List<int[]> findInfixNegativeRanges(String line) {
+        List<int[]> out = new ArrayList<>();
         List<String> tokens = stringSplit(line);
+        int searchFrom = 0;
         for (int i = 1; i < tokens.size(); i++) {
             String t = tokens.get(i);
             if (t.startsWith("-") && t.length() > 1 && !Character.isWhitespace(t.charAt(1))
                     && isAfterInfixOperator(tokens, i)) {
-                return t;
+                int idx = line.indexOf(t, searchFrom);
+                if (idx >= 0) {
+                    out.add(new int[]{idx, idx + t.length()});
+                    searchFrom = idx + t.length();
+                }
             }
         }
-        return null;
+        return out;
     }
 
     /** 是否位于中置运算符之后(排除赋值 =、括号与 always/never 伪运算符) */

@@ -93,6 +93,19 @@ class LspServerTest {
     }
 
     @Test
+    void diagnostics_warningRange_coversOnlyNegativeToken() {
+        // range 仅覆盖负数 token(2 + -3 的 -3,第 3 行第 8-10 列)
+        open("file:///test.mdtc", "print(flush)\nx=1\ny=2 + -3");
+        Diagnostic warn = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Warning)
+            .findFirst().orElse(null);
+        assertThat(warn).isNotNull();
+        assertThat(warn.getRange().getStart().getLine()).isEqualTo(2);
+        assertThat(warn.getRange().getStart().getCharacter()).isEqualTo(6);
+        assertThat(warn.getRange().getEnd().getCharacter()).isEqualTo(8);
+    }
+
+    @Test
     void diagnostics_warningRange_isOnSourceLine() {
         // 第 3 行的中置运算符后负数 → 警告 range 应定位到第 3 行,而非整个文档
         open("file:///test.mdtc", "print(flush)\nx=1\ny=2 + -3");
@@ -139,7 +152,11 @@ class LspServerTest {
             .findFirst().orElse(null);
         assertThat(err).isNotNull();
         assertThat(err.getMessage()).contains("Syntax error on token \"(\", delete this token");
+        // range 仅覆盖括号 token(第 1 行第 6 列),且消息不附行内容
         assertThat(err.getRange().getStart().getLine()).isEqualTo(0);
+        assertThat(err.getRange().getStart().getCharacter()).isEqualTo(5);
+        assertThat(err.getRange().getEnd().getCharacter()).isEqualTo(6);
+        assertThat(err.getMessage()).doesNotContain("print(hello");
     }
 
     @Test
@@ -151,7 +168,11 @@ class LspServerTest {
             .findFirst().orElse(null);
         assertThat(err).isNotNull();
         assertThat(err.getMessage()).contains("Syntax error on token \"{\", delete this token");
+        // range 仅覆盖 { token(第 2 行第 10 列),消息不附行内容
         assertThat(err.getRange().getStart().getLine()).isEqualTo(1);
+        assertThat(err.getRange().getStart().getCharacter()).isEqualTo(8);
+        assertThat(err.getRange().getEnd().getCharacter()).isEqualTo(9);
+        assertThat(err.getMessage()).doesNotContain("if(x==0");
     }
 
     @Test

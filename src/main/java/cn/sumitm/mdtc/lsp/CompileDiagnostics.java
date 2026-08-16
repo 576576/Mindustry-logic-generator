@@ -3,7 +3,9 @@ package cn.sumitm.mdtc.lsp;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,44 +57,29 @@ final class CompileDiagnostics {
             System.setErr(oldErr);
         }
 
-        // ---- 2. 错误(stderr 中非 "Compile Warning" 的行;剥离 ANSI 颜色码) ----
-        // "> expr" 续行与上一行合并;errorFrom 用消息中的原文行片段定位
+        // ---- 2. 括号错误由第 5 步精确扫描覆盖;其余编译错误(stderr) ----
+        // 括号 Syntax error 与 "> expr" 续行在此跳过(消息末尾不附加行内容)
         String errText = buf.toString(StandardCharsets.UTF_8);
         String[] srcLines = text.split("\\n", -1);
-        StringBuilder pending = new StringBuilder();
         for (String rawLine : errText.split("\\n")) {
             String line = rawLine.replaceAll("\\x1B\\[[;\\d]*m", "").trim();
-            if (line.isEmpty() || line.contains("Compile Warning:")) {
-                if (!pending.isEmpty()) {
-                    out.add(errorFrom(pending.toString(), srcLines));
-                    pending.setLength(0);
-                }
+            if (line.isEmpty() || line.contains("Compile Warning:")
+                || line.contains("Syntax error on token") || line.startsWith(">")) {
                 continue;
             }
-            if (line.startsWith(">")) {
-                pending.append(' ').append(line.substring(1).trim());
-            } else {
-                if (!pending.isEmpty()) {
-                    out.add(errorFrom(pending.toString(), srcLines));
-                    pending.setLength(0);
-                }
-                pending.append(line);
-            }
-        }
-        if (!pending.isEmpty()) {
-            out.add(errorFrom(pending.toString(), srcLines));
+            out.add(errorFrom(line, srcLines));
         }
 
-        // ---- 3. 负数守卫警告:按原文逐行扫描精确定位(不依赖编译行号,
-        //      函数/import/repeat 展开或空行都不会造成偏移) ----
+        // ---- 3. 负数守卫警告:按原文逐行扫描,range 仅覆盖负数 token(标黄该负数) ----
         String[] lines = text.split("\n", -1);
         for (int i = 0; i < lines.length; i++) {
-            String token = Utils.findInfixNegative(lines[i]);
-            if (token != null) {
-                out.add(diagnostic("负数 \"" + token + "\" 未被 () 包裹;建议写成 \"(" + token
+            for (int[] r : Utils.findInfixNegativeRanges(lines[i])) {
+                String token = lines[i].substring(r[0], r[1]);
+                out.add(diagnosticAt("负数 \"" + token + "\" 未被 () 包裹;建议写成 \"(" + token
                     + ")\" 或使用空格减法 \" - " + token.substring(1)
                     + "\" | Negative \"" + token + "\" is not wrapped in parentheses; use \"(" + token
-                    + ")\" or spaced subtraction \" - " + token.substring(1) + "\"", i, DiagnosticSeverity.Warning));
+                    + ")\" or spaced subtraction \" - " + token.substring(1) + "\"",
+                    i, r[0], r[1], DiagnosticSeverity.Warning));
             }
         }
 
@@ -102,7 +89,52 @@ final class CompileDiagnostics {
             if (w.contains("未被 () 包裹")) continue;
             out.add(diagnostic(w, -1, DiagnosticSeverity.Warning));
         }
+
+        // ---- 5. 括号配对扫描:精确标红不匹配的括号 token(而非整行) ----
+        out.addAll(scanBrackets(text));
         return out;
+    }
+
+    /** 括号配对扫描:返回不匹配括号的诊断(只覆盖该括号字符) */
+    private static List<Diagnostic> scanBrackets(String text) {
+        List<Diagnostic> out = new ArrayList<>();
+        String[] lines = text.split("\\n", -1);
+        Deque<int[]> stack = new ArrayDeque<>(); // {line, col, char}
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            boolean inString = false;
+            for (int j = 0; j < line.length(); j++) {
+                char c = line.charAt(j);
+                if (c == ':' && j + 1 < line.length() && line.charAt(j + 1) == ':') break; // 注释
+                if (c == '"') { inString = !inString; continue; }
+                if (inString) continue;
+                if (c == '(' || c == '{') {
+                    stack.push(new int[]{i, j, c});
+                } else if (c == ')' || c == '}') {
+                    char want = c == ')' ? '(' : '{';
+                    if (stack.isEmpty() || stack.peek()[2] != want) {
+                        out.add(bracketError(c, i, j));
+                    } else {
+                        stack.pop();
+                    }
+                }
+            }
+        }
+        // 未闭合的括号(按栈序报出,每个标红其所在位置)
+        while (!stack.isEmpty()) {
+            int[] t = stack.pop();
+            out.add(bracketError((char) t[2], t[0], t[1]));
+        }
+        return out;
+    }
+
+    /** 括号语法错误诊断:range 仅覆盖该括号字符;消息中英双语,不附行内容 */
+    private static Diagnostic bracketError(char ch, int line, int col) {
+        String token = String.valueOf(ch);
+        String msg = "Syntax error on token \"" + token + "\", delete this token | 语法错误:标记 \""
+            + token + "\" 无效,请删除该标记";
+        return new Diagnostic(new Range(new Position(line, col), new Position(line, col + 1)),
+            msg, DiagnosticSeverity.Error, "mdtc");
     }
 
     /** 错误诊断:优先 "line N",其次用消息中的原文行片段定位,否则整个文档 */
@@ -132,6 +164,13 @@ final class CompileDiagnostics {
             }
         }
         return -1;
+    }
+
+    /** 精确 token 级诊断:range 仅覆盖 [startCol, endCol) */
+    private static Diagnostic diagnosticAt(String message, int line, int startCol, int endCol,
+        DiagnosticSeverity severity) {
+        return new Diagnostic(new Range(new Position(line, startCol), new Position(line, endCol)),
+            message, severity, "mdtc");
     }
 
     private static Diagnostic diagnostic(String message, int line, DiagnosticSeverity severity) {
