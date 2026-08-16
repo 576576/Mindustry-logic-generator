@@ -13,6 +13,7 @@ namespace Builtins {
 
     export const uctrl: InstrDef = {
       key: 'uctrl',
+      params: ['类型', '参数…'],
       mcode: 'ucontrol',
       compile: function (s, ctx) { return 'ucontrol ' + H.padZero(6, ctx.parts(s)); },
       restore: function (s) {

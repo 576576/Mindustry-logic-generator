@@ -12,6 +12,7 @@ namespace Builtins {
 
     export const angleDiff: InstrDef = {
       key: 'angleDiff',
+      params: ['a', 'b'],
       compile: function (s, ctx) {
         const w = ctx.parts(s);
         return 'op angleDiff ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');

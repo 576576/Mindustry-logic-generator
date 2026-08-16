@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Ctrl {
     export const ubind: InstrDef = {
       key: 'ubind',
+      params: ['单位类型'],
       compile: function (s) { return 'ubind ' + s; },
       restore: function (s) { return 'ubind(' + s + ')'; }
     };

@@ -18,12 +18,13 @@ namespace Builtins {
     import R = Builtins.Registry;
 
     const CHAIN: ChainKeyDef[] = [
-      { key: 'main', def: 'DEFAULT' },
-      { key: 'when', def: '' }
+      { key: 'main', def: 'DEFAULT', params: ['目标标签'] },
+      { key: 'when', def: '', params: ['条件'] }
     ];
 
     export const jump: InstrDef = {
       key: 'jump',
+      params: ['目标标签'],
       chain: CHAIN,
       compile: function (s, ctx) {
         const m = ctx.chain(s);

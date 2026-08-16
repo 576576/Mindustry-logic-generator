@@ -49,6 +49,8 @@ declare type BuiltinHandler = (s: string, ctx: EmitCtx) => string;
 declare interface ChainKeyDef {
   key: string;
   def: string;
+  /** 参数提示:签名帮助与补全用(缺省 = 无参数) */
+  params?: string[];
 }
 
 /**
@@ -66,6 +68,8 @@ declare interface InstrDef {
   mcodeSelect?: string[];
   /** 链式调用的合法链键声明;编译时对未知链键输出警告(不影响输出)。 */
   chain?: ChainKeyDef[];
+  /** 参数提示:括号内参数名列表(签名帮助用;缺省 = 无参数) */
+  params?: string[];
   /** 发射:mdtc 参数 → mdtcode 行(可含 \n 多行) */
   compile: BuiltinHandler;
   /** 还原:mdtcode 参数 → mdtc 文本。

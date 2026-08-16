@@ -13,6 +13,7 @@ namespace Builtins {
 
     export const lookup: InstrDef = {
       key: 'lookup',
+      params: ['类型', '索引'],
       compile: function (s, ctx) {
         const w = ctx.parts(s);
         return 'lookup ' + H.getOr(w, 0, D.LOOKUP_TYPES[0]) + ' ' + ctx.mid() + ' ' + H.getLastOr(w, D.VAL_0);

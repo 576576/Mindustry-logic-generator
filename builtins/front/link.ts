@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const link: InstrDef = {
       key: 'link',
+      params: ['索引'],
       mcode: 'getlink',
       compile: function (s, ctx) { return 'getlink ' + ctx.mid() + ' ' + s; },
       restore: function (s) {

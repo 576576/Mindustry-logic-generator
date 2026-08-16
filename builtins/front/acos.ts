@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const acos: InstrDef = {
       key: 'acos',
+      params: ['x'],
       compile: function (s, ctx) { return 'op acos ' + ctx.mid() + ' ' + s + ' 0'; }
     };
   }

@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const sqrt: InstrDef = {
       key: 'sqrt',
+      params: ['x'],
       compile: function (s, ctx) { return 'op sqrt ' + ctx.mid() + ' ' + s + ' 0'; }
     };
   }

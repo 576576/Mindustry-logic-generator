@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const liquid: InstrDef = {
       key: 'liquid',
+      params: ['液体'],
       mcode: 'lookup',
       mcodeSelect: ['liquid'],
       compile: function (s, ctx) { return 'lookup liquid ' + ctx.mid() + ' ' + s; },

@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const atan: InstrDef = {
       key: 'atan',
+      params: ['x'],
       compile: function (s, ctx) { return 'op atan ' + ctx.mid() + ' ' + s + ' 0'; }
     };
   }

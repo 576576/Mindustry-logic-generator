@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const unit: InstrDef = {
       key: 'unit',
+      params: ['单位'],
       mcode: 'lookup',
       mcodeSelect: ['unit'],
       compile: function (s, ctx) { return 'lookup unit ' + ctx.mid() + ' ' + s; },

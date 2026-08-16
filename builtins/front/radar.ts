@@ -14,10 +14,10 @@ namespace Builtins {
     import R = Builtins.Registry;
 
     const CHAIN: ChainKeyDef[] = [
-      { key: 'target', def: 'enemy,any,any' },
-      { key: 'sort', def: 'distance' },
-      { key: 'main', def: '@this' },
-      { key: 'order', def: '1' }
+      { key: 'target', def: 'enemy,any,any', params: ['t'] },
+      { key: 'sort', def: 'distance', params: ['s'] },
+      { key: 'main', def: '@this', params: ['敌方目标'] },
+      { key: 'order', def: '1', params: ['o'] }
     ];
 
     export const radar: InstrDef = {

@@ -9,6 +9,7 @@ namespace Builtins {
   export namespace Ctrl {
     export const tag: InstrDef = {
       key: 'tag',
+      params: ['标签名'],
       compile: function (s) { return '::' + s; }
     };
   }

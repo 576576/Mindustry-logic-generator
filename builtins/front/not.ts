@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const not: InstrDef = {
       key: 'not',
+      params: ['x'],
       compile: function (s, ctx) { return 'op not ' + ctx.mid() + ' ' + s + ' 0'; }
     };
   }

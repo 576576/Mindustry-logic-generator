@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const team: InstrDef = {
       key: 'team',
+      params: ['阵营'],
       mcode: 'lookup',
       mcodeSelect: ['team'],
       compile: function (s, ctx) { return 'lookup team ' + ctx.mid() + ' ' + s; },

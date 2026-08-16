@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Dot {
     export const read: InstrDef = {
       key: 'read',
+      params: ['单元号'],
       mcode: 'read',
       compile: function (s, ctx) { return 'read ' + ctx.mid() + ' ' + ctx.block() + ' ' + s; },
       restore: function (s) {

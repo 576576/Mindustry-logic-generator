@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Ctrl {
     export const wait: InstrDef = {
       key: 'wait',
+      params: ['秒数'],
       compile: function (s) { return 'wait ' + s; },
       restore: function (s) { return 'wait(' + s + ')'; }
     };

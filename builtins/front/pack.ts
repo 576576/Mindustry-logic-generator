@@ -12,6 +12,7 @@ namespace Builtins {
 
     export const pack: InstrDef = {
       key: 'pack',
+      params: ['r', 'g', 'b', 'a'],
       mcode: 'packcolor',
       compile: function (s, ctx) { return 'packcolor ' + ctx.mid() + ' ' + H.padZero(4, ctx.parts(s)); },
       restore: function (s) {

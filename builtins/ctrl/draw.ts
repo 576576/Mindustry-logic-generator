@@ -13,6 +13,7 @@ namespace Builtins {
 
     export const draw: InstrDef = {
       key: 'draw',
+      params: ['类型', '参数…'],
       compile: function (s, ctx) { return 'draw ' + H.padZero(7, ctx.parts(s)); },
       restore: function (s) { return 'draw(' + H.reduce('0', s) + ')'; }
     };

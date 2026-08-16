@@ -12,6 +12,7 @@ namespace Builtins {
 
     export const enable: InstrDef = {
       key: 'enable',
+      params: ['0|1'],
       mcode: 'control',
       mcodeSelect: ['enabled'],
       compile: function (s, ctx) { return 'control enabled ' + ctx.block() + ' ' + H.padZero(4, ctx.parts(s)); },

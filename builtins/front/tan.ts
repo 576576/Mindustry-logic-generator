@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const tan: InstrDef = {
       key: 'tan',
+      params: ['x'],
       compile: function (s, ctx) { return 'op tan ' + ctx.mid() + ' ' + s; }
     };
   }

@@ -11,6 +11,7 @@ namespace Builtins {
   export namespace Ctrl {
     export const jump2: InstrDef = {
       key: 'jump2',
+      params: ['表达式或增量表达式'],
       compile: function (s, ctx) {
         const compiled = ctx.compileSub(ctx.split(s).length > 1 ? '@counter=@counter' + s : '@counter=' + s);
         ctx.bashAll(compiled.bash);

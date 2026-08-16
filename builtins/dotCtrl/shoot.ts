@@ -17,12 +17,13 @@ namespace Builtins {
     import R = Builtins.Registry;
 
     const CHAIN: ChainKeyDef[] = [
-      { key: 'main', def: '1' },
-      { key: 'target', def: '@this' }
+      { key: 'main', def: '1', params: ['shoot'] },
+      { key: 'target', def: '@this', params: ['设计目标'] }
     ];
 
     export const shoot: InstrDef = {
       key: 'shoot',
+      params: ['shoot'],
       mcode: 'control',
       mcodeSelect: ['shoot', 'shootp'],
       chain: CHAIN,

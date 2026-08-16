@@ -461,6 +461,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Ctrl.draw = {
             key: 'draw',
+            params: ['类型', '参数…'],
             compile: function (s, ctx) { return 'draw ' + H.padZero(7, ctx.parts(s)); },
             restore: function (s) { return 'draw(' + H.reduce('0', s) + ')'; }
         };
@@ -496,6 +497,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.format = {
             key: 'format',
+            params: ['值'],
             compile: function (s) { return 'format ' + s; },
             restore: function (s) { return 'format(' + s + ')'; }
         };
@@ -521,11 +523,12 @@ var Builtins;
         var H = Builtins.Helpers;
         var R = Builtins.Registry;
         var CHAIN = [
-            { key: 'main', def: 'DEFAULT' },
-            { key: 'when', def: '' }
+            { key: 'main', def: 'DEFAULT', params: ['目标标签'] },
+            { key: 'when', def: '', params: ['条件'] }
         ];
         Ctrl.jump = {
             key: 'jump',
+            params: ['目标标签'],
             chain: CHAIN,
             compile: function (s, ctx) {
                 var m = ctx.chain(s);
@@ -591,6 +594,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.jump2 = {
             key: 'jump2',
+            params: ['表达式或增量表达式'],
             compile: function (s, ctx) {
                 var compiled = ctx.compileSub(ctx.split(s).length > 1 ? '@counter=@counter' + s : '@counter=' + s);
                 ctx.bashAll(compiled.bash);
@@ -612,6 +616,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.print = {
             key: 'print',
+            params: ['内容'],
             compile: function (s) { return 'print ' + s; },
             restore: function (s) { return 'print(' + s + ')'; }
         };
@@ -630,6 +635,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.printchar = {
             key: 'printchar',
+            params: ['码点'],
             compile: function (s) { return 'printchar ' + s; },
             restore: function (s) { return 'printchar(' + s + ')'; }
         };
@@ -648,6 +654,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.printf = {
             key: 'printf',
+            params: ['格式串', '参数…'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 if (w.length < 2)
@@ -673,6 +680,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.raw = {
             key: 'raw',
+            params: ['原生 mdtcode 指令'],
             compile: function (s) { return s; }
         };
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
@@ -706,6 +714,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.tag = {
             key: 'tag',
+            params: ['标签名'],
             compile: function (s) { return '::' + s; }
         };
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
@@ -723,6 +732,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.ubind = {
             key: 'ubind',
+            params: ['单位类型'],
             compile: function (s) { return 'ubind ' + s; },
             restore: function (s) { return 'ubind(' + s + ')'; }
         };
@@ -743,6 +753,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Ctrl.uctrl = {
             key: 'uctrl',
+            params: ['类型', '参数…'],
             mcode: 'ucontrol',
             compile: function (s, ctx) { return 'ucontrol ' + H.padZero(6, ctx.parts(s)); },
             restore: function (s) {
@@ -769,11 +780,12 @@ var Builtins;
         var H = Builtins.Helpers;
         var R = Builtins.Registry;
         var CHAIN = [
-            { key: 'main', def: '1' },
-            { key: 'target', def: '@this' }
+            { key: 'main', def: '1', params: ['shoot'] },
+            { key: 'target', def: '@this', params: ['目标'] }
         ];
         Ctrl.ushoot = {
             key: 'ushoot',
+            params: ['shoot'],
             mcode: 'ucontrol',
             mcodeSelect: ['target', 'targetp'],
             chain: CHAIN,
@@ -819,6 +831,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.wait = {
             key: 'wait',
+            params: ['秒数'],
             compile: function (s) { return 'wait ' + s; },
             restore: function (s) { return 'wait(' + s + ')'; }
         };
@@ -855,6 +868,7 @@ var Builtins;
         var H = Builtins.Helpers;
         DotCtrl.color = {
             key: 'color',
+            params: ['r', 'g', 'b', 'a'],
             mcode: 'control',
             mcodeSelect: ['color'],
             compile: function (s, ctx) { return 'control color ' + ctx.block() + ' ' + H.padZero(4, ctx.parts(s)); },
@@ -880,6 +894,7 @@ var Builtins;
         var H = Builtins.Helpers;
         DotCtrl.config = {
             key: 'config',
+            params: ['值'],
             mcode: 'control',
             mcodeSelect: ['config'],
             compile: function (s, ctx) { return 'control config ' + ctx.block() + ' ' + H.padZero(4, ctx.parts(s)); },
@@ -906,6 +921,7 @@ var Builtins;
         var D = Builtins.Domain;
         DotCtrl.ctrl = {
             key: 'ctrl',
+            params: ['类型', '参数…'],
             mcode: 'control',
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
@@ -952,6 +968,7 @@ var Builtins;
         var H = Builtins.Helpers;
         DotCtrl.enable = {
             key: 'enable',
+            params: ['0|1'],
             mcode: 'control',
             mcodeSelect: ['enabled'],
             compile: function (s, ctx) { return 'control enabled ' + ctx.block() + ' ' + H.padZero(4, ctx.parts(s)); },
@@ -1001,11 +1018,12 @@ var Builtins;
         var H = Builtins.Helpers;
         var R = Builtins.Registry;
         var CHAIN = [
-            { key: 'main', def: '1' },
-            { key: 'target', def: '@this' }
+            { key: 'main', def: '1', params: ['shoot'] },
+            { key: 'target', def: '@this', params: ['设计目标'] }
         ];
         DotCtrl.shoot = {
             key: 'shoot',
+            params: ['shoot'],
             mcode: 'control',
             mcodeSelect: ['shoot', 'shootp'],
             chain: CHAIN,
@@ -1056,13 +1074,14 @@ var Builtins;
         var D = Builtins.Domain;
         var R = Builtins.Registry;
         var CHAIN = [
-            { key: 'main', def: 'ore' },
-            { key: 'ore', def: '0' },
-            { key: 'building', def: 'core' },
-            { key: 'enemy', def: '0' }
+            { key: 'main', def: 'ore', params: ['type'] },
+            { key: 'ore', def: '0', params: ['矿石'] },
+            { key: 'building', def: 'core', params: ['建筑'] },
+            { key: 'enemy', def: '0', params: ['敌人'] }
         ];
         DotCtrl.ulocate = {
             key: 'ulocate',
+            params: ['type'],
             chain: CHAIN,
             compile: function (s, ctx) {
                 var m = ctx.chain(s);
@@ -1109,6 +1128,7 @@ var Builtins;
         var H = Builtins.Helpers;
         DotCtrl.unpack = {
             key: 'unpack',
+            params: ['r', 'g', 'b', 'a'],
             mcode: 'unpackcolor',
             compile: function (s, ctx) { return 'unpackcolor ' + H.padZero(4, ctx.parts(s)) + ' ' + ctx.block(); },
             restore: function (s) {
@@ -1133,6 +1153,7 @@ var Builtins;
         var D = Builtins.Domain;
         DotCtrl.write = {
             key: 'write',
+            params: ['内容', '单元号'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'write ' + H.getOr(w, 0, D.VAL_NUL) + ' ' + ctx.block() + ' ' + H.getOr(w, 1, D.VAL_0);
@@ -1177,11 +1198,12 @@ var Builtins;
         var H = Builtins.Helpers;
         var R = Builtins.Registry;
         var CHAIN = [
-            { key: 'main', def: '0' },
-            { key: 'when', def: '' }
+            { key: 'main', def: '0', params: ['后备'] },
+            { key: 'when', def: '', params: ['条件'] }
         ];
         Dot.orElse = {
             key: 'orElse',
+            params: ['后备'],
             mcode: 'select',
             chain: CHAIN,
             compile: function (s, ctx) {
@@ -1238,6 +1260,7 @@ var Builtins;
     (function (Dot) {
         Dot.read = {
             key: 'read',
+            params: ['单元号'],
             mcode: 'read',
             compile: function (s, ctx) { return 'read ' + ctx.mid() + ' ' + ctx.block() + ' ' + s; },
             restore: function (s) {
@@ -1261,6 +1284,7 @@ var Builtins;
     (function (Dot) {
         Dot.sensor = {
             key: 'sensor',
+            params: ['属性'],
             mcode: 'sensor',
             compile: function (s, ctx) { return 'sensor ' + ctx.mid() + ' ' + ctx.block() + ' ' + s; },
             restore: function (s) {
@@ -1297,6 +1321,7 @@ var Builtins;
     (function (Front) {
         Front.abs = {
             key: 'abs',
+            params: ['x'],
             compile: function (s, ctx) { return 'op abs ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1314,6 +1339,7 @@ var Builtins;
     (function (Front) {
         Front.acos = {
             key: 'acos',
+            params: ['x'],
             compile: function (s, ctx) { return 'op acos ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1332,6 +1358,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Front.angle = {
             key: 'angle',
+            params: ['a', 'b'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'op angle ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');
@@ -1353,6 +1380,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Front.angleDiff = {
             key: 'angleDiff',
+            params: ['a', 'b'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'op angleDiff ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');
@@ -1373,6 +1401,7 @@ var Builtins;
     (function (Front) {
         Front.asin = {
             key: 'asin',
+            params: ['x'],
             compile: function (s, ctx) { return 'op asin ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1390,6 +1419,7 @@ var Builtins;
     (function (Front) {
         Front.atan = {
             key: 'atan',
+            params: ['x'],
             compile: function (s, ctx) { return 'op atan ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1407,6 +1437,7 @@ var Builtins;
     (function (Front) {
         Front.block = {
             key: 'block',
+            params: ['类型'],
             mcode: 'lookup',
             mcodeSelect: ['block'],
             compile: function (s, ctx) { return 'lookup block ' + ctx.mid() + ' ' + s; },
@@ -1430,6 +1461,7 @@ var Builtins;
     (function (Front) {
         Front.ceil = {
             key: 'ceil',
+            params: ['x'],
             compile: function (s, ctx) { return 'op ceil ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1447,6 +1479,7 @@ var Builtins;
     (function (Front) {
         Front.cos = {
             key: 'cos',
+            params: ['x'],
             compile: function (s, ctx) { return 'op cos ' + ctx.mid() + ' ' + s; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1464,6 +1497,7 @@ var Builtins;
     (function (Front) {
         Front.floor = {
             key: 'floor',
+            params: ['x'],
             compile: function (s, ctx) { return 'op floor ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1481,6 +1515,7 @@ var Builtins;
     (function (Front) {
         Front.item = {
             key: 'item',
+            params: ['物品'],
             mcode: 'lookup',
             mcodeSelect: ['item'],
             compile: function (s, ctx) { return 'lookup item ' + ctx.mid() + ' ' + s; },
@@ -1504,6 +1539,7 @@ var Builtins;
     (function (Front) {
         Front.lb = {
             key: 'lb',
+            params: ['x'],
             compile: function (s, ctx) { return 'op logn ' + ctx.mid() + ' ' + s + ' 2'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1522,6 +1558,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Front.len = {
             key: 'len',
+            params: ['a', 'b'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'op len ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');
@@ -1542,6 +1579,7 @@ var Builtins;
     (function (Front) {
         Front.lg = {
             key: 'lg',
+            params: ['x'],
             compile: function (s, ctx) { return 'op log10 ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1559,6 +1597,7 @@ var Builtins;
     (function (Front) {
         Front.link = {
             key: 'link',
+            params: ['索引'],
             mcode: 'getlink',
             compile: function (s, ctx) { return 'getlink ' + ctx.mid() + ' ' + s; },
             restore: function (s) {
@@ -1581,6 +1620,7 @@ var Builtins;
     (function (Front) {
         Front.liquid = {
             key: 'liquid',
+            params: ['液体'],
             mcode: 'lookup',
             mcodeSelect: ['liquid'],
             compile: function (s, ctx) { return 'lookup liquid ' + ctx.mid() + ' ' + s; },
@@ -1604,6 +1644,7 @@ var Builtins;
     (function (Front) {
         Front.ln = {
             key: 'ln',
+            params: ['x'],
             compile: function (s, ctx) { return 'op log ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1623,6 +1664,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Front.log = {
             key: 'log',
+            params: ['底数', '真数'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'op logn ' + ctx.mid() + ' ' + H.getOr(w, 1, 'null') + ' ' + H.getOr(w, 0, 'null');
@@ -1645,6 +1687,7 @@ var Builtins;
         var D = Builtins.Domain;
         Front.lookup = {
             key: 'lookup',
+            params: ['类型', '索引'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'lookup ' + H.getOr(w, 0, D.LOOKUP_TYPES[0]) + ' ' + ctx.mid() + ' ' + H.getLastOr(w, D.VAL_0);
@@ -1670,6 +1713,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Front.max = {
             key: 'max',
+            params: ['a', 'b'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'op max ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');
@@ -1691,6 +1735,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Front.min = {
             key: 'min',
+            params: ['a', 'b'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'op min ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');
@@ -1712,6 +1757,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Front.noise = {
             key: 'noise',
+            params: ['a', 'b'],
             compile: function (s, ctx) {
                 var w = ctx.parts(s);
                 return 'op noise ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');
@@ -1732,6 +1778,7 @@ var Builtins;
     (function (Front) {
         Front.not = {
             key: 'not',
+            params: ['x'],
             compile: function (s, ctx) { return 'op not ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1750,6 +1797,7 @@ var Builtins;
         var H = Builtins.Helpers;
         Front.pack = {
             key: 'pack',
+            params: ['r', 'g', 'b', 'a'],
             mcode: 'packcolor',
             compile: function (s, ctx) { return 'packcolor ' + ctx.mid() + ' ' + H.padZero(4, ctx.parts(s)); },
             restore: function (s) {
@@ -1776,10 +1824,10 @@ var Builtins;
         var H = Builtins.Helpers;
         var R = Builtins.Registry;
         var CHAIN = [
-            { key: 'target', def: 'enemy,any,any' },
-            { key: 'sort', def: 'distance' },
-            { key: 'main', def: '@this' },
-            { key: 'order', def: '1' }
+            { key: 'target', def: 'enemy,any,any', params: ['t'] },
+            { key: 'sort', def: 'distance', params: ['s'] },
+            { key: 'main', def: '@this', params: ['敌方目标'] },
+            { key: 'order', def: '1', params: ['o'] }
         ];
         Front.radar = {
             key: 'radar',
@@ -1824,6 +1872,7 @@ var Builtins;
     (function (Front) {
         Front.rand = {
             key: 'rand',
+            params: ['x'],
             compile: function (s, ctx) { return 'op rand ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1841,6 +1890,7 @@ var Builtins;
     (function (Front) {
         Front.round = {
             key: 'round',
+            params: ['x'],
             compile: function (s, ctx) { return 'op round ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1858,6 +1908,7 @@ var Builtins;
     (function (Front) {
         Front.sign = {
             key: 'sign',
+            params: ['x'],
             compile: function (s, ctx) { return 'op sign ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1875,6 +1926,7 @@ var Builtins;
     (function (Front) {
         Front.sin = {
             key: 'sin',
+            params: ['x'],
             compile: function (s, ctx) { return 'op sin ' + ctx.mid() + ' ' + s; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1892,6 +1944,7 @@ var Builtins;
     (function (Front) {
         Front.sqrt = {
             key: 'sqrt',
+            params: ['x'],
             compile: function (s, ctx) { return 'op sqrt ' + ctx.mid() + ' ' + s + ' 0'; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1909,6 +1962,7 @@ var Builtins;
     (function (Front) {
         Front.tan = {
             key: 'tan',
+            params: ['x'],
             compile: function (s, ctx) { return 'op tan ' + ctx.mid() + ' ' + s; }
         };
     })(Front = Builtins.Front || (Builtins.Front = {}));
@@ -1926,6 +1980,7 @@ var Builtins;
     (function (Front) {
         Front.team = {
             key: 'team',
+            params: ['阵营'],
             mcode: 'lookup',
             mcodeSelect: ['team'],
             compile: function (s, ctx) { return 'lookup team ' + ctx.mid() + ' ' + s; },
@@ -1949,6 +2004,7 @@ var Builtins;
     (function (Front) {
         Front.unit = {
             key: 'unit',
+            params: ['单位'],
             mcode: 'lookup',
             mcodeSelect: ['unit'],
             compile: function (s, ctx) { return 'lookup unit ' + ctx.mid() + ' ' + s; },
@@ -1975,9 +2031,9 @@ var Builtins;
         var H = Builtins.Helpers;
         var R = Builtins.Registry;
         var CHAIN = [
-            { key: 'target', def: 'enemy,any,any' },
-            { key: 'sort', def: 'distance' },
-            { key: 'order', def: '1' }
+            { key: 'target', def: 'enemy,any,any', params: ['t'] },
+            { key: 'sort', def: 'distance', params: ['s'] },
+            { key: 'order', def: '1', params: ['o'] }
         ];
         Front.uradar = {
             key: 'uradar',

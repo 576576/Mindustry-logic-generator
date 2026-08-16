@@ -13,6 +13,7 @@ namespace Builtins {
 
     export const log: InstrDef = {
       key: 'log',
+      params: ['底数', '真数'],
       compile: function (s, ctx) {
         const w = ctx.parts(s);
         return 'op logn ' + ctx.mid() + ' ' + H.getOr(w, 1, 'null') + ' ' + H.getOr(w, 0, 'null');

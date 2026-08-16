@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const floor: InstrDef = {
       key: 'floor',
+      params: ['x'],
       compile: function (s, ctx) { return 'op floor ' + ctx.mid() + ' ' + s + ' 0'; }
     };
   }

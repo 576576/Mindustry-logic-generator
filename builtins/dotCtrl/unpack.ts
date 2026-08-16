@@ -12,6 +12,7 @@ namespace Builtins {
 
     export const unpack: InstrDef = {
       key: 'unpack',
+      params: ['r', 'g', 'b', 'a'],
       mcode: 'unpackcolor',
       compile: function (s, ctx) { return 'unpackcolor ' + H.padZero(4, ctx.parts(s)) + ' ' + ctx.block(); },
       restore: function (s) {

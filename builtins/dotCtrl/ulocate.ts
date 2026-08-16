@@ -16,14 +16,15 @@ namespace Builtins {
     import R = Builtins.Registry;
 
     const CHAIN: ChainKeyDef[] = [
-      { key: 'main', def: 'ore' },
-      { key: 'ore', def: '0' },
-      { key: 'building', def: 'core' },
-      { key: 'enemy', def: '0' }
+      { key: 'main', def: 'ore', params: ['type'] },
+      { key: 'ore', def: '0', params: ['矿石'] },
+      { key: 'building', def: 'core', params: ['建筑'] },
+      { key: 'enemy', def: '0', params: ['敌人'] }
     ];
 
     export const ulocate: InstrDef = {
       key: 'ulocate',
+      params: ['type'],
       chain: CHAIN,
       compile: function (s, ctx) {
         const m = ctx.chain(s);

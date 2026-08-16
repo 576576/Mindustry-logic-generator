@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Ctrl {
     export const printf: InstrDef = {
       key: 'printf',
+      params: ['格式串', '参数…'],
       compile: function (s, ctx) {
         const w = ctx.parts(s);
         if (w.length < 2) return 'print ' + s;

@@ -617,6 +617,9 @@ public final class CodeCompiler {
                 ref[0]++;
             } else {
                 Utils.printError("Undefined loop type of " + line);
+                // 无法识别的块:报错后移除该 { } 对,避免死循环
+                bashList.remove(line2Index);
+                bashList.remove(lineIndex);
             }
         }
         return stdCodeStream.of(bashList);

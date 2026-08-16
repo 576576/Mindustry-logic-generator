@@ -12,6 +12,7 @@ namespace Builtins {
 
     export const angle: InstrDef = {
       key: 'angle',
+      params: ['a', 'b'],
       compile: function (s, ctx) {
         const w = ctx.parts(s);
         return 'op angle ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');

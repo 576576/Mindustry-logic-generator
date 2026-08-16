@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const lg: InstrDef = {
       key: 'lg',
+      params: ['x'],
       compile: function (s, ctx) { return 'op log10 ' + ctx.mid() + ' ' + s + ' 0'; }
     };
   }

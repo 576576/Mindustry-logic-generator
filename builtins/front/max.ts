@@ -12,6 +12,7 @@ namespace Builtins {
 
     export const max: InstrDef = {
       key: 'max',
+      params: ['a', 'b'],
       compile: function (s, ctx) {
         const w = ctx.parts(s);
         return 'op max ' + ctx.mid() + ' ' + H.getOr(w, 0, 'null') + ' ' + H.getOr(w, 1, 'null');

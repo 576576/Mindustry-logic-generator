@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Ctrl {
     export const raw: InstrDef = {
       key: 'raw',
+      params: ['原生 mdtcode 指令'],
       compile: function (s) { return s; }
     };
   }

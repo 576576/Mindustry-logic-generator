@@ -53,6 +53,9 @@ sample_cases/testcase.mdtcode
 ### VSCode extension (mdtc-lsp) ###
 vscode-mdtc/node_modules/
 vscode-mdtc/out/
+vscode-mdtc/server/node_modules/
+vscode-mdtc/server/out/
+vscode-mdtc/server/data/
 vscode-mdtc/server/*.jar
 vscode-mdtc/*.vsix
 

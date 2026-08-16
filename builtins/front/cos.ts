@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const cos: InstrDef = {
       key: 'cos',
+      params: ['x'],
       compile: function (s, ctx) { return 'op cos ' + ctx.mid() + ' ' + s; }
     };
   }

@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const sign: InstrDef = {
       key: 'sign',
+      params: ['x'],
       compile: function (s, ctx) { return 'op sign ' + ctx.mid() + ' ' + s + ' 0'; }
     };
   }

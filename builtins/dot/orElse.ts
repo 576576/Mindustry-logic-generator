@@ -16,12 +16,13 @@ namespace Builtins {
     import R = Builtins.Registry;
 
     const CHAIN: ChainKeyDef[] = [
-      { key: 'main', def: '0' },
-      { key: 'when', def: '' }
+      { key: 'main', def: '0', params: ['后备'] },
+      { key: 'when', def: '', params: ['条件'] }
     ];
 
     export const orElse: InstrDef = {
       key: 'orElse',
+      params: ['后备'],
       mcode: 'select',
       chain: CHAIN,
       compile: function (s, ctx) {

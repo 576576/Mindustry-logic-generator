@@ -13,6 +13,7 @@ namespace Builtins {
 
     export const ctrl: InstrDef = {
       key: 'ctrl',
+      params: ['类型', '参数…'],
       mcode: 'control',
       compile: function (s, ctx) {
         const w = ctx.parts(s);

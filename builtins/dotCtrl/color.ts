@@ -12,6 +12,7 @@ namespace Builtins {
 
     export const color: InstrDef = {
       key: 'color',
+      params: ['r', 'g', 'b', 'a'],
       mcode: 'control',
       mcodeSelect: ['color'],
       compile: function (s, ctx) { return 'control color ' + ctx.block() + ' ' + H.padZero(4, ctx.parts(s)); },

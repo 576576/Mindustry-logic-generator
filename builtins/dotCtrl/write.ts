@@ -13,6 +13,7 @@ namespace Builtins {
 
     export const write: InstrDef = {
       key: 'write',
+      params: ['内容', '单元号'],
       compile: function (s, ctx) {
         const w = ctx.parts(s);
         return 'write ' + H.getOr(w, 0, D.VAL_NUL) + ' ' + ctx.block() + ' ' + H.getOr(w, 1, D.VAL_0);

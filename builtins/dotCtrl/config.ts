@@ -12,6 +12,7 @@ namespace Builtins {
 
     export const config: InstrDef = {
       key: 'config',
+      params: ['值'],
       mcode: 'control',
       mcodeSelect: ['config'],
       compile: function (s, ctx) { return 'control config ' + ctx.block() + ' ' + H.padZero(4, ctx.parts(s)); },

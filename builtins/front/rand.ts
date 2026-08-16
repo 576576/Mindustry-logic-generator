@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Front {
     export const rand: InstrDef = {
       key: 'rand',
+      params: ['x'],
       compile: function (s, ctx) { return 'op rand ' + ctx.mid() + ' ' + s + ' 0'; }
     };
   }

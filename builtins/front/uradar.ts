@@ -15,9 +15,9 @@ namespace Builtins {
     import R = Builtins.Registry;
 
     const CHAIN: ChainKeyDef[] = [
-      { key: 'target', def: 'enemy,any,any' },
-      { key: 'sort', def: 'distance' },
-      { key: 'order', def: '1' }
+      { key: 'target', def: 'enemy,any,any', params: ['t'] },
+      { key: 'sort', def: 'distance', params: ['s'] },
+      { key: 'order', def: '1', params: ['o'] }
     ];
 
     export const uradar: InstrDef = {

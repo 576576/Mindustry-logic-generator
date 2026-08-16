@@ -35,19 +35,6 @@
     "configuration": {
       "title": "MdtC",
       "properties": {
-        "mdtc.lsp.jarPath": {
-          "type": "string",
-          "default": "",
-          "description": "Path to mdtc LSP server jar. Empty = bundled jar."
-        },
-        "mdtc.lsp.javaArgs": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "description": "Extra JVM args for the LSP server process."
-        },
         "mdtc.lsp.trace": {
           "type": "string",
           "enum": [
@@ -57,6 +44,11 @@
           ],
           "default": "off",
           "description": "LSP trace level (written to the MdtC LSP Trace output channel)."
+        },
+        "mdtc.lsp.watch": {
+          "type": "boolean",
+          "default": false,
+          "description": "Dev mode: restart the TS language server automatically when its source changes."
         }
       }
     },
@@ -70,21 +62,26 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -w -p ./",
-    "package": "vsce package --out mdtc-lsp-0.1.0.vsix"
+    "compile": "npm run compile:server && tsc -p ./",
+    "watch": "cd server && tsc -w -p .",
+    "package": "vsce package --out mdtc-lsp-0.1.0.vsix",
+    "prepare:data": "node scripts/prepare-data.mjs",
+    "compile:server": "cd server && tsc -p ."
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
+    "@types/node": "^26.2.0",
     "@types/vscode": "^1.75.0",
     "@vscode/vsce": "^3.9.2",
     "typescript": "^5.5.0"
   },
   "files": [
     "out/**",
-    "server/**",
+    "server/out/**",
+    "server/data/**",
+    "server/node_modules/**",
     "language-configuration.json",
     "syntaxes/**",
     "node_modules/**"

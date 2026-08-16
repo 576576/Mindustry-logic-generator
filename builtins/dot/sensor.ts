@@ -11,6 +11,7 @@ namespace Builtins {
   export namespace Dot {
     export const sensor: InstrDef = {
       key: 'sensor',
+      params: ['属性'],
       mcode: 'sensor',
       compile: function (s, ctx) { return 'sensor ' + ctx.mid() + ' ' + ctx.block() + ' ' + s; },
       restore: function (s) {
