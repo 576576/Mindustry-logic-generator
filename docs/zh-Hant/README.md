@@ -4,7 +4,7 @@
 
 <a href="../zh/README.md">中文 (简体)</a> &nbsp;|&nbsp; 中文 (繁體) &nbsp;|&nbsp; <a href="../en/README.md">English</a>
 
-![JDK](https://img.shields.io/badge/JDK-25-red) ![Version](https://img.shields.io/badge/version-2161067-informational) ![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange) ![License](https://img.shields.io/badge/license-GPL--3.0-green)
+![JDK](https://img.shields.io/badge/JDK-25-red) ![Version](https://img.shields.io/badge/version-3.0.0-informational) ![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange) ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 
 ## 簡介
 
