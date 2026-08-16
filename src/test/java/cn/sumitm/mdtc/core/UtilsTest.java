@@ -22,6 +22,35 @@ class UtilsTest {
     }
 
     @Test
+    void stringSplit_spacedSub() {
+        // 减法 "-" 前后必须有空白(或行边界)
+        assertThat(Utils.stringSplit("a - b")).containsExactly("a", "-", "b");
+        assertThat(Utils.stringSplit("e=e - 1")).containsExactly("e", "=", "e", "-", "1");
+        assertThat(Utils.stringSplit("e = e - 1")).containsExactly("e", "=", "e", "-", "1");
+    }
+
+    @Test
+    void stringSplit_hyphenIsIdentifierChar() {
+        // 无空白的 "-" 是标识符一部分(连字符变量名),不是减法
+        assertThat(Utils.stringSplit("a-b")).containsExactly("a-b");
+        assertThat(Utils.stringSplit("phase-fabric")).containsExactly("phase-fabric");
+        assertThat(Utils.stringSplit("e=e-1")).containsExactly("e", "=", "e-1");
+    }
+
+    @Test
+    void stringSplit_legacyDotSub() {
+        // 兼容旧写法 .- :无空格要求,按旧语义解析
+        assertThat(Utils.stringSplit("a .- b")).containsExactly("a", ".-", "b");
+        assertThat(Utils.stringSplit("a.-b")).containsExactly("a", ".-", "b");
+    }
+
+    @Test
+    void stringSplit_negativeLiterals() {
+        assertThat(Utils.stringSplit("x=-1")).containsExactly("x", "=", "-1");
+        assertThat(Utils.stringSplit("z = -5")).containsExactly("z", "=", "-5");
+    }
+
+    @Test
     void stringSplit_empty() {
         assertThat(Utils.stringSplit("")).isEmpty();
     }

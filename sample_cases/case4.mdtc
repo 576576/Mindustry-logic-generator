@@ -22,7 +22,7 @@ for(e=0;e<@links;e=e+1){
 
 ::循环do-while
 do{
-	e=e-1
+	e=e - 1
 }while(e.^3>(-114514))
 
 ::跳转jump2

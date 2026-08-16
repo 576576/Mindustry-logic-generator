@@ -106,6 +106,20 @@ class CodeCompilerTest {
     @Test void compile_lg()    { assertContains("lg(x)",    "op log10 mid."); }
     @Test void compile_lb()    { assertContains("lb(x)",    "op logn mid."); }
 
+    // ==================== 减法运算符: - (前后空格) / .- (兼容) ====================
+
+    @Test void compile_sub_spaced() { assertContains("x=a - b", "op sub"); }
+    @Test void compile_sub_legacy() { assertContains("x=a .- b", "op sub"); }
+    @Test void compile_sub_negative() { assertThat(CodeCompiler.compile("x=a - -5")).contains("op sub"); }
+    @Test void compile_hyphenVar_isIdentifier() {
+        // 无空格的 "-" 是标识符,不是减法
+        assertThat(CodeCompiler.compile("x=a-b")).isEqualTo("set x a-b");
+    }
+    @Test void compile_sub_rpnPrecedence() {
+        assertContains("x=1 - 2*3", "op sub");
+        assertContains("x=1 - 2*3", "op mul");
+    }
+
     // ==================== Front High: 二元运算 ====================
 
     @Test void compile_max()       { assertContains("max(a,b)",       "op max mid."); }

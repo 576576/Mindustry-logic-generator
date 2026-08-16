@@ -167,6 +167,12 @@ public final class Utils {
             boolean isOperator = false;
             for (String opValue : eng().operatorValues()) {
                 if (str.startsWith(opValue, i)) {
+                    // spaced 运算符(如 "-" 减法)要求前后空白或行边界,
+                    // 前边界含右括号(反编译折叠会产生 ")- x" 粘连),否则视为标识符一部分
+                    if (eng().spacedOperatorValues().contains(opValue)
+                            && !(isLeftBoundary(str, i - 1) && isSpaceBoundary(str, i + opValue.length()))) {
+                        continue;
+                    }
                     if (!tokenBuilder.toString().trim().isEmpty()) {
                         tokens.add(tokenBuilder.toString().trim());
                         tokenBuilder = new StringBuilder();
@@ -184,7 +190,7 @@ public final class Utils {
 
         for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);
-            if (token.startsWith("-") && !isNumeric(token)) {
+            if (token.startsWith("-") && token.length() > 1 && !isNumeric(token)) {
                 List<String> tokenTo = List.of("(", "0", eng().subOperatorValue(), token.substring(1), ")");
                 tokens.remove(i);
                 tokens.addAll(i, tokenTo);
@@ -217,6 +223,18 @@ public final class Utils {
             }
         }
         return tokens;
+    }
+
+    /** 空格边界判断:字符串边界或空白字符(供 spaced 运算符匹配) */
+    private static boolean isSpaceBoundary(String str, int idx) {
+        return idx < 0 || idx >= str.length() || Character.isWhitespace(str.charAt(idx));
+    }
+
+    /** 左边界判断:字符串边界、空白或右括号(右括号后紧跟减号视为减法) */
+    private static boolean isLeftBoundary(String str, int idx) {
+        if (idx < 0) return true;
+        char c = str.charAt(idx);
+        return Character.isWhitespace(c) || c == ')';
     }
 
     public static List<String> bracketPartSplit(String str) {

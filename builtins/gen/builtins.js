@@ -31,6 +31,15 @@ var Builtins;
         Domain.RADAR_TARGET = 'enemy,any,any';
     })(Domain = Builtins.Domain || (Builtins.Domain = {}));
 })(Builtins || (Builtins = {}));
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 /**
  * 运算符表(规范见 docs/instructions/operators.md)。
  * 数组顺序 = 词法匹配顺序,不可调整。
@@ -39,9 +48,10 @@ var Builtins;
 (function (Builtins) {
     var Operators;
     (function (Operators) {
+        var _a;
         Operators.list = [
             { name: 'add', value: '+', priority: 4 },
-            { name: 'sub', value: '.-', priority: 4 },
+            { name: 'sub', value: '-', priority: 4, spaced: true, values: ['.-'] },
             { name: 'mul', value: '*', priority: 5 },
             { name: 'idiv', value: '//', priority: 5 },
             { name: 'div', value: '/', priority: 5 },
@@ -76,9 +86,12 @@ var Builtins;
         Operators.priority = {};
         for (var _i = 0, list_1 = Operators.list; _i < list_1.length; _i++) {
             var o = list_1[_i];
-            Operators.byValue[o.value] = o.name;
+            for (var _b = 0, _c = __spreadArray([o.value], ((_a = o.values) !== null && _a !== void 0 ? _a : []), true); _b < _c.length; _b++) {
+                var v = _c[_b];
+                Operators.byValue[v] = o.name;
+                Operators.priority[v] = o.priority;
+            }
             Operators.byName[o.name] = o.value;
-            Operators.priority[o.value] = o.priority;
         }
         /** 运算符别名表 */
         Operators.alias = {
@@ -112,7 +125,7 @@ var Builtins;
             select: 1
         };
         /** sub 运算符词法值(负数字面量展开用) */
-        Operators.SUB_VALUE = '.-';
+        Operators.SUB_VALUE = '-';
     })(Operators = Builtins.Operators || (Builtins.Operators = {}));
 })(Builtins || (Builtins = {}));
 /**

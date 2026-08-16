@@ -55,16 +55,19 @@ class BuiltinEngineTest {
     @Test
     void operatorTable() {
         BuiltinEngine e = BuiltinEngine.get();
-        assertThat(e.operatorValues()).hasSize(27);
+        assertThat(e.operatorValues()).hasSize(28);
         assertThat(e.operatorValues().getFirst()).isEqualTo("+");
         assertThat(e.operatorValues().getLast()).isEqualTo("never");
-        assertThat(e.midOpValueMap().get("sub")).isEqualTo(".-");
+        assertThat(e.midOpValueMap().get("sub")).isEqualTo("-");
+        assertThat(e.midOpKeysMap().get("-")).isEqualTo("sub");
+        assertThat(e.midOpKeysMap().get(".-")).isEqualTo("sub");
+        assertThat(e.spacedOperatorValues()).contains("-");
         assertThat(e.midOpPriorityMap().get("*")).isEqualTo(5);
         assertThat(e.midOpPriorityMap().get("+")).isEqualTo(4);
         assertThat(e.operatorOffsetMap().get("radar")).isEqualTo(7);
         assertThat(e.operatorReverseMap().get("always")).isEqualTo("never");
         assertThat(e.operatorAliasMap().get("log10")).isEqualTo("lg");
-        assertThat(e.subOperatorValue()).isEqualTo(".-");
+        assertThat(e.subOperatorValue()).isEqualTo("-");
     }
 
     @Test

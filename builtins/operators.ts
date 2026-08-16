@@ -8,10 +8,14 @@ namespace Builtins {
       name: string;
       value: string;
       priority: number;
+      /** 前后须有空白(或行边界)才匹配,避免吞并连字符标识符(如 phase-fabric) */
+      spaced?: boolean;
+      /** 附加词法值(同 name/priority,兼容旧写法;主 value 仍用于还原输出) */
+      values?: string[];
     }
     export const list: OpDef[] = [
       { name: 'add', value: '+', priority: 4 },
-      { name: 'sub', value: '.-', priority: 4 },
+      { name: 'sub', value: '-', priority: 4, spaced: true, values: ['.-'] },
       { name: 'mul', value: '*', priority: 5 },
       { name: 'idiv', value: '//', priority: 5 },
       { name: 'div', value: '/', priority: 5 },
@@ -45,9 +49,11 @@ namespace Builtins {
     /** 词法值 → 优先级(midOpPriorityMap) */
     export const priority: { [key: string]: number } = {};
     for (const o of list) {
-      byValue[o.value] = o.name;
+      for (const v of [o.value, ...(o.values ?? [])]) {
+        byValue[v] = o.name;
+        priority[v] = o.priority;
+      }
       byName[o.name] = o.value;
-      priority[o.value] = o.priority;
     }
     /** 运算符别名表 */
     export const alias: { [key: string]: string } = {
@@ -81,6 +87,6 @@ namespace Builtins {
       select: 1
     };
     /** sub 运算符词法值(负数字面量展开用) */
-    export const SUB_VALUE = '.-';
+    export const SUB_VALUE = '-';
   }
 }

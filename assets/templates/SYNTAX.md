@@ -27,12 +27,12 @@
 
 ```
 x = 1 + 2
-y = a .- b           :: {{syntax.a_sub}}
+y = a - b            :: {{syntax.a_sub}}
 z = -5                :: {{syntax.a_neg}}
 
 :: {{syntax.a_ops}}
 x = 1 + 2              :: {{syntax.op_add}}
-x = a .- b             :: {{syntax.op_sub}}
+x = a - b              :: {{syntax.op_sub}}
 x = a * b              :: {{syntax.op_mul}}
 x = a / b              :: {{syntax.op_div}}
 x = a // b             :: {{syntax.op_idiv}}

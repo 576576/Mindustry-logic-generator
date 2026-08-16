@@ -5,9 +5,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +49,8 @@ public final class BuiltinEngine {
 
     // ---- 运算符表 ----
     private final List<String> operatorValues = new ArrayList<>();
+    /** 需前后空白(或行边界)才匹配的运算符(如 sub 的 "-",避免吞并连字符标识符) */
+    private final Set<String> spacedOperatorValues = new HashSet<>();
     private final Map<String, String> midOpKeysMap = new LinkedHashMap<>();
     private final Map<String, String> midOpValueMap = new LinkedHashMap<>();
     private final Map<String, Integer> midOpPriorityMap = new LinkedHashMap<>();
@@ -146,6 +150,8 @@ public final class BuiltinEngine {
 
     /** 运算符词法值,顺序 = 词法匹配顺序(等同旧 Constants.Operator.values() 的 value) */
     public List<String> operatorValues() { return operatorValues; }
+    /** 需前后空白(或行边界)才匹配的运算符集合 */
+    public Set<String> spacedOperatorValues() { return spacedOperatorValues; }
     /** 词法值 → 运算符名(midOpKeysMap) */
     public Map<String, String> midOpKeysMap() { return midOpKeysMap; }
     /** 运算符名 → 词法值(midOpValueMap) */
@@ -208,6 +214,16 @@ public final class BuiltinEngine {
                 midOpKeysMap.put(value, name);
                 midOpValueMap.put(name, value);
                 midOpPriorityMap.put(value, priority);
+                Object spaced = ScriptableObject.getProperty(item, "spaced");
+                if (spaced instanceof Boolean b && b) {
+                    spacedOperatorValues.add(value);
+                }
+                // 附加词法值(兼容旧写法,如 sub 的 ".-")
+                for (String extra : jsArrayToStrings(ScriptableObject.getProperty(item, "values"))) {
+                    operatorValues.add(extra);
+                    midOpKeysMap.put(extra, name);
+                    midOpPriorityMap.put(extra, priority);
+                }
             }
         }
         operatorAliasMap.putAll(strMap(objectProp(ops, "alias")));

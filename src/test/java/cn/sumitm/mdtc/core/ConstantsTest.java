@@ -14,8 +14,9 @@ class ConstantsTest {
     @Test
     void midOpKeysMap_containsBasicOps() {
         var m = BuiltinEngine.get().midOpKeysMap();
-        assertThat(m).containsKeys("+", ".-", "==", "!=", ">=");
+        assertThat(m).containsKeys("+", "-", ".-", "==", "!=", ">=");
         assertThat(m.get("+")).isEqualTo("add");
+        assertThat(m.get("-")).isEqualTo("sub");
         assertThat(m.get(".-")).isEqualTo("sub");
     }
 

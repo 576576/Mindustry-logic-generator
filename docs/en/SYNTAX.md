@@ -27,12 +27,12 @@ tag(global_label)
 
 ```
 x = 1 + 2
-y = a .- b           :: subtraction uses .- (hyphen is separator)
+y = a - b            :: subtraction uses - with spaces around it (. - legacy also works)
 z = -5                :: negative literals are fine
 
 :: Supported operators
 x = 1 + 2              :: add
-x = a .- b             :: sub
+x = a - b              :: sub
 x = a * b              :: mul
 x = a / b              :: div (float)
 x = a // b             :: idiv (integer)

@@ -141,7 +141,7 @@
     "c_head": "HEAD and END tags are auto-generated",
     "c_default": "DEFAULT tag marks the fallthrough entry",
     "h_assign": "Assignment & Arithmetic",
-    "a_sub": "subtraction uses .- (hyphen is separator)",
+    "a_sub": "subtraction uses - with spaces around it (. - legacy also works)",
     "a_neg": "negative literals are fine",
     "a_ops": "Supported operators",
     "op_add": "add",
