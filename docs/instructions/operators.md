@@ -1,6 +1,6 @@
 # 运算符表与指令码表(Operators & Codes)
 
-> [← 指令规范索引](README.md)
+> [← 返回 README](../../README.md)
 
 ## 运算符表(Operator)
 

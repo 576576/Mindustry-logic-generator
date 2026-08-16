@@ -1,6 +1,6 @@
 # 反编译端逆处理器(Decompile,共 24 个)
 
-> [← 指令规范索引](README.md)
+> [← 返回 README](../../README.md)
 
 反编译把 mdtcode 指令行还原为 mdtc 语法。处理器以 mdtcode 指令字 + 空格
 为键(如 `print `),参数 `s` 为指令字之后 trim 的内容。无法识别的

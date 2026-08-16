@@ -1,6 +1,6 @@
 # Front 指令(编译端前缀函数,共 32 个)
 
-> [← 指令规范索引](README.md)
+> [← 返回 README](../../README.md)
 
 Front 指令以函数形式嵌套在表达式中:`<handler>(<args>)`;调用方
 `convertFront` 在高优组与低优组中扫描,命中后用 `mid.<ref>` 替换

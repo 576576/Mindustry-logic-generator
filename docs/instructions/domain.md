@@ -1,6 +1,6 @@
 # 领域数据表(Domain)
 
-> [← 指令规范索引](README.md)
+> [← 返回 README](../../README.md)
 
 领域数据描述各指令所引用的**游戏内容分类**与**默认值常量**。
 静态目录由 `builtins/domain.ts` 提供;模组模式下 `BuiltinDomain.init()`

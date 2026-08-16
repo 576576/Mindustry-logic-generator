@@ -1,6 +1,6 @@
 # DotCtrl 与 Dot 指令(编译端链式指令,共 13 个)
 
-> [← 指令规范索引](README.md)
+> [← 返回 README](../../README.md)
 
 两类指令都以点链形式出现在表达式右侧:`<block>.<handler>(<args>)`。
 `block` 为点链左侧的引用表达式(如 `reactor`、`link(1)`),由调用方

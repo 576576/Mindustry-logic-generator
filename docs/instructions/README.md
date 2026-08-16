@@ -1,6 +1,6 @@
 # 内置指令规范(Specification of Built-in Instructions)
 
-> [← 返回 README](../../README.md) · [语法指南](../SYNTAX.md)
+> [← 返回 README](../../README.md)
 
 本目录是 MdtC 语言**内置指令的唯一规范(Spec)**,也是"文档驱动开发"的契约:
 
