@@ -1,6 +1,6 @@
 # Mod Guide
 
-> [← Back to README](../README.md)
+> [← Back to README](../../README.md)
 
 ## Installation
 
@@ -53,4 +53,4 @@ Settings persist across game sessions via Mindustry's settings system.
 
 ## Language Support
 
-Detects game language automatically. See [i18n.md](i18n.md) for supported languages and contribution guide.
+Detects game language automatically. See [i18n.md](../i18n.md) for supported languages and contribution guide.

@@ -3,9 +3,12 @@
   "lang": "中文",
   "langCode": "zh",
   "langRegion": "简体",
-  "langRegionCode": ["Hans", "CN", "SG"],
+  "langRegionCode": [
+    "Hans",
+    "CN",
+    "SG"
+  ],
   "title": "MdtC",
-
   "_comment_headings": "── 章节标题 ──",
   "headings": {
     "block1": "简介",
@@ -19,13 +22,11 @@
     "structure": "项目结构",
     "license": "许可证"
   },
-
   "_comment_descriptions": "── 描述 ──",
   "descriptions": {
     "desc1": "一种和 C 相似的高级语言，可编译为 Mindustry 原生逻辑汇编，支持完整的双向转换。提供**Mod**和 **CLI** 工具两种使用方式。",
-    "i18n": "MdtC 自动检测游戏语言以适配游戏内 UI。详见 [i18n.md](docs/i18n.md)。"
+    "i18n": "MdtC 自动检测游戏语言以适配游戏内 UI。详见 [i18n.md]({{docs_root}}i18n.md)。"
   },
-
   "_comment_mod": "── 模组安装章节 ──",
   "mod": {
     "browser_title": "从模组浏览器",
@@ -38,19 +39,31 @@
     "manual_step2": "在 Mindustry 中选择 **模组** → **导入模组** → 选择 JAR 文件",
     "manual_step3": "之后同上 3–4 步"
   },
-
   "_comment_cli": "── CLI 章节 ──",
-  "cli_ref": "详见 [CLI 参考](docs/CLI.md)。",
-
+  "cli_ref": "详见 [CLI 参考]({{docs_prefix}}CLI.md)。",
   "_comment_features": "── 特性表格 ──",
   "features": {
-    "title": ["特性", "描述"],
-    "feat1": ["完整双向转换", "编译 `.mdtc` → `.mdtcode` 并支持无损反编译"],
-    "feat2": ["双栏编辑器", "在 Mindustry 游戏内边编辑边预览"],
-    "feat3": ["多语言", "自动检测游戏语言"],
-    "feat4": ["丰富语法", "函数、宏、命名参数、可导入库"]
+    "title": [
+      "特性",
+      "描述"
+    ],
+    "feat1": [
+      "完整双向转换",
+      "编译 `.mdtc` → `.mdtcode` 并支持无损反编译"
+    ],
+    "feat2": [
+      "双栏编辑器",
+      "在 Mindustry 游戏内边编辑边预览"
+    ],
+    "feat3": [
+      "多语言",
+      "自动检测游戏语言"
+    ],
+    "feat4": [
+      "丰富语法",
+      "函数、宏、命名参数、可导入库"
+    ]
   },
-
   "_comment_docs": "── 文档表格 ──",
   "docsTable": {
     "col_doc": "文档",
@@ -63,29 +76,54 @@
     "mod_desc": "游戏内模组功能与设置",
     "building": "构建指南",
     "building_desc": "如何从源码构建",
+    "instructions": "指令规范",
+    "instructions_desc": "内置指令唯一规范(文档驱动开发契约)",
     "i18n": "i18n 状态",
     "i18n_desc": "翻译覆盖率与贡献指南"
   },
-
   "_comment_contrib": "── 贡献翻译 ──",
   "contrib": {
     "step1": "复制 `assets/bundles/en.properties` 为 `assets/bundles/[langCode]-[regionCode].properties`",
     "step2": "翻译所有值 — **键名不可更改**",
     "step3": "（可选）复制 `assets/docs/en.json` 为 `assets/docs/[langCode].json` 并翻译文档",
-    "step4": "提交 Pull Request — CI 合入后自动更新 [docs/i18n.md](docs/i18n.md)"
+    "step4": "提交 Pull Request — CI 合入后自动更新 [docs/i18n.md]({{docs_root}}i18n.md)"
   },
-
   "_comment_archTree": "── 项目结构树 ──",
   "archTree": {
     "title": "src/main/java/cn/sumitm/mdtc",
-    "dir1": ["cli", "CLI entry (Main, CliHelper)"],
-    "dir2": ["compiler", "Compiler & decompiler (CodeCompiler, CodeDecompiler, LangRegistry)"],
-    "dir3": ["core", "Data structures & utilities (Constants, Utils, LangBuiltins, WrappedList)"],
-    "dir4": ["formatter", "Code formatter (CodeFormatter)"],
-    "dir5": ["mod", "Mindustry mod (ModInterface, LogicEditorDialog, I18n)"],
-    "dir6": ["resources", "Bundled assets"]
+    "dir1": [
+      "cli",
+      "CLI entry (Main, CliHelper)"
+    ],
+    "dir2": [
+      "compiler",
+      "Compiler & decompiler (CodeCompiler, CodeDecompiler, EmitCtx)"
+    ],
+    "dir3": [
+      "core",
+      "BuiltinEngine, BuiltinDomain, Constants, Utils, WrappedList"
+    ],
+    "dir4": [
+      "formatter",
+      "Code formatter (CodeFormatter)"
+    ],
+    "dir5": [
+      "mod",
+      "Mindustry mod (ModInterface, LogicEditorDialog, I18n)"
+    ],
+    "dir6": [
+      "resources",
+      "Bundled assets(含 builtins/gen)"
+    ],
+    "dir7": [
+      "builtins",
+      "内置指令唯一事实源(每指令一个 .ts 文件)"
+    ],
+    "dir8": [
+      "tools",
+      "sync-js.mjs(.ts → gen/builtins.js 构建工具)"
+    ]
   },
-
   "_comment_license": "── 许可证 ──",
   "license_text": "本项目使用 [GNU General Public License v3.0](LICENSE) 许可。"
 }

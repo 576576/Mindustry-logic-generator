@@ -38,7 +38,7 @@ A C-like high-level language that compiles to Mindustry's native logic assembly,
 java -jar mdtc-{version}-Desktop.jar [options]
 ```
 
-> See [CLI Reference](../docs/CLI.md) for instructions.
+> See [CLI Reference](CLI.md) for instructions.
 
 ---
 
@@ -55,17 +55,18 @@ Feature | Description
 
 Document | Content
 ----------|---------
-[Syntax Guide](../docs/SYNTAX.md) | Full language syntax with examples
-[CLI Reference](../docs/CLI.md) | Command-line arguments and usage
-[Mod Guide](../docs/MOD.md) | In-game mod features and settings
-[Building](../docs/BUILDING.md) | How to build from source
-[i18n Status](../docs/i18n.md) | Translation coverage & contributing
+[Syntax Guide](SYNTAX.md) | Full language syntax with examples
+[CLI Reference](CLI.md) | Command-line arguments and usage
+[Mod Guide](MOD.md) | In-game mod features and settings
+[Building](BUILDING.md) | How to build from source
+[Instruction Spec](../instructions/README.md) | Built-in instruction spec (doc-driven contract)
+[i18n Status](../i18n.md) | Translation coverage & contributing
 
 ---
 
 ## I18n
 
-MdtC auto-detects the game locale for its in-game UI. See [i18n.md](../docs/i18n.md) for the current translation status.
+MdtC auto-detects the game locale for its in-game UI. See [i18n.md](../i18n.md) for the current translation status.
 
 ### Contributing a Translation
 
@@ -75,7 +76,7 @@ MdtC auto-detects the game locale for its in-game UI. See [i18n.md](../docs/i18n
 
 3. (Optional) Copy `assets/docs/en.json` to `assets/docs/[langCode].json` and translate the documentation
 
-4. Submit a Pull Request — CI will auto-update [docs/i18n.md](../docs/i18n.md) on merge
+4. Submit a Pull Request — CI will auto-update [docs/i18n.md](../i18n.md) on merge
 
 ---
 
@@ -84,11 +85,13 @@ MdtC auto-detects the game locale for its in-game UI. See [i18n.md](../docs/i18n
 ```text
 src/main/java/cn/sumitm/mdtc/
 ├── cli/               CLI entry (Main, CliHelper)
-├── compiler/               Compiler & decompiler (CodeCompiler, CodeDecompiler, LangRegistry)
-├── core/               Data structures & utilities (Constants, Utils, LangBuiltins, WrappedList)
+├── compiler/               Compiler & decompiler (CodeCompiler, CodeDecompiler, EmitCtx)
+├── core/               BuiltinEngine, BuiltinDomain, Constants, Utils, WrappedList
 ├── formatter/               Code formatter (CodeFormatter)
 ├── mod/               Mindustry mod (ModInterface, LogicEditorDialog, I18n)
-└── resources/               Bundled assets
+├── resources/               Bundled assets (incl. builtins/gen)
+├── builtins/               Built-in instruction source of truth (one .ts per instruction)
+└── tools/               sync-js.mjs (.ts → gen/builtins.js build tool)
 ```
 
 ## License

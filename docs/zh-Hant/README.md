@@ -38,7 +38,7 @@
 java -jar mdtc-{version}-Desktop.jar [options]
 ```
 
-> 詳見 [CLI 參考](../docs/CLI.md)。
+> 詳見 [CLI 參考](CLI.md)。
 
 ---
 
@@ -55,17 +55,18 @@ java -jar mdtc-{version}-Desktop.jar [options]
 
 文件 | 內容
 ----------|---------
-[語法指南](../docs/SYNTAX.md) | 完整語法說明與範例
-[CLI 參考](../docs/CLI.md) | 命令列參數與用法
-[模組指南](../docs/MOD.md) | 遊戲內模組功能與設定
-[建置指南](../docs/BUILDING.md) | 如何從原始碼建置
-[i18n 狀態](../docs/i18n.md) | 翻譯覆蓋率與貢獻指南
+[語法指南](SYNTAX.md) | 完整語法說明與範例
+[CLI 參考](CLI.md) | 命令列參數與用法
+[模組指南](MOD.md) | 遊戲內模組功能與設定
+[建置指南](BUILDING.md) | 如何從原始碼建置
+[指令規範](../instructions/README.md) | 內建指令唯一規範(文件驅動開發契約)
+[i18n 狀態](../i18n.md) | 翻譯覆蓋率與貢獻指南
 
 ---
 
 ## 多語言
 
-MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](../docs/i18n.md)。
+MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](../i18n.md)。
 
 ### 貢獻翻譯
 
@@ -75,7 +76,7 @@ MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](../docs/i1
 
 3. （可選）複製 `assets/docs/en.json` 為 `assets/docs/[langCode].json` 並翻譯文件
 
-4. 提交 Pull Request — CI 合併後自動更新 [docs/i18n.md](../docs/i18n.md)
+4. 提交 Pull Request — CI 合併後自動更新 [docs/i18n.md](../i18n.md)
 
 ---
 
@@ -84,11 +85,13 @@ MdtC 自動偵測遊戲語言以適配遊戲內 UI。詳見 [i18n.md](../docs/i1
 ```text
 src/main/java/cn/sumitm/mdtc/
 ├── cli/               CLI entry (Main, CliHelper)
-├── compiler/               Compiler & decompiler (CodeCompiler, CodeDecompiler, LangRegistry)
-├── core/               Data structures & utilities (Constants, Utils, LangBuiltins, WrappedList)
+├── compiler/               Compiler & decompiler (CodeCompiler, CodeDecompiler, EmitCtx)
+├── core/               BuiltinEngine, BuiltinDomain, Constants, Utils, WrappedList
 ├── formatter/               Code formatter (CodeFormatter)
 ├── mod/               Mindustry mod (ModInterface, LogicEditorDialog, I18n)
-└── resources/               Bundled assets
+├── resources/               Bundled assets(含 builtins/gen)
+├── builtins/               內建指令唯一事實來源(每個指令一個 .ts 檔)
+└── tools/               sync-js.mjs(.ts → gen/builtins.js 建置工具)
 ```
 
 ## 授權條款

@@ -1,11 +1,13 @@
 # Building from Source
 
-> [← Back to README](../README.md)
+> [← Back to README](../../README.md)
 
 ## Prerequisites
 
 - **JDK 25+** — [Adoptium](https://adoptium.net/) recommended
 - **Gradle** — wrapper included (`gradlew`)
+- **Node.js + npm** *(可选,仅内置指令开发时需要)* — 首次运行前执行 `npm install`;
+  缺省时构建使用已提交的 `builtins/gen/builtins.js`
 
 ## Quick Build
 
@@ -31,6 +33,8 @@
 | `jarMod` | `mdtc-[version]-Desktop.jar` | Desktop mod JAR |
 | `jarAndroidMod` | `mdtc-[version]-Android.jar` | Android mod JAR (needs SDK) |
 | `deployMod` | `mdtc-[version].jar` | Combined Desktop + Android |
+| `syncBuiltinJs` | `builtins/gen/builtins.js` | Recompile built-in instructions (`.ts` → `.js`) |
+| `extractRhino` | `build/generated/rhino/` | Extract rhino classes for CLI/run/test |
 
 ## Android Mod
 
@@ -60,6 +64,9 @@ The build system derives artifact names from `gradle.properties`.
 build.gradle.kts     — Gradle build config (Kotlin DSL)
 gradle.properties    — version number
 mod.hjson            — Mindustry mod manifest
+builtins/            — built-in instructions source of truth (.ts → gen/builtins.js)
+docs/instructions/   — built-in instruction spec (doc-driven contract)
+tools/sync-js.mjs    — .ts → .js generator
 src/
   main/java/         — main source
   main/resources/    — version.properties template

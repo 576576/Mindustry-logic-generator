@@ -1,6 +1,6 @@
 # MdtC Syntax Guide
 
-> [← Back to README](../README.md)
+> [← Back to README](../../README.md) · [内置指令规范 →](../instructions/README.md)
 
 ## File Types
 
@@ -257,7 +257,7 @@ raw("raw mindustry logic instruction here")
 
 ## Examples
 
-See [`sample_cases/`](../sample_cases/) for complete working examples:
+See [`sample_cases/`](../../sample_cases/) for complete working examples:
 
 | File | Description |
 |------|-------------|

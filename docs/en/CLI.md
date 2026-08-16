@@ -1,6 +1,6 @@
 # CLI Reference
 
-> [← Back to README](../README.md)
+> [← Back to README](../../README.md)
 
 ## Usage
 

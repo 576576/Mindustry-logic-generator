@@ -3,9 +3,11 @@
   "lang": "English",
   "langCode": "en",
   "langRegion": "US",
-  "langRegionCode": ["US", "GB"],
+  "langRegionCode": [
+    "US",
+    "GB"
+  ],
   "title": "MdtC",
-
   "_comment_headings": "── Section Headings ──",
   "headings": {
     "block1": "About",
@@ -19,13 +21,11 @@
     "structure": "Project Structure",
     "license": "License"
   },
-
   "_comment_descriptions": "── Descriptions ──",
   "descriptions": {
     "desc1": "A C-like high-level language that compiles to Mindustry's native logic assembly, with full round-trip decompilation support. Available as a **mod** and a **CLI** tool.",
-    "i18n": "MdtC auto-detects the game locale for its in-game UI. See [i18n.md](docs/i18n.md) for the current translation status."
+    "i18n": "MdtC auto-detects the game locale for its in-game UI. See [i18n.md]({{docs_root}}i18n.md) for the current translation status."
   },
-
   "_comment_mod": "── Mod install section ──",
   "mod": {
     "browser_title": "From Mod Browser",
@@ -38,19 +38,31 @@
     "manual_step2": "In Mindustry, go to **Mods** → **Import Mod** → select the JAR file",
     "manual_step3": "Then same as steps 3–4 above"
   },
-
   "_comment_cli": "── CLI section ──",
-  "cli_ref": "See [CLI Reference](docs/CLI.md) for instructions.",
-
+  "cli_ref": "See [CLI Reference]({{docs_prefix}}CLI.md) for instructions.",
   "_comment_features": "── Features table ──",
   "features": {
-    "title": ["Feature", "Description"],
-    "feat1": ["Full Round-Trip", "Compile `.mdtc` → `.mdtcode` and decompile back losslessly"],
-    "feat2": ["Dual-Pane Editor", "Side-by-side edit & preview, directly inside Mindustry"],
-    "feat3": ["Multi-Language", "Auto-detects game locale"],
-    "feat4": ["Rich Syntax", "Functions, macros, named arguments, importable libraries"]
+    "title": [
+      "Feature",
+      "Description"
+    ],
+    "feat1": [
+      "Full Round-Trip",
+      "Compile `.mdtc` → `.mdtcode` and decompile back losslessly"
+    ],
+    "feat2": [
+      "Dual-Pane Editor",
+      "Side-by-side edit & preview, directly inside Mindustry"
+    ],
+    "feat3": [
+      "Multi-Language",
+      "Auto-detects game locale"
+    ],
+    "feat4": [
+      "Rich Syntax",
+      "Functions, macros, named arguments, importable libraries"
+    ]
   },
-
   "_comment_docs": "── Documentation table ──",
   "docsTable": {
     "col_doc": "Document",
@@ -63,29 +75,54 @@
     "mod_desc": "In-game mod features and settings",
     "building": "Building",
     "building_desc": "How to build from source",
+    "instructions": "Instruction Spec",
+    "instructions_desc": "Built-in instruction spec (doc-driven contract)",
     "i18n": "i18n Status",
     "i18n_desc": "Translation coverage & contributing"
   },
-
   "_comment_contrib": "── Contributing a Translation ──",
   "contrib": {
     "step1": "Copy `assets/bundles/en.properties` to `assets/bundles/[langCode]-[regionCode].properties`",
     "step2": "Translate all values — **keys must stay unchanged**",
     "step3": "(Optional) Copy `assets/docs/en.json` to `assets/docs/[langCode].json` and translate the documentation",
-    "step4": "Submit a Pull Request — CI will auto-update [docs/i18n.md](docs/i18n.md) on merge"
+    "step4": "Submit a Pull Request — CI will auto-update [docs/i18n.md]({{docs_root}}i18n.md) on merge"
   },
-
   "_comment_archTree": "── Project structure tree ──",
   "archTree": {
     "title": "src/main/java/cn/sumitm/mdtc",
-    "dir1": ["cli", "CLI entry (Main, CliHelper)"],
-    "dir2": ["compiler", "Compiler & decompiler (CodeCompiler, CodeDecompiler, LangRegistry)"],
-    "dir3": ["core", "Data structures & utilities (Constants, Utils, LangBuiltins, WrappedList)"],
-    "dir4": ["formatter", "Code formatter (CodeFormatter)"],
-    "dir5": ["mod", "Mindustry mod (ModInterface, LogicEditorDialog, I18n)"],
-    "dir6": ["resources", "Bundled assets"]
+    "dir1": [
+      "cli",
+      "CLI entry (Main, CliHelper)"
+    ],
+    "dir2": [
+      "compiler",
+      "Compiler & decompiler (CodeCompiler, CodeDecompiler, EmitCtx)"
+    ],
+    "dir3": [
+      "core",
+      "BuiltinEngine, BuiltinDomain, Constants, Utils, WrappedList"
+    ],
+    "dir4": [
+      "formatter",
+      "Code formatter (CodeFormatter)"
+    ],
+    "dir5": [
+      "mod",
+      "Mindustry mod (ModInterface, LogicEditorDialog, I18n)"
+    ],
+    "dir6": [
+      "resources",
+      "Bundled assets (incl. builtins/gen)"
+    ],
+    "dir7": [
+      "builtins",
+      "Built-in instruction source of truth (one .ts per instruction)"
+    ],
+    "dir8": [
+      "tools",
+      "sync-js.mjs (.ts → gen/builtins.js build tool)"
+    ]
   },
-
   "_comment_license": "── License ──",
   "license_text": "This project is licensed under [GNU General Public License v3.0](LICENSE)."
 }

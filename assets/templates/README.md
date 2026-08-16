@@ -55,11 +55,12 @@ java -jar mdtc-{version}-Desktop.jar [options]
 
 {{docsTable.col_doc}} | {{docsTable.col_content}}
 ----------|---------
-[{{docsTable.syntax}}](docs/SYNTAX.md) | {{docsTable.syntax_desc}}
-[{{docsTable.cli}}](docs/CLI.md) | {{docsTable.cli_desc}}
-[{{docsTable.mod}}](docs/MOD.md) | {{docsTable.mod_desc}}
-[{{docsTable.building}}](docs/BUILDING.md) | {{docsTable.building_desc}}
-[{{docsTable.i18n}}](docs/i18n.md) | {{docsTable.i18n_desc}}
+[{{docsTable.syntax}}]({{docs_prefix}}SYNTAX.md) | {{docsTable.syntax_desc}}
+[{{docsTable.cli}}]({{docs_prefix}}CLI.md) | {{docsTable.cli_desc}}
+[{{docsTable.mod}}]({{docs_prefix}}MOD.md) | {{docsTable.mod_desc}}
+[{{docsTable.building}}]({{docs_prefix}}BUILDING.md) | {{docsTable.building_desc}}
+[{{docsTable.instructions}}]({{docs_instr}}) | {{docsTable.instructions_desc}}
+[{{docsTable.i18n}}]({{docs_root}}i18n.md) | {{docsTable.i18n_desc}}
 
 ---
 
@@ -88,7 +89,9 @@ java -jar mdtc-{version}-Desktop.jar [options]
 ├── {{archTree.dir3.0}}/               {{archTree.dir3.1}}
 ├── {{archTree.dir4.0}}/               {{archTree.dir4.1}}
 ├── {{archTree.dir5.0}}/               {{archTree.dir5.1}}
-└── {{archTree.dir6.0}}/               {{archTree.dir6.1}}
+├── {{archTree.dir6.0}}/               {{archTree.dir6.1}}
+├── {{archTree.dir7.0}}/               {{archTree.dir7.1}}
+└── {{archTree.dir8.0}}/               {{archTree.dir8.1}}
 ```
 
 ## {{headings.license}}

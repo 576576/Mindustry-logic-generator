@@ -100,6 +100,11 @@ def main():
             root_view = (out == "README.md")
             doc_prefix = "docs/" if root_view else "../"
             icon_prefix = "" if root_view else "../../"
+            # 文档链接前缀:root view 指向 root_lang 语言目录;docs view 指向同目录
+            docs_prefix = f"docs/{root_lang}/" if root_view else ""
+            # docs 根路径(root view: docs/;docs view: 上级 ../)
+            docs_root = "docs/" if root_view else "../"
+            docs_instr = "docs/instructions/README.md" if root_view else "../instructions/README.md"
 
             tpl = template
             tpl = tpl.replace("{{icon_prefix}}", icon_prefix)
@@ -109,9 +114,14 @@ def main():
             for token, value in collect_tokens(doc).items():
                 tpl = tpl.replace("{{" + token + "}}", value)
 
-            # docs view: body doc links become ../docs/...
+            # 语言化链接 token(在 json token 代入之后处理,避免遗漏 json 值内的引用)
+            tpl = tpl.replace("{{docs_prefix}}", docs_prefix)
+            tpl = tpl.replace("{{docs_root}}", docs_root)
+            tpl = tpl.replace("{{docs_instr}}", docs_instr)
+
+            # docs view: body doc links become ../...
             if not root_view:
-                tpl = tpl.replace("](docs/", "](../docs/")
+                tpl = tpl.replace("](docs/", "](../")
 
             write_text(out, tpl)
             print(f"Rendered {out}")
