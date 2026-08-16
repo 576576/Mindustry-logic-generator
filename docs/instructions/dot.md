@@ -1,4 +1,4 @@
-# DotCtrl 与 Dot 指令(编译端链式指令,共 13 个)
+# DotCtrl 与 Dot 指令(编译端链式指令)
 
 > [← 返回 README](../../README.md)
 

@@ -1,4 +1,4 @@
-# 反编译端逆处理器(Decompile,共 24 个)
+# 反编译端逆处理器(Decompile)
 
 > [← 返回 README](../../README.md)
 

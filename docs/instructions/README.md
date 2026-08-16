@@ -32,10 +32,10 @@ docs/instructions/*.md      ←  规范索引与总览(具体指令细节见 .ts
 |------|------|
 | [domain.md](domain.md) | 领域数据:ulocate 建筑/locate/lookup 内容类型/链式键/默认值常量 |
 | [operators.md](operators.md) | 运算符表(含优先级与匹配顺序)、别名/反转/偏移表、指令码表 |
-| [ctrl.md](ctrl.md) | Ctrl 指令清单(print…raw,共 15 个;规范见 `builtins/ctrl/*.ts`) |
-| [dot.md](dot.md) | DotCtrl + Dot 指令清单(enabled…orElse,共 13 个;规范见 `builtins/dotCtrl|dot/*.ts`) |
-| [front.md](front.md) | FrontHigh + FrontLow 指令清单(not…radar,共 34 个;规范见 `builtins/front/*.ts`) |
-| [decompile.md](decompile.md) | 反编译端逆处理器清单(set…radar,共 24 个,由指令定义派生) |
+| [ctrl.md](ctrl.md) | Ctrl 指令清单(规范见 `builtins/ctrl/*.ts`) |
+| [dot.md](dot.md) | DotCtrl + Dot 指令清单(规范见 `builtins/dotCtrl|dot/*.ts`) |
+| [front.md](front.md) | FrontHigh + FrontLow 指令清单(规范见 `builtins/front/*.ts`) |
+| [decompile.md](decompile.md) | 反编译端逆处理器清单(由指令定义派生) |
 
 ## 指令定义结构(InstrDef 双向映射)
 
