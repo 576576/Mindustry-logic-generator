@@ -204,9 +204,10 @@ public final class Utils {
         for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);
             if (token.startsWith("-") && token.length() > 1 && !Character.isWhitespace(token.charAt(1))) {
-                // 负数无空格守卫:减号与后续字符无空格,按负数/负变量解析,提示减法写法
-                if (collectWarnings) {
-                    CodeCompiler.addWarning("无空格负数 \"" + token
+                // 负数守卫:仅当负数紧跟在中置运算符之后(如 "1 + -1")才提示,
+                // 避免 "x = -5"、"(-114514)" 等常规负数写法产生噪音
+                if (collectWarnings && isAfterInfixOperator(tokens, i)) {
+                    CodeCompiler.addWarning("中置运算符后无空格负数 \"" + token
                         + "\" 已按负数解析;若意图为减法请写成 \" - " + token.substring(1) + "\"(前后空格)");
                 }
                 if (!isNumeric(token)) {
@@ -243,6 +244,15 @@ public final class Utils {
             }
         }
         return tokens;
+    }
+
+    /** 是否位于中置运算符之后(排除赋值 =、括号与 always/never 伪运算符) */
+    private static boolean isAfterInfixOperator(List<String> tokens, int idx) {
+        if (idx <= 0) return false;
+        String prev = tokens.get(idx - 1);
+        if (!eng().midOpPriorityMap().containsKey(prev)) return false;
+        return !prev.equals("=") && !prev.equals("(") && !prev.equals(")")
+            && !prev.equals("always") && !prev.equals("never");
     }
 
     /** 空格边界判断:字符串边界或空白字符(供 spaced 运算符匹配) */

@@ -118,16 +118,31 @@ class CodeCompilerTest {
 
     // ==================== 负数无空格守卫警告 ====================
 
-    @Test void guard_negativeLiteral_warns() {
+    @Test void guard_negativeAfterInfix_warns() {
+        // 中置运算符(如 +)后紧跟无空格负数 → 提示
         CodeCompiler.compile("x=(1 + -1)");
         assertThat(CodeCompiler.lastWarnings)
             .anyMatch(w -> w.contains("-1") && w.contains("减法"));
     }
 
-    @Test void guard_negativeVar_warns() {
-        CodeCompiler.compile("y = -x0");
+    @Test void guard_negativeVarAfterInfix_warns() {
+        CodeCompiler.compile("y=1 * -x0");
         assertThat(CodeCompiler.lastWarnings)
             .anyMatch(w -> w.contains("-x0") && w.contains("减法"));
+    }
+
+    @Test void guard_negativeAfterEquals_noWarning() {
+        // 赋值 = 后的负数(如 z = -5)是常规写法,不提示
+        CodeCompiler.compile("z = -5");
+        assertThat(CodeCompiler.lastWarnings).isEmpty();
+        CodeCompiler.compile("j=-1");
+        assertThat(CodeCompiler.lastWarnings).isEmpty();
+    }
+
+    @Test void guard_negativeAfterParen_noWarning() {
+        // 括号内的负数(如 (-114514))不提示
+        CodeCompiler.compile("x=(-114514)");
+        assertThat(CodeCompiler.lastWarnings).isEmpty();
     }
 
     @Test void guard_spacedSub_noWarning() {

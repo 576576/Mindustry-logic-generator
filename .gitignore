@@ -43,6 +43,12 @@ bin/
 ### VS Code ###
 .vscode/
 
+### VSCode extension (mdtc-lsp) ###
+vscode-mdtc/node_modules/
+vscode-mdtc/out/
+vscode-mdtc/server/*.jar
+vscode-mdtc/*.vsix
+
 ### Mac OS ###
 .DS_Store
 *.log

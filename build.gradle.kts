@@ -45,6 +45,8 @@ repositories {
 
 dependencies {
     implementation("info.picocli:picocli:4.7.7")
+    // LSP 语言服务器协议(lsp jar 构建时打包;mod jar 不包含)
+    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.21.2")
 
     // Mindustry 编译时依赖（mod 开发用，不打包进最终产物）
     if (useLatestMindustry) {
@@ -109,10 +111,31 @@ tasks.shadowJar {
     from(layout.buildDirectory.dir("generated/rhino"))
 }
 
+// ==================== LSP 语言服务器构建 ====================
+
+val lspJar = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("lspJar") {
+    group = "mdtc lsp"
+    description = "Build standalone LSP server JAR (stdio, for the VSCode extension)"
+    archiveFileName.set("${project.name}-${project.version}-Lsp.jar")
+    manifest {
+        attributes["Main-Class"] = "cn.sumitm.mdtc.lsp.LspMain"
+    }
+    dependsOn("extractRhino")
+    from(layout.buildDirectory.dir("generated/rhino"))
+    from(sourceSets.main.get().output)
+    from(project.provider { project.configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) } })
+    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "module-info.class")
+    mergeServiceFiles()
+}
+
 tasks.processResources {
     dependsOn("syncBuiltinJs")
     from("builtins/gen") {
         into("builtins/gen")
+    }
+    // 指令文档(LSP hover 用)
+    from("docs/instructions") {
+        into("docs/instructions")
     }
     filesMatching("**/version.properties") {
         expand("version" to project.version)

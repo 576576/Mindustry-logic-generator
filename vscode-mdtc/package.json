@@ -1,0 +1,84 @@
+{
+  "name": "mdtc-lsp",
+  "displayName": "MdtC Language Support",
+  "description": "MdtC (.mdtc) language server: diagnostics, completion, formatting, hover. Compiles to Mindustry logic.",
+  "version": "0.1.0",
+  "publisher": "mdtc",
+  "license": "GPL-3.0",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Formatters"
+  ],
+  "activationEvents": [
+    "onLanguage:mdtc"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mdtc",
+        "aliases": [
+          "MdtC",
+          "mdtc"
+        ],
+        "extensions": [
+          ".mdtc",
+          ".libmdtc"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "configuration": {
+      "title": "MdtC",
+      "properties": {
+        "mdtc.lsp.jarPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to mdtc LSP server jar. Empty = bundled jar."
+        },
+        "mdtc.lsp.javaArgs": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Extra JVM args for the LSP server process."
+        },
+        "mdtc.lsp.trace": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "LSP trace level (written to the MdtC LSP Trace output channel)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "package": "vsce package --out mdtc-lsp-0.1.0.vsix"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@vscode/vsce": "^3.9.2",
+    "typescript": "^5.5.0"
+  },
+  "files": [
+    "out/**",
+    "server/**",
+    "language-configuration.json",
+    "node_modules/**"
+  ]
+}
