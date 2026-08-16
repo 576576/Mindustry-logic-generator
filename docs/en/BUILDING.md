@@ -1,13 +1,12 @@
 # Building from Source
 
-> [← Back to README](../../README.md)
+> [← Back to README](README.md) · [Instruction Spec →](../instructions/README.md)
 
 ## Prerequisites
 
 - **JDK 25+** — [Adoptium](https://adoptium.net/) recommended
 - **Gradle** — wrapper included (`gradlew`)
-- **Node.js + npm** *(可选,仅内置指令开发时需要)* — 首次运行前执行 `npm install`;
-  缺省时构建使用已提交的 `builtins/gen/builtins.js`
+- **Node.js + npm** *optional, only needed for built-in instruction development* — run `npm install` once; otherwise the committed `builtins/gen/builtins.js` is used
 
 ## Quick Build
 
@@ -54,13 +53,33 @@ Update version in three files:
 
 1. `gradle.properties` — `version=X.Y.Z`
 2. `mod.hjson` — `version: X.Y.Z`
-3. README badges
+3. README badges (filled from `gradle.properties` at render time)
 
-The build system derives artifact names from `gradle.properties`.
+The build system derives artifact names from `gradle.properties`. CI writes a real version for commits marked `r-x.y.z`/`beta-x.y.z`, and the commit short SHA otherwise (nightly).
+
+## CI Build
+
+The CI pipeline (`.github/workflows/ci.yml`) runs on every push/PR to `main`/`master`; markers in the commit message control build targets and version:
+
+| Commit marker | Effect |
+|------|-------------|
+| `b-cli` | Build the CLI jar only |
+| `b-mod` | Build the Desktop mod jar only |
+| `b-all` | Build all artifacts (default) |
+| `b-none` | Skip builds (docs/i18n only) |
+| `r-x.y.z` | Set version X.Y.Z and create a GitHub Release |
+| `beta-x.y.z` | Set version X.Y.Z (beta, no stable Release) |
+
+Pipeline stages:
+
+1. **prebuild** — Detects build targets & version from the commit message, updates version files and i18n hashes
+2. **i18n** — Regenerates translation status and localized READMEs when bundles/docs change
+3. **build** — JDK 25 + `./gradlew build`, then `shadowJar` / `jarMod` per markers
+4. **release / nightly** — Creates a GitHub Release for stable versions; publishes nightly otherwise
 
 ## Project Structure
 
-```
+```text
 build.gradle.kts     — Gradle build config (Kotlin DSL)
 gradle.properties    — version number
 mod.hjson            — Mindustry mod manifest
