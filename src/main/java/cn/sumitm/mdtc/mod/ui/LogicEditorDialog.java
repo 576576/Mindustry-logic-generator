@@ -132,7 +132,9 @@ public class LogicEditorDialog extends BaseDialog {
     }
 
     private void pickFile(String extension, java.util.function.Consumer<String> onContent) {
-        Vars.platform.showFileChooser(true, extension, file -> {
+        // Mindustry v159+:Platform.showFileChooser 接收 FileChooserParams
+        var params = mindustry.ui.FileChooser.open(extension);
+        params.submit(file -> {
             try {
                 String content = file.readString();
                 if (content != null && !content.isBlank()) {
@@ -145,6 +147,7 @@ public class LogicEditorDialog extends BaseDialog {
                 Log.err(e);
             }
         });
+        Vars.platform.showFileChooser(params);
     }
 
     private void importToLeft(String content) {

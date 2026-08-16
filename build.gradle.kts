@@ -9,7 +9,7 @@ val version: String by project
 group = "cn.sumitm.mdtc"
 
 // ==================== Mindustry Mod 属性 ====================
-val mindustryVersion = "v157"  // 目标 Mindustry 构建版本号
+val mindustryVersion = "v159"  // 目标 Mindustry 构建版本号
 val useLatestMindustry = false // 设为 true 则始终依赖最新 BE 构建
 val isWindows = System.getProperty("os.name").lowercase().contains("windows")
 val sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
