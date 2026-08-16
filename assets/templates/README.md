@@ -4,7 +4,7 @@
 
 {{languages}}
 
-![JDK](https://img.shields.io/badge/JDK-25-red) ![Version](https://img.shields.io/badge/version-{version}-informational) ![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange) ![License](https://img.shields.io/badge/license-GPL--3.0-green)
+![JDK](https://img.shields.io/badge/JDK-25-red) ![Version](https://img.shields.io/badge/version-{{version}}-informational) ![Mindustry](https://img.shields.io/badge/Mindustry-v157-orange) ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 
 ## {{headings.block1}}
 

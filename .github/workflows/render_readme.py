@@ -37,6 +37,21 @@ def write_text(path, text):
         f.write(text)
 
 
+def read_version():
+    """读取实际版本号:VERSION 环境变量优先,否则从 gradle.properties 读取。"""
+    env = os.environ.get("VERSION")
+    if env:
+        return env.strip()
+    try:
+        for line in read_text("gradle.properties").splitlines():
+            line = line.strip()
+            if line.startswith("version="):
+                return line.split("=", 1)[1].strip()
+    except Exception:
+        pass
+    return "unknown"
+
+
 def collect_tokens(obj, prefix=""):
     """Flatten nested docs into {dot.path: value}; dicts nest, lists become
     indexed (features.feat1 -> features.feat1.0, features.feat1.1, ...).
@@ -118,6 +133,9 @@ def main():
             tpl = tpl.replace("{{docs_prefix}}", docs_prefix)
             tpl = tpl.replace("{{docs_root}}", docs_root)
             tpl = tpl.replace("{{docs_instr}}", docs_instr)
+
+            # 版本号 badge({{version}} → 实际版本)
+            tpl = tpl.replace("{{version}}", read_version())
 
             # docs view: body doc links become ../...
             if not root_view:
