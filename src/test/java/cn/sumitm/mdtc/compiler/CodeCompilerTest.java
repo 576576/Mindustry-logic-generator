@@ -122,13 +122,13 @@ class CodeCompilerTest {
         // 中置运算符(如 +)后紧跟无空格负数 → 提示未被 () 包裹
         CodeCompiler.compile("x=(1 + -1)");
         assertThat(CodeCompiler.lastWarnings)
-            .anyMatch(w -> w.contains("-1") && w.contains("未被 () 包裹"));
+            .anyMatch(w -> w.contains("-1") && w.contains("is not wrapped in parentheses"));
     }
 
     @Test void guard_negativeVarAfterInfix_warns() {
         CodeCompiler.compile("y=1 * -x0");
         assertThat(CodeCompiler.lastWarnings)
-            .anyMatch(w -> w.contains("-x0") && w.contains("未被 () 包裹"));
+            .anyMatch(w -> w.contains("-x0") && w.contains("is not wrapped in parentheses"));
     }
 
     @Test void guard_negativeAfterEquals_noWarning() {

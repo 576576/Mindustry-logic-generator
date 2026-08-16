@@ -63,6 +63,8 @@ class LspServerTest {
 
     @BeforeEach
     void setUp() {
+        // 默认 en locale(其余 locale 测试自行设置)
+        LspMessages.setLocale("en");
         client = new FakeClient();
         service = new MdtcTextDocumentService(client);
     }
@@ -140,6 +142,54 @@ class LspServerTest {
         assertThat(warn).isNotNull();
         assertThat(warn.getRange().getStart().getLine()).isEqualTo(5);
         assertThat(warn.getRange().getEnd().getLine()).isEqualTo(5);
+    }
+
+    // ==================== 消息本地化(locale) ====================
+
+    @Test
+    void diagnostics_localeZh_usesChinese() {
+        LspMessages.setLocale("zh-cn");
+        open("file:///test.mdtc", "print(hello");
+        Diagnostic err = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Error)
+            .findFirst().orElse(null);
+        assertThat(err).isNotNull();
+        assertThat(err.getMessage()).contains("语法错误:标记 \"(\" 无效");
+        assertThat(err.getMessage()).doesNotContain("Syntax error");
+    }
+
+    @Test
+    void diagnostics_localeEn_usesEnglish() {
+        LspMessages.setLocale("en");
+        open("file:///test.mdtc", "print(hello");
+        Diagnostic err = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Error)
+            .findFirst().orElse(null);
+        assertThat(err).isNotNull();
+        assertThat(err.getMessage()).contains("Syntax error on token");
+        assertThat(err.getMessage()).doesNotContain("语法错误");
+    }
+
+    @Test
+    void diagnostics_localeUnsupported_fallsBackToEn() {
+        LspMessages.setLocale("ja");
+        open("file:///test.mdtc", "print(hello");
+        Diagnostic err = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Error)
+            .findFirst().orElse(null);
+        assertThat(err).isNotNull();
+        assertThat(err.getMessage()).contains("Syntax error on token");
+    }
+
+    @Test
+    void diagnostics_localeZh_negativeWarningChinese() {
+        LspMessages.setLocale("zh-cn");
+        open("file:///test.mdtc", "x=(1 + -1)");
+        Diagnostic warn = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Warning)
+            .findFirst().orElse(null);
+        assertThat(warn).isNotNull();
+        assertThat(warn.getMessage()).contains("未被 () 包裹");
     }
 
     // ==================== 括号语法错误(Syntax error on token) ====================

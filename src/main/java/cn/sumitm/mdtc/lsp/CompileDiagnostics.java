@@ -49,10 +49,7 @@ final class CompileDiagnostics {
             CodeCompiler.compile(text);
         } catch (Throwable t) {
             // 编译崩溃(如 RPN 栈越界)也转为错误诊断,避免客户端断连
-            out.add(diagnostic("编译异常: " + t.getClass().getSimpleName()
-                + (t.getMessage() != null ? " - " + t.getMessage() : "")
-                + " | Compile exception: " + t.getClass().getSimpleName()
-                + (t.getMessage() != null ? " - " + t.getMessage() : ""), -1, DiagnosticSeverity.Error));
+            out.add(diagnostic(LspMessages.compileException(t), -1, DiagnosticSeverity.Error));
         } finally {
             System.setErr(oldErr);
         }
@@ -75,19 +72,16 @@ final class CompileDiagnostics {
         for (int i = 0; i < lines.length; i++) {
             for (int[] r : Utils.findInfixNegativeRanges(lines[i])) {
                 String token = lines[i].substring(r[0], r[1]);
-                out.add(diagnosticAt("负数 \"" + token + "\" 未被 () 包裹;建议写成 \"(" + token
-                    + ")\" 或使用空格减法 \" - " + token.substring(1)
-                    + "\" | Negative \"" + token + "\" is not wrapped in parentheses; use \"(" + token
-                    + ")\" or spaced subtraction \" - " + token.substring(1) + "\"",
+                out.add(diagnosticAt(LspMessages.negativeWarning(token),
                     i, r[0], r[1], DiagnosticSeverity.Warning));
             }
         }
 
         // ---- 4. 其他警告(jump 标签缺失、chain 警告等;无行号,定位整个文档) ----
-        // 负数守卫消息已由第 3 步精确覆盖,这里跳过避免重复
+        // 负数守卫消息已由第 3 步精确覆盖,这里跳过避免重复;其余按 locale 翻译
         for (String w : CodeCompiler.lastWarnings) {
-            if (w.contains("未被 () 包裹")) continue;
-            out.add(diagnostic(w, -1, DiagnosticSeverity.Warning));
+            if (w.contains("is not wrapped in parentheses") || w.contains("未被 () 包裹")) continue;
+            out.add(diagnostic(LspMessages.translate(w), -1, DiagnosticSeverity.Warning));
         }
 
         // ---- 5. 括号配对扫描:精确标红不匹配的括号 token(而非整行) ----
@@ -128,13 +122,10 @@ final class CompileDiagnostics {
         return out;
     }
 
-    /** 括号语法错误诊断:range 仅覆盖该括号字符;消息中英双语,不附行内容 */
+    /** 括号语法错误诊断:range 仅覆盖该括号字符;消息按 locale,不附行内容 */
     private static Diagnostic bracketError(char ch, int line, int col) {
-        String token = String.valueOf(ch);
-        String msg = "Syntax error on token \"" + token + "\", delete this token | 语法错误:标记 \""
-            + token + "\" 无效,请删除该标记";
         return new Diagnostic(new Range(new Position(line, col), new Position(line, col + 1)),
-            msg, DiagnosticSeverity.Error, "mdtc");
+            LspMessages.bracketError(ch), DiagnosticSeverity.Error, "mdtc");
     }
 
     /** 错误诊断:优先 "line N",其次用消息中的原文行片段定位,否则整个文档 */
@@ -150,7 +141,7 @@ final class CompileDiagnostics {
                 }
             }
         }
-        return diagnostic(msg.trim(), ln, DiagnosticSeverity.Error);
+        return diagnostic(LspMessages.translate(msg.trim()), ln, DiagnosticSeverity.Error);
     }
 
     /** 从错误文本解析行号(0-based);-1 表示无法定位 */

@@ -323,7 +323,7 @@ var Builtins;
                 for (var _i = 0, _a = Object.keys(m); _i < _a.length; _i++) {
                     var k = _a[_i];
                     if (!allow[k]) {
-                        ctx.warn('链式警告: ' + fullKey + ' — 未知链键 "' + k + '"(已忽略) | chain warning: ' + fullKey + ' — unknown chain key "' + k + '" (ignored)');
+                        ctx.warn('chain warning: ' + fullKey + ' — unknown chain key "' + k + '" (ignored)');
                     }
                 }
                 return def.compile(s, ctx);

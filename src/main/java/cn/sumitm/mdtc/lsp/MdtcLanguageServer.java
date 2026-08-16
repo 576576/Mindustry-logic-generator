@@ -46,6 +46,8 @@ class MdtcLanguageServer implements LanguageServer, LanguageClientAware {
 
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
+        // 诊断消息按客户端 locale 本地化(zh → 中文,其余回退 en)
+        LspMessages.setLocale(params.getLocale());
         ServerCapabilities caps = new ServerCapabilities();
         caps.setTextDocumentSync(TextDocumentSyncKind.Full);
         caps.setCompletionProvider(new CompletionOptions(false, List.of("(", ".")));
