@@ -54,11 +54,31 @@ final class CompileDiagnostics {
         }
 
         // ---- 2. 错误(stderr 中非 "Compile Warning" 的行;剥离 ANSI 颜色码) ----
+        // "> expr" 续行与上一行合并;errorFrom 用消息中的原文行片段定位
         String errText = buf.toString(StandardCharsets.UTF_8);
+        String[] srcLines = text.split("\\n", -1);
+        StringBuilder pending = new StringBuilder();
         for (String rawLine : errText.split("\\n")) {
             String line = rawLine.trim().replaceAll("\\u001B\\[[;\\d]*m", "").trim();
-            if (line.isEmpty() || line.contains("Compile Warning:")) continue;
-            out.add(diagnostic(line, parseLine(line), DiagnosticSeverity.Error));
+            if (line.isEmpty() || line.contains("Compile Warning:")) {
+                if (!pending.isEmpty()) {
+                    out.add(errorFrom(pending.toString(), srcLines));
+                    pending.setLength(0);
+                }
+                continue;
+            }
+            if (line.startsWith(">")) {
+                pending.append(' ').append(line.substring(1).trim());
+            } else {
+                if (!pending.isEmpty()) {
+                    out.add(errorFrom(pending.toString(), srcLines));
+                    pending.setLength(0);
+                }
+                pending.append(line);
+            }
+        }
+        if (!pending.isEmpty()) {
+            out.add(errorFrom(pending.toString(), srcLines));
         }
 
         // ---- 3. 负数守卫警告:按原文逐行扫描精确定位(不依赖编译行号,
@@ -80,6 +100,22 @@ final class CompileDiagnostics {
             out.add(diagnostic(w, -1, DiagnosticSeverity.Warning));
         }
         return out;
+    }
+
+    /** 错误诊断:优先 "line N",其次用消息中的原文行片段定位,否则整个文档 */
+    private static Diagnostic errorFrom(String msg, String[] srcLines) {
+        int ln = parseLine(msg);
+        if (ln < 0) {
+            // 消息通常包含出错的原文行(如 "> print(hello"),逐行匹配定位
+            for (int i = 0; i < srcLines.length; i++) {
+                String src = srcLines[i].trim();
+                if (src.length() >= 3 && !src.startsWith("::") && msg.contains(src)) {
+                    ln = i;
+                    break;
+                }
+            }
+        }
+        return diagnostic(msg.trim(), ln, DiagnosticSeverity.Error);
     }
 
     /** 从错误文本解析行号(0-based);-1 表示无法定位 */
