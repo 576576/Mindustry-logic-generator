@@ -40,8 +40,7 @@ final class CompileDiagnostics {
         PrintStream capture = new PrintStream(buf, true, StandardCharsets.UTF_8);
         System.setErr(capture);
         try {
-            // LSP 模式:关闭 CLI 静态开关(prime code 输出会污染 stdout)
-            Main.primeCodeLevel = 0;
+            // LSP 模式:关闭 CLI 静态开关
             Main.isToFormat = false;
             Main.filePath = "";
             CodeCompiler.compile(text);

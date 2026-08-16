@@ -17,7 +17,6 @@ public class Main {
     public static boolean isOpenOutput;
     public static String filePath = "";
     public static String outPath = "";
-    public static int primeCodeLevel = 0;
 
     static {
         Properties prop = new Properties();
@@ -42,7 +41,6 @@ public class Main {
         filePath = cliHelper.filePath;
         outPath = cliHelper.outPath;
         isOpenOutput = cliHelper.isOpenOutput;
-        primeCodeLevel = cliHelper.primeCodeLevel;
 
         if (cliHelper.versionInfo) IO.println("MdtC Compiler v" + VERSION_TAG);
 

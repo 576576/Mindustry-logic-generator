@@ -17,7 +17,6 @@ java -jar mdtc-[version]-Cli.jar [options]
 | `-f` | `--format` | — | Format source file after compilation |
 | `-fo` | `--format-only` | — | Only format, no compilation |
 | `-oo` | `--open-out` | — | Reveal output file in file explorer |
-| `-gpc` | `--generate-prime-code` | `<0\|1\|2>` | Generate intermediate code (debug) |
 | `-v` | `--version` | — | Show version info |
 
 ## Examples
@@ -29,8 +28,8 @@ java -jar mdtc-[version]-Cli.jar -i sample_cases/case1.mdtc
 # Compile + format source + open output
 java -jar mdtc-[version]-Cli.jar -i sample_cases/case1.mdtc -f -oo
 
-# Decompile .mdtcode → .mdtc + prime code
-java -jar mdtc-[version]-Cli.jar -i sample_cases/case4.mdtcode -f -gpc 2
+# Decompile .mdtcode → .mdtc
+java -jar mdtc-[version]-Cli.jar -i sample_cases/case4.mdtcode -f
 
 # Custom output path
 java -jar mdtc-[version]-Cli.jar -i sample_cases/case5.mdtc -o output/custom.mdtcode
@@ -49,11 +48,7 @@ The tool detects the operation from the input file extension:
 | `.mdtcode` | Decompile → `.mdtc` |
 | `.libmdtc` | Format-only |
 
-## Prime Code Levels
+## Expanded Code Output
 
-`-gpc` generates intermediate representations for debugging:
-
-| Level | Output |
-|-------|--------|
-| 1 | Source after function inlining, repeat expansion, and formatting |
-| 2 | Source after full decompilation of jump/link structures |
+Every compilation also writes the source after `import`/`function`/`repeat` expansion
+(next to the input file) as a `.d.mdtc` temporary file, e.g. `case1.mdtc` → `case1.d.mdtc`.

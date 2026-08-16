@@ -26,17 +26,6 @@ public final class CodeDecompiler {
         stdCodeStream result_link = convertLink(stdCodeStream.of(bashList));
         stdCodeStream result_jump = convertJump(result_link);
 
-        if (Main.primeCodeLevel >= 2) {
-            String filePath = Main.filePath;
-            if (filePath.endsWith(".mdtcode")) {
-                String primeCodePath = filePath.replace(".mdtcode", "_prime.mdtc");
-                String writeContent = CodeFormatter.format(result_jump.toString());
-                Utils.writeFile(primeCodePath, writeContent);
-
-                IO.println("PrimeCode output at:\n> " + primeCodePath);
-            } else IO.println("Skip writing prime code.");
-        }
-
         stdCodeStream result_code = convertCode(result_jump);
         stdCodeStream result_fold = simplifyCode(result_code);
         stdCodeStream result_jump2 = convertJump2(result_fold);

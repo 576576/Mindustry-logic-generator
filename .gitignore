@@ -43,6 +43,9 @@ bin/
 ### VS Code ###
 .vscode/
 
+### Expanded-code temp files (compile-time) ###
+*.d.mdtc
+
 ### VSCode extension (mdtc-lsp) ###
 vscode-mdtc/node_modules/
 vscode-mdtc/out/

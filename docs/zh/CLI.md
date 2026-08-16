@@ -17,7 +17,6 @@ java -jar mdtc-[version]-Cli.jar [选项]
 | `-f` | `--format` | — | 编译后格式化源码 |
 | `-fo` | `--format-only` | — | 仅格式化，不编译 |
 | `-oo` | `--open-out` | — | 在资源管理器中打开输出文件 |
-| `-gpc` | `--generate-prime-code` | `<0\|1\|2>` | 生成中间代码（调试用） |
 | `-v` | `--version` | — | 显示版本 |
 
 ## 示例
@@ -29,8 +28,8 @@ java -jar mdtc-[version]-Cli.jar -i sample_cases/case1.mdtc
 # 编译 + 格式化 + 打开输出
 java -jar mdtc-[version]-Cli.jar -i sample_cases/case1.mdtc -f -oo
 
-# 反编译 .mdtcode → .mdtc + 中间代码
-java -jar mdtc-[version]-Cli.jar -i sample_cases/case4.mdtcode -f -gpc 2
+# 反编译 .mdtcode → .mdtc
+java -jar mdtc-[version]-Cli.jar -i sample_cases/case4.mdtcode -f
 
 # 指定输出路径
 java -jar mdtc-[version]-Cli.jar -i sample_cases/case5.mdtc -o output/custom.mdtcode
@@ -49,11 +48,7 @@ java -jar mdtc-[version]-Cli.jar -i modules/example.libmdtc -fo
 | `.mdtcode` | 反编译 → `.mdtc` |
 | `.libmdtc` | 仅格式化 |
 
-## 中间代码级别
+## 展开后代码输出
 
-`-gpc` 生成用于调试的中间表示：
-
-| 级别 | 输出内容 |
-|------|---------|
-| 1 | 函数内联 + repeat 展开 + 格式化后的源码 |
-| 2 | 完整反编译跳跃/链接结构后的源码 |
+每次编译都会在输入文件旁额外生成一份 `import`/`function`/`repeat` 展开后的
+中间代码（`.d.mdtc` 临时文件），例如 `case1.mdtc` → `case1.d.mdtc`。

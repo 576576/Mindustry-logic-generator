@@ -17,8 +17,7 @@ public final class LspMain {
     private LspMain() {}
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        // LSP 模式固定静态开关:prime code 输出会污染 stdout(LSP 协议通道)
-        Main.primeCodeLevel = 0;
+        // LSP 模式固定静态开关
         Main.isToFormat = false;
         Main.isFormatOnly = false;
         Main.filePath = "";

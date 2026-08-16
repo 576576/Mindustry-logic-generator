@@ -24,7 +24,4 @@ public class CliHelper {
 
     @Option(names = {"-oo", "--open-out"}, description = "编译后打开输出")
     public boolean isOpenOutput;
-
-    @Option(names = {"-gpc", "--generate-prime-code"}, paramLabel = "<level>", description = "产生中间代码")
-    public int primeCodeLevel;
 }

@@ -59,15 +59,16 @@ public final class CodeCompiler {
             codeBlock = unfoldRepeat(codeBlock);
         }
 
-        if (Main.primeCodeLevel == 1) {
+        // 函数/import/repeat 展开后的中间代码:输出 .d.mdtc 临时文件
+        {
             String filePath = Main.filePath;
-            if (filePath.endsWith(".mdtc") && !filePath.endsWith("_prime.mdtc")) {
-                String primeCodePath = filePath.replace(".mdtc", "_prime.mdtc");
+            if (filePath.endsWith(".mdtc") && !filePath.endsWith(".d.mdtc")) {
+                String expandedPath = filePath.replace(".mdtc", ".d.mdtc");
                 String writeContent = CodeFormatter.format(codeBlock);
-                Utils.writeFile(primeCodePath, writeContent);
+                Utils.writeFile(expandedPath, writeContent);
 
-                IO.println("PrimeCode output at:\n> " + primeCodePath);
-            } else IO.println("Skip writing prime code.");
+                IO.println("Expanded code output at:\n> " + expandedPath);
+            }
         }
 
         codeBlock = CodeFormatter.deformat(codeBlock);
@@ -626,17 +627,6 @@ public final class CodeCompiler {
     static stdCodeStream convertLink(stdCodeStream stream) {
         ArrayList<String> bashList = stream.bash();
         String expr = stream.expr();
-
-        if (Main.primeCodeLevel == 2) {
-            String filePath = Main.filePath;
-            if (filePath.endsWith(".mdtc") && !filePath.endsWith("_prime.mdtc")) {
-                String primeCodePath = filePath.replace(".mdtc", "_prime.mdtc");
-                String writeContent = Utils.stringBlockOf(bashList);
-                Utils.writeFile(primeCodePath, writeContent);
-
-                IO.println("PrimeCode output at:\n> " + primeCodePath);
-            } else IO.println("Skip writing prime code.");
-        }
 
         Utils.removeSpareTags(bashList);
         if (!bashList.isEmpty()) {
