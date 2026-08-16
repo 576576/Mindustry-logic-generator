@@ -6,6 +6,8 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.SemanticTokensLegend;
+import org.eclipse.lsp4j.SemanticTokensWithRegistrationOptions;
 import org.eclipse.lsp4j.ServerCapabilities;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -49,6 +51,11 @@ class MdtcLanguageServer implements LanguageServer, LanguageClientAware {
         caps.setCompletionProvider(new CompletionOptions(false, List.of("(", ".")));
         caps.setDocumentFormattingProvider(true);
         caps.setHoverProvider(true);
+        caps.setDefinitionProvider(true); // jump/jump2 标签 goto
+        SemanticTokensWithRegistrationOptions st = new SemanticTokensWithRegistrationOptions(
+            new SemanticTokensLegend(MdtcSemanticTokens.TOKEN_TYPES, List.of()));
+        st.setFull(true);
+        caps.setSemanticTokensProvider(st);
         return CompletableFuture.completedFuture(new InitializeResult(caps));
     }
 

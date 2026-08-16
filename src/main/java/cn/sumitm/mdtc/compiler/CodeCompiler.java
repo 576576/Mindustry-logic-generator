@@ -74,7 +74,9 @@ public final class CodeCompiler {
         codeBlock = CodeFormatter.deformat(codeBlock);
 
         int refNumMax = 1;
+        int lineNo = 0;
         for (String line : codeBlock.split("\n")) {
+            Utils.setCurrentLine(lineNo++);
             stdCodeStream codeStream = convertCodeLine(stdCodeStream.of(line));
             refNumMax = Math.max(refNumMax, codeStream.stat());
             bashList.addAll(codeStream.toList());

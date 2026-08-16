@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "MdtC",
+  "scopeName": "source.mdtc",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#labels"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "match": "::.*$",
+      "name": "comment.line.double-colon.mdtc"
+    },
+    "strings": {
+      "begin": "\"",
+      "end": "\"",
+      "name": "string.quoted.double.mdtc"
+    },
+    "numbers": {
+      "match": "\\b\\d+(\\.\\d+)?\\b",
+      "name": "constant.numeric.mdtc"
+    },
+    "labels": {
+      "match": "^\\s*::[A-Za-z0-9_.-]+",
+      "name": "entity.name.tag.mdtc"
+    }
+  }
+}

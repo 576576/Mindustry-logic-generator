@@ -24,12 +24,23 @@ public final class Utils {
     /** 编译期收集开关:true 时 stringSplit 的负数守卫等警告写入 CodeCompiler.lastWarnings;反编译路径关闭 */
     private static boolean collectWarnings = false;
 
+    /** 编译中当前处理的行号(0-based,守卫警告定位用) */
+    private static int currentLine = 0;
+
     public static void setCollectWarnings(boolean on) {
         collectWarnings = on;
     }
 
     public static boolean isCollectWarnings() {
         return collectWarnings;
+    }
+
+    public static void setCurrentLine(int line) {
+        currentLine = line;
+    }
+
+    public static int currentLine() {
+        return currentLine;
     }
 
     public static String readFile(String filePath) {
@@ -207,7 +218,8 @@ public final class Utils {
                 // 负数守卫:仅当负数紧跟在中置运算符之后(如 "1 + -1")才提示,
                 // 避免 "x = -5"、"(-114514)" 等常规负数写法产生噪音
                 if (collectWarnings && isAfterInfixOperator(tokens, i)) {
-                    CodeCompiler.addWarning("中置运算符后无空格负数 \"" + token
+                    CodeCompiler.addWarning("line " + (currentLine + 1)
+                        + ": 中置运算符后无空格负数 \"" + token
                         + "\" 已按负数解析;若意图为减法请写成 \" - " + token.substring(1) + "\"(前后空格)");
                 }
                 if (!isNumeric(token)) {

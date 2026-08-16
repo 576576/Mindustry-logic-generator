@@ -60,9 +60,11 @@ final class CompileDiagnostics {
             out.add(diagnostic(line, parseLine(line), DiagnosticSeverity.Error));
         }
 
-        // ---- 3. 警告 ----
+        // ---- 3. 警告(带行号的消息定位到该行,否则整个文档) ----
+        // 警告消息行号为 1-based(用户友好),转 LSP 0-based 需减 1
         for (String w : CodeCompiler.lastWarnings) {
-            out.add(diagnostic(w, -1, DiagnosticSeverity.Warning));
+            int ln = parseLine(w);
+            out.add(diagnostic(w, ln > 0 ? ln - 1 : -1, DiagnosticSeverity.Warning));
         }
         return out;
     }

@@ -59,7 +59,14 @@
           "description": "LSP trace level (written to the MdtC LSP Trace output channel)."
         }
       }
-    }
+    },
+    "grammars": [
+      {
+        "language": "mdtc",
+        "scopeName": "source.mdtc",
+        "path": "./syntaxes/mdtc.tmLanguage.json"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -79,6 +86,7 @@
     "out/**",
     "server/**",
     "language-configuration.json",
+    "syntaxes/**",
     "node_modules/**"
   ]
 }

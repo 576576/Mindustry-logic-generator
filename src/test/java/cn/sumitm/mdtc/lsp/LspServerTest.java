@@ -93,6 +93,19 @@ class LspServerTest {
     }
 
     @Test
+    void diagnostics_warningRange_isOnSourceLine() {
+        // 第 3 行的中置运算符后负数 → 警告 range 应定位到第 3 行,而非整个文档
+        open("file:///test.mdtc", "print(flush)\nx=1\ny=2 + -3");
+        Diagnostic warn = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Warning)
+            .findFirst().orElse(null);
+        assertThat(warn).isNotNull();
+        assertThat(warn.getMessage()).contains("line 3");
+        assertThat(warn.getRange().getStart().getLine()).isEqualTo(2);
+        assertThat(warn.getRange().getEnd().getLine()).isEqualTo(2);
+    }
+
+    @Test
     void diagnostics_cleanCode_noDiagnostics() {
         open("file:///test.mdtc", "x=1 + 2\nprint(flush)");
         assertThat(lastDiagnostics()).isEmpty();
@@ -155,5 +168,86 @@ class LspServerTest {
         params.setTextDocument(new TextDocumentIdentifier("file:///test.mdtc"));
         params.setPosition(new Position(0, 1));
         assertThat(service.hover(params).join()).isNull();
+    }
+
+    // ==================== 语义高亮 ====================
+
+    @Test
+    void semanticTokens_coversAllCategories() {
+        String code = "::循环\nfor(i=0;i<10;i=i+1){\n\tprint(\"hi\")\n\t@copper=1\n}\n";
+        open("file:///test.mdtc", code);
+        org.eclipse.lsp4j.SemanticTokensParams stp = new org.eclipse.lsp4j.SemanticTokensParams();
+        stp.setTextDocument(new TextDocumentIdentifier("file:///test.mdtc"));
+        org.eclipse.lsp4j.SemanticTokens st = service.semanticTokensFull(stp).join();
+        assertThat(st).isNotNull();
+        assertThat(st.getData()).isNotEmpty();
+
+        // 解码 token 类型集合:data 每 5 个一组 [deltaLine, deltaStart, len, typeIdx, mod]
+        List<Integer> types = new ArrayList<>();
+        int line = 0, col = 0;
+        var data = st.getData();
+        for (int i = 0; i + 4 < data.size(); i += 5) {
+            line += data.get(i);
+            col = data.get(i + 1) == 0 && i > 0 ? col : (data.get(i) == 0 ? col + data.get(i + 1) : data.get(i + 1));
+            // 简化:直接收集 typeIdx
+            types.add(data.get(i + 3));
+        }
+        // 注释(label 0)/字符串(1)/数字(2)/关键字(4)/指令(5)/@常量(8)都出现过
+        assertThat(types).contains(0); // :: 注释
+        assertThat(types).contains(1); // 字符串
+        assertThat(types).contains(2); // 数字
+        assertThat(types).contains(4); // for( 关键字
+        assertThat(types).contains(5); // print( 指令
+        assertThat(types).contains(8); // @copper
+    }
+
+    // ==================== jump/jump2 标签 goto ====================
+
+    private static final String JUMP_CODE =
+        "::TAG.5\nset e 3\njump(TAG.5)\njump2(TAG.5)\n::bind.end\nend()\njump2(bind.end)\n";
+
+    @Test
+    void definition_jumpTarget_findsLabel() {
+        open("file:///test.mdtc", JUMP_CODE);
+        org.eclipse.lsp4j.DefinitionParams p = new org.eclipse.lsp4j.DefinitionParams();
+        p.setTextDocument(new TextDocumentIdentifier("file:///test.mdtc"));
+        p.setPosition(new Position(2, 7)); // jump(TAG.5) 内
+        var res = service.definition(p).join();
+        assertThat(res).isNotNull();
+        assertThat(res.getLeft()).hasSize(1);
+        assertThat(res.getLeft().get(0).getRange().getStart().getLine()).isEqualTo(0);
+    }
+
+    @Test
+    void definition_jump2Target_findsLabel() {
+        open("file:///test.mdtc", JUMP_CODE);
+        org.eclipse.lsp4j.DefinitionParams p = new org.eclipse.lsp4j.DefinitionParams();
+        p.setTextDocument(new TextDocumentIdentifier("file:///test.mdtc"));
+        p.setPosition(new Position(3, 7)); // jump2(TAG.5) 内
+        var res = service.definition(p).join();
+        assertThat(res).isNotNull();
+        assertThat(res.getLeft()).hasSize(1);
+        assertThat(res.getLeft().get(0).getRange().getStart().getLine()).isEqualTo(0);
+    }
+
+    @Test
+    void definition_onLabel_returnsReferences() {
+        open("file:///test.mdtc", JUMP_CODE);
+        org.eclipse.lsp4j.DefinitionParams p = new org.eclipse.lsp4j.DefinitionParams();
+        p.setTextDocument(new TextDocumentIdentifier("file:///test.mdtc"));
+        p.setPosition(new Position(0, 4)); // ::TAG.5 定义行
+        var res = service.definition(p).join();
+        assertThat(res).isNotNull();
+        assertThat(res.getLeft()).hasSize(2); // jump(TAG.5) + jump2(TAG.5)
+        assertThat(res.getLeft()).allMatch(l -> l.getRange().getStart().getLine() >= 2);
+    }
+
+    @Test
+    void definition_unknownTarget_returnsNull() {
+        open("file:///test.mdtc", JUMP_CODE);
+        org.eclipse.lsp4j.DefinitionParams p = new org.eclipse.lsp4j.DefinitionParams();
+        p.setTextDocument(new TextDocumentIdentifier("file:///test.mdtc"));
+        p.setPosition(new Position(6, 3)); // 非 jump 行
+        assertThat(service.definition(p).join()).isNull();
     }
 }

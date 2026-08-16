@@ -15,12 +15,17 @@ import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
+import org.eclipse.lsp4j.DefinitionParams;
 import org.eclipse.lsp4j.DocumentFormattingParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
+import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.SemanticTokens;
+import org.eclipse.lsp4j.SemanticTokensParams;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -179,5 +184,102 @@ class MdtcTextDocumentService implements TextDocumentService {
 
     private static boolean isWordChar(char c) {
         return Character.isLetterOrDigit(c) || c == '_' || c == '.' || c == '@' || c == '-';
+    }
+
+    // ==================== 语义高亮 ====================
+
+    @Override
+    public CompletableFuture<SemanticTokens> semanticTokensFull(SemanticTokensParams params) {
+        String text = documents.getOrDefault(params.getTextDocument().getUri(), "");
+        if (text.isEmpty()) return CompletableFuture.completedFuture(null);
+        return CompletableFuture.completedFuture(new SemanticTokens(MdtcSemanticTokens.encode(text)));
+    }
+
+    // ==================== jump/jump2 标签 goto ====================
+
+    @Override
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>>
+        definition(DefinitionParams params) {
+        String uri = params.getTextDocument().getUri();
+        String text = documents.getOrDefault(uri, "");
+        if (text.isEmpty()) return CompletableFuture.completedFuture(null);
+
+        String[] lines = text.split("\n", -1);
+        Position pos = params.getPosition();
+        if (pos.getLine() < 0 || pos.getLine() >= lines.length) {
+            return CompletableFuture.completedFuture(null);
+        }
+        String cursorLine = lines[pos.getLine()];
+
+        // ---- 1. 光标在标签定义行(::NAME)上 → 返回所有引用行 ----
+        String labelDef = labelDefAt(cursorLine);
+        if (labelDef != null && pos.getCharacter() <= cursorLine.length()) {
+            List<Location> refs = new ArrayList<>();
+            for (int i = 0; i < lines.length; i++) {
+                String l = lines[i];
+                int idx = l.indexOf("jump");
+                while (idx != -1) {
+                    int open = l.indexOf('(', idx);
+                    if (open != -1) {
+                        int close = l.indexOf(')', open);
+                        if (close != -1) {
+                            String arg = l.substring(open + 1, close).split(",", 2)[0].trim();
+                            if (arg.equals(labelDef)) {
+                                refs.add(location(uri, i));
+                            }
+                            idx = close;
+                        } else break;
+                    } else break;
+                    idx = l.indexOf("jump", idx + 4);
+                }
+            }
+            return CompletableFuture.completedFuture(
+                refs.isEmpty() ? null : Either.forLeft(refs));
+        }
+
+        // ---- 2. 光标在 jump/jump2 引用上 → 返回标签定义行 ----
+        String target = jumpTargetAt(cursorLine, pos.getCharacter());
+        if (target != null) {
+            for (int i = 0; i < lines.length; i++) {
+                String l = lines[i].trim();
+                if (l.startsWith("::" + target)) {
+                    return CompletableFuture.completedFuture(
+                        Either.forLeft(List.of(location(uri, i))));
+                }
+            }
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /** 行首标签定义:返回标签名(不含 ::);非标签行返回 null */
+    private static String labelDefAt(String line) {
+        String t = line.trim();
+        if (!t.startsWith("::")) return null;
+        String name = t.substring(2).trim();
+        return name.isEmpty() ? null : name.split("\s+")[0];
+    }
+
+    /** 光标处 jump/jump2 的目标标签;非引用位置返回 null */
+    private static String jumpTargetAt(String line, int column) {
+        int from = 0;
+        while (true) {
+            int idx = line.indexOf("jump", from);
+            if (idx == -1) return null;
+            int open = line.indexOf('(', idx);
+            if (open != -1 && open - idx <= 6) { // jump( jump2(
+                int close = line.indexOf(')', open);
+                if (close != -1) {
+                    String arg = line.substring(open + 1, close).split(",", 2)[0].trim();
+                    if (!arg.isEmpty() && column >= open + 1 && column <= close) {
+                        return arg;
+                    }
+                }
+            }
+            from = idx + 4;
+        }
+    }
+
+    private static Location location(String uri, int line) {
+        return new Location(uri, new Range(new Position(line, 0), new Position(line, Integer.MAX_VALUE)));
     }
 }
