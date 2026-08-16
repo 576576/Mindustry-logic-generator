@@ -118,8 +118,9 @@ reactor.enable(0|1)
 reactor.config(值)
 reactor.color(r, g, b, a)
 
-:: 射击
-turret.shoot(x, y, 射击开关).target(目标)
+:: 射击 — shoot() 只带射击开关
+:: target:双参 (x,y) 为坐标,单参为设计目标
+turret.shoot(射击开关).target(x, y)
 
 :: 定位
 result = core.ulocate(类型).ore(矿物).building(建筑).enemy(敌方)

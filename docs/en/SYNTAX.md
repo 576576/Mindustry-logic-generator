@@ -118,8 +118,9 @@ reactor.enable(0|1)
 reactor.config(value)
 reactor.color(r, g, b, a)
 
-:: Shooting
-turret.shoot(x, y, shoot).target(target)
+:: Shooting — shoot() takes only the fire switch
+:: target: two args (x,y) = coordinates, one arg = design target
+turret.shoot(shoot).target(x, y)
 
 :: Locate
 result = core.ulocate(type).ore(ore).building(bld).enemy(enemy)

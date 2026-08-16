@@ -33,11 +33,14 @@
 - 输出:`control color <block> <pad(4, s)>`
 
 ### .shoot(
-- 语法:`<block>.shoot(<x>,<y>,<shoot>).target(<tx>,<ty>)`;shoot 缺省 `1`,
+- 语法:`<block>.shoot(<shoot>).target(<设计目标>|<x>,<y>)`;shoot 缺省 `1`,
   target 缺省 `@this`
-- 链式键:main(开火), target(目标)
-- 输出:目标含逗号时 `control target <block> <pad(4, tgt 逗号替换为空格, shoot)>`,
-  否则 `control shootp <block> <pad(4, tgt, shoot)>`
+- 链式键:main(射击开关), target(设计目标或坐标)
+- 说明:括号内**只有射击开关**;x/y 坐标或设计目标经 `.target(...)` 传递,
+  由 target 的**参数量**区分——双参为 xy 坐标(shoot),单参为设计目标(shootp)
+- 输出:`control shoot <block> <pad(4, tgt 逗号替换为空格, shoot)>`(坐标),
+  或 `control shootp <block> <pad(4, tgt, shoot)>`(设计目标)
+- 示例:`turret.shoot(1).target(5,6)` → `control shoot turret 5 6 1 0`
 - 反编译:见 `control `(shootp/shoot 分支)
 
 ### .ulocate(
