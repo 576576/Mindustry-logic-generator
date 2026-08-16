@@ -34,6 +34,14 @@ export interface InstructionData {
 /** 编译器会输出但 builtins 未声明的 mdtcode 指令字 */
 const EXTRA_MCODES = ["set", "getblock", "setprop", "unitlocate"];
 
+/** front 指令键 → 实际 op 运算符名(lg→log10、log/lb→logn、ln→log) */
+const FRONT_OP_NAME: Record<string, string> = {
+  lg: "log10",
+  log: "logn",
+  lb: "logn",
+  ln: "log",
+};
+
 let cached: InstructionData | null = null;
 
 export function loadData(builtinsJsPath: string): InstructionData {
@@ -71,7 +79,7 @@ export function loadData(builtinsJsPath: string): InstructionData {
         if (!mcode) {
           if (ns === "Front" && d.key !== "lookup") {
             mcode = "op"; // 一元/二元运算输出 op 行(lookup 例外:行首即 lookup)
-            opNames.add(d.key);
+            opNames.add(FRONT_OP_NAME[d.key] ?? d.key); // front 键 → 实际 op 名
           } else {
             mcode = d.key.replace(/^\./, "").replace(/\($|\)$/g, "");
           }
