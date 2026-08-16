@@ -39,7 +39,8 @@ function scanLine(line: string, li: number, keys: string[], ops: string[], data:
   let pos = 0;
   const len = line.length;
   const add = (s: number, l: number, t: number) => { if (l > 0) out.push([li, s, l, t]); };
-  const isWord = (c: string) => /[A-Za-z0-9_.-]/.test(c);
+  // 不含 ".":变量词扫到 "." 即停,让 ".enable(" 等点指令与链键匹配得以执行
+  const isWord = (c: string) => /[A-Za-z0-9_-]/.test(c);
   // 本行出现的可链母指令 → 其后紧跟的链键(.key)标为 method
   let pendingChain: Set<string> | null = null;
   while (pos < len) {
