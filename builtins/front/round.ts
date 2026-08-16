@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const round: InstrDef = {
+      desc: '四舍五入',
       key: 'round',
       params: ['x'],
       compile: function (s, ctx) { return 'op round ' + ctx.mid() + ' ' + s + ' 0'; }

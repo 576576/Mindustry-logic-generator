@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const unpack: InstrDef = {
+      desc: '取方块颜色(输出到变量)',
       key: 'unpack',
       params: ['r', 'g', 'b', 'a'],
       mcode: 'unpackcolor',

@@ -12,6 +12,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const draw: InstrDef = {
+      desc: '绘制图形(线/圆/文字等)',
       key: 'draw',
       params: ['类型', '参数…'],
       compile: function (s, ctx) { return 'draw ' + H.padZero(7, ctx.parts(s)); },

@@ -23,6 +23,7 @@ namespace Builtins {
     ];
 
     export const ulocate: InstrDef = {
+      desc: '搜索定位方块',
       key: 'ulocate',
       params: ['type'],
       chain: CHAIN,

@@ -10,6 +10,7 @@
 namespace Builtins {
   export namespace Ctrl {
     export const jump2: InstrDef = {
+      desc: '按表达式动态跳转',
       key: 'jump2',
       params: ['表达式或增量表达式'],
       compile: function (s, ctx) {

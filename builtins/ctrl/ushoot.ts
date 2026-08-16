@@ -20,6 +20,7 @@ namespace Builtins {
     ];
 
     export const ushoot: InstrDef = {
+      desc: '射击控制(开火/停火)',
       key: 'ushoot',
       params: ['shoot'],
       mcode: 'ucontrol',

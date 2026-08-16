@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const min: InstrDef = {
+      desc: '取较小值',
       key: 'min',
       params: ['a', 'b'],
       compile: function (s, ctx) {

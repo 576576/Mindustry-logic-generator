@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const link: InstrDef = {
+      desc: '按索引链接方块',
       key: 'link',
       params: ['索引'],
       mcode: 'getlink',

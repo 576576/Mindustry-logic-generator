@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const liquid: InstrDef = {
+      desc: '查询液体内容',
       key: 'liquid',
       params: ['液体'],
       mcode: 'lookup',

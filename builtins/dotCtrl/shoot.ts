@@ -22,6 +22,7 @@ namespace Builtins {
     ];
 
     export const shoot: InstrDef = {
+      desc: '射击控制(坐标/目标)',
       key: 'shoot',
       params: ['shoot'],
       mcode: 'control',

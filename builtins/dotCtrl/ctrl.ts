@@ -12,6 +12,7 @@ namespace Builtins {
     import D = Builtins.Domain;
 
     export const ctrl: InstrDef = {
+      desc: '方块控制(类型分派)',
       key: 'ctrl',
       params: ['类型', '参数…'],
       mcode: 'control',

@@ -10,6 +10,7 @@
 namespace Builtins {
   export namespace Dot {
     export const sensor: InstrDef = {
+      desc: '读取方块属性',
       key: 'sensor',
       params: ['属性'],
       mcode: 'sensor',

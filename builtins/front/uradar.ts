@@ -22,6 +22,7 @@ namespace Builtins {
 
     export const uradar: InstrDef = {
       key: 'uradar',
+      desc: '单位雷达(链式)',
       mcode: 'uradar',
       chain: CHAIN,
       compile: function (s, ctx) {

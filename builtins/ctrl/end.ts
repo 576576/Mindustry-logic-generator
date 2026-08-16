@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace Ctrl {
     export const end: InstrDef = {
       key: 'end',
+      desc: '结束程序',
       compile: function () { return 'end'; }
     };
   }

@@ -21,6 +21,7 @@ namespace Builtins {
     ];
 
     export const orElse: InstrDef = {
+      desc: '条件缺省(满足条件取后备值)',
       key: 'orElse',
       params: ['后备'],
       mcode: 'select',

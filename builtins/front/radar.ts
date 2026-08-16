@@ -22,6 +22,7 @@ namespace Builtins {
 
     export const radar: InstrDef = {
       key: 'radar',
+      desc: '方块雷达(链式)',
       mcode: 'radar',
       chain: CHAIN,
       compile: function (s, ctx) {

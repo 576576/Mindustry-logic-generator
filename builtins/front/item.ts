@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const item: InstrDef = {
+      desc: '查询物品内容',
       key: 'item',
       params: ['物品'],
       mcode: 'lookup',

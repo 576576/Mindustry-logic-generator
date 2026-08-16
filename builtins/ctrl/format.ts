@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Ctrl {
     export const format: InstrDef = {
+      desc: '格式化数值显示',
       key: 'format',
       params: ['值'],
       compile: function (s) { return 'format ' + s; },

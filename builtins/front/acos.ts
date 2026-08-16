@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const acos: InstrDef = {
+      desc: '反余弦',
       key: 'acos',
       params: ['x'],
       compile: function (s, ctx) { return 'op acos ' + ctx.mid() + ' ' + s + ' 0'; }

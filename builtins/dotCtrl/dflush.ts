@@ -10,6 +10,7 @@ namespace Builtins {
   export namespace DotCtrl {
     export const dflush: InstrDef = {
       key: 'dflush',
+      desc: '绘制冲刷(drawflush)',
       mcode: 'drawflush',
       compile: function (_s, ctx) { return 'drawflush ' + ctx.block(); },
       restore: function (s) { return s + '.dflush()'; }

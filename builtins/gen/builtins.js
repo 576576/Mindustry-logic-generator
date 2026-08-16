@@ -460,6 +460,7 @@ var Builtins;
     (function (Ctrl) {
         var H = Builtins.Helpers;
         Ctrl.draw = {
+            desc: '绘制图形(线/圆/文字等)',
             key: 'draw',
             params: ['类型', '参数…'],
             compile: function (s, ctx) { return 'draw ' + H.padZero(7, ctx.parts(s)); },
@@ -480,6 +481,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.end = {
             key: 'end',
+            desc: '结束程序',
             compile: function () { return 'end'; }
         };
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
@@ -496,6 +498,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.format = {
+            desc: '格式化数值显示',
             key: 'format',
             params: ['值'],
             compile: function (s) { return 'format ' + s; },
@@ -527,6 +530,7 @@ var Builtins;
             { key: 'when', def: '', params: ['条件'] }
         ];
         Ctrl.jump = {
+            desc: '条件跳转(目标标签)',
             key: 'jump',
             params: ['目标标签'],
             chain: CHAIN,
@@ -593,6 +597,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.jump2 = {
+            desc: '按表达式动态跳转',
             key: 'jump2',
             params: ['表达式或增量表达式'],
             compile: function (s, ctx) {
@@ -615,6 +620,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.print = {
+            desc: '打印内容到消息栏',
             key: 'print',
             params: ['内容'],
             compile: function (s) { return 'print ' + s; },
@@ -634,6 +640,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.printchar = {
+            desc: '打印单个字符(码点)',
             key: 'printchar',
             params: ['码点'],
             compile: function (s) { return 'printchar ' + s; },
@@ -653,6 +660,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.printf = {
+            desc: '格式化打印(%d/%f 等)',
             key: 'printf',
             params: ['格式串', '参数…'],
             compile: function (s, ctx) {
@@ -679,6 +687,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.raw = {
+            desc: '写入原生 mdtcode 指令',
             key: 'raw',
             params: ['原生 mdtcode 指令'],
             compile: function (s) { return s; }
@@ -698,6 +707,7 @@ var Builtins;
     (function (Ctrl) {
         Ctrl.stop = {
             key: 'stop',
+            desc: '停止当前进程',
             compile: function () { return 'stop'; }
         };
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
@@ -713,6 +723,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.tag = {
+            desc: '定义跳转标签',
             key: 'tag',
             params: ['标签名'],
             compile: function (s) { return '::' + s; }
@@ -731,6 +742,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.ubind = {
+            desc: '绑定指定单位',
             key: 'ubind',
             params: ['单位类型'],
             compile: function (s) { return 'ubind ' + s; },
@@ -752,6 +764,7 @@ var Builtins;
     (function (Ctrl) {
         var H = Builtins.Helpers;
         Ctrl.uctrl = {
+            desc: '单位控制(移动/采矿等)',
             key: 'uctrl',
             params: ['类型', '参数…'],
             mcode: 'ucontrol',
@@ -784,6 +797,7 @@ var Builtins;
             { key: 'target', def: '@this', params: ['目标'] }
         ];
         Ctrl.ushoot = {
+            desc: '射击控制(开火/停火)',
             key: 'ushoot',
             params: ['shoot'],
             mcode: 'ucontrol',
@@ -830,6 +844,7 @@ var Builtins;
     var Ctrl;
     (function (Ctrl) {
         Ctrl.wait = {
+            desc: '等待指定秒数',
             key: 'wait',
             params: ['秒数'],
             compile: function (s) { return 'wait ' + s; },
@@ -867,8 +882,9 @@ var Builtins;
     (function (DotCtrl) {
         var H = Builtins.Helpers;
         DotCtrl.color = {
+            desc: '设置颜色(16进制)',
             key: 'color',
-            params: ['r', 'g', 'b', 'a'],
+            params: ['hex color'],
             mcode: 'control',
             mcodeSelect: ['color'],
             compile: function (s, ctx) { return 'control color ' + ctx.block() + ' ' + H.padZero(4, ctx.parts(s)); },
@@ -893,6 +909,7 @@ var Builtins;
     (function (DotCtrl) {
         var H = Builtins.Helpers;
         DotCtrl.config = {
+            desc: '设置方块配置',
             key: 'config',
             params: ['值'],
             mcode: 'control',
@@ -920,6 +937,7 @@ var Builtins;
         var H = Builtins.Helpers;
         var D = Builtins.Domain;
         DotCtrl.ctrl = {
+            desc: '方块控制(类型分派)',
             key: 'ctrl',
             params: ['类型', '参数…'],
             mcode: 'control',
@@ -948,6 +966,7 @@ var Builtins;
     (function (DotCtrl) {
         DotCtrl.dflush = {
             key: 'dflush',
+            desc: '绘制冲刷(drawflush)',
             mcode: 'drawflush',
             compile: function (_s, ctx) { return 'drawflush ' + ctx.block(); },
             restore: function (s) { return s + '.dflush()'; }
@@ -967,6 +986,7 @@ var Builtins;
     (function (DotCtrl) {
         var H = Builtins.Helpers;
         DotCtrl.enable = {
+            desc: '开关方块',
             key: 'enable',
             params: ['0|1'],
             mcode: 'control',
@@ -993,6 +1013,7 @@ var Builtins;
     (function (DotCtrl) {
         DotCtrl.pflush = {
             key: 'pflush',
+            desc: '打印冲刷(printflush)',
             mcode: 'printflush',
             compile: function (_s, ctx) { return 'printflush ' + ctx.block(); },
             restore: function (s) { return s + '.pflush()'; }
@@ -1022,6 +1043,7 @@ var Builtins;
             { key: 'target', def: '@this', params: ['设计目标'] }
         ];
         DotCtrl.shoot = {
+            desc: '射击控制(坐标/目标)',
             key: 'shoot',
             params: ['shoot'],
             mcode: 'control',
@@ -1080,6 +1102,7 @@ var Builtins;
             { key: 'enemy', def: '0', params: ['敌人'] }
         ];
         DotCtrl.ulocate = {
+            desc: '搜索定位方块',
             key: 'ulocate',
             params: ['type'],
             chain: CHAIN,
@@ -1127,6 +1150,7 @@ var Builtins;
     (function (DotCtrl) {
         var H = Builtins.Helpers;
         DotCtrl.unpack = {
+            desc: '取方块颜色(输出到变量)',
             key: 'unpack',
             params: ['r', 'g', 'b', 'a'],
             mcode: 'unpackcolor',
@@ -1152,6 +1176,7 @@ var Builtins;
         var H = Builtins.Helpers;
         var D = Builtins.Domain;
         DotCtrl.write = {
+            desc: '写入存储单元',
             key: 'write',
             params: ['内容', '单元号'],
             compile: function (s, ctx) {
@@ -1202,6 +1227,7 @@ var Builtins;
             { key: 'when', def: '', params: ['条件'] }
         ];
         Dot.orElse = {
+            desc: '条件缺省(满足条件取后备值)',
             key: 'orElse',
             params: ['后备'],
             mcode: 'select',
@@ -1259,6 +1285,7 @@ var Builtins;
     var Dot;
     (function (Dot) {
         Dot.read = {
+            desc: '读取存储单元',
             key: 'read',
             params: ['单元号'],
             mcode: 'read',
@@ -1283,6 +1310,7 @@ var Builtins;
     var Dot;
     (function (Dot) {
         Dot.sensor = {
+            desc: '读取方块属性',
             key: 'sensor',
             params: ['属性'],
             mcode: 'sensor',
@@ -1320,6 +1348,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.abs = {
+            desc: '绝对值',
             key: 'abs',
             params: ['x'],
             compile: function (s, ctx) { return 'op abs ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1338,6 +1367,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.acos = {
+            desc: '反余弦',
             key: 'acos',
             params: ['x'],
             compile: function (s, ctx) { return 'op acos ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1357,6 +1387,7 @@ var Builtins;
     (function (Front) {
         var H = Builtins.Helpers;
         Front.angle = {
+            desc: '向量角度(弧度)',
             key: 'angle',
             params: ['a', 'b'],
             compile: function (s, ctx) {
@@ -1379,6 +1410,7 @@ var Builtins;
     (function (Front) {
         var H = Builtins.Helpers;
         Front.angleDiff = {
+            desc: '角度差',
             key: 'angleDiff',
             params: ['a', 'b'],
             compile: function (s, ctx) {
@@ -1400,6 +1432,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.asin = {
+            desc: '反正弦',
             key: 'asin',
             params: ['x'],
             compile: function (s, ctx) { return 'op asin ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1418,6 +1451,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.atan = {
+            desc: '反正切',
             key: 'atan',
             params: ['x'],
             compile: function (s, ctx) { return 'op atan ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1436,6 +1470,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.block = {
+            desc: '查询方块内容',
             key: 'block',
             params: ['类型'],
             mcode: 'lookup',
@@ -1460,6 +1495,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.ceil = {
+            desc: '向上取整',
             key: 'ceil',
             params: ['x'],
             compile: function (s, ctx) { return 'op ceil ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1478,6 +1514,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.cos = {
+            desc: '余弦',
             key: 'cos',
             params: ['x'],
             compile: function (s, ctx) { return 'op cos ' + ctx.mid() + ' ' + s; }
@@ -1496,6 +1533,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.floor = {
+            desc: '向下取整',
             key: 'floor',
             params: ['x'],
             compile: function (s, ctx) { return 'op floor ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1514,6 +1552,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.item = {
+            desc: '查询物品内容',
             key: 'item',
             params: ['物品'],
             mcode: 'lookup',
@@ -1538,6 +1577,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.lb = {
+            desc: '以2为底对数',
             key: 'lb',
             params: ['x'],
             compile: function (s, ctx) { return 'op logn ' + ctx.mid() + ' ' + s + ' 2'; }
@@ -1557,6 +1597,7 @@ var Builtins;
     (function (Front) {
         var H = Builtins.Helpers;
         Front.len = {
+            desc: '向量长度',
             key: 'len',
             params: ['a', 'b'],
             compile: function (s, ctx) {
@@ -1578,6 +1619,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.lg = {
+            desc: '以10为底对数',
             key: 'lg',
             params: ['x'],
             compile: function (s, ctx) { return 'op log10 ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1596,6 +1638,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.link = {
+            desc: '按索引链接方块',
             key: 'link',
             params: ['索引'],
             mcode: 'getlink',
@@ -1619,6 +1662,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.liquid = {
+            desc: '查询液体内容',
             key: 'liquid',
             params: ['液体'],
             mcode: 'lookup',
@@ -1643,6 +1687,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.ln = {
+            desc: '自然对数',
             key: 'ln',
             params: ['x'],
             compile: function (s, ctx) { return 'op log ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1663,6 +1708,7 @@ var Builtins;
     (function (Front) {
         var H = Builtins.Helpers;
         Front.log = {
+            desc: '对数(底数,真数)',
             key: 'log',
             params: ['底数', '真数'],
             compile: function (s, ctx) {
@@ -1686,6 +1732,7 @@ var Builtins;
         var H = Builtins.Helpers;
         var D = Builtins.Domain;
         Front.lookup = {
+            desc: '按索引查询内容',
             key: 'lookup',
             params: ['类型', '索引'],
             compile: function (s, ctx) {
@@ -1712,6 +1759,7 @@ var Builtins;
     (function (Front) {
         var H = Builtins.Helpers;
         Front.max = {
+            desc: '取较大值',
             key: 'max',
             params: ['a', 'b'],
             compile: function (s, ctx) {
@@ -1734,6 +1782,7 @@ var Builtins;
     (function (Front) {
         var H = Builtins.Helpers;
         Front.min = {
+            desc: '取较小值',
             key: 'min',
             params: ['a', 'b'],
             compile: function (s, ctx) {
@@ -1756,6 +1805,7 @@ var Builtins;
     (function (Front) {
         var H = Builtins.Helpers;
         Front.noise = {
+            desc: '噪声值',
             key: 'noise',
             params: ['a', 'b'],
             compile: function (s, ctx) {
@@ -1777,6 +1827,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.not = {
+            desc: '逻辑非',
             key: 'not',
             params: ['x'],
             compile: function (s, ctx) { return 'op not ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1796,6 +1847,7 @@ var Builtins;
     (function (Front) {
         var H = Builtins.Helpers;
         Front.pack = {
+            desc: '打包颜色(0~1)',
             key: 'pack',
             params: ['r', 'g', 'b', 'a'],
             mcode: 'packcolor',
@@ -1831,6 +1883,7 @@ var Builtins;
         ];
         Front.radar = {
             key: 'radar',
+            desc: '方块雷达(链式)',
             mcode: 'radar',
             chain: CHAIN,
             compile: function (s, ctx) {
@@ -1871,6 +1924,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.rand = {
+            desc: '随机数(0~x)',
             key: 'rand',
             params: ['x'],
             compile: function (s, ctx) { return 'op rand ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1889,6 +1943,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.round = {
+            desc: '四舍五入',
             key: 'round',
             params: ['x'],
             compile: function (s, ctx) { return 'op round ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1907,6 +1962,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.sign = {
+            desc: '取符号(1/-1/0)',
             key: 'sign',
             params: ['x'],
             compile: function (s, ctx) { return 'op sign ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1925,6 +1981,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.sin = {
+            desc: '正弦',
             key: 'sin',
             params: ['x'],
             compile: function (s, ctx) { return 'op sin ' + ctx.mid() + ' ' + s; }
@@ -1943,6 +2000,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.sqrt = {
+            desc: '平方根',
             key: 'sqrt',
             params: ['x'],
             compile: function (s, ctx) { return 'op sqrt ' + ctx.mid() + ' ' + s + ' 0'; }
@@ -1961,6 +2019,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.tan = {
+            desc: '正切',
             key: 'tan',
             params: ['x'],
             compile: function (s, ctx) { return 'op tan ' + ctx.mid() + ' ' + s; }
@@ -1979,6 +2038,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.team = {
+            desc: '查询阵营内容',
             key: 'team',
             params: ['阵营'],
             mcode: 'lookup',
@@ -2003,6 +2063,7 @@ var Builtins;
     var Front;
     (function (Front) {
         Front.unit = {
+            desc: '查询单位内容',
             key: 'unit',
             params: ['单位'],
             mcode: 'lookup',
@@ -2037,6 +2098,7 @@ var Builtins;
         ];
         Front.uradar = {
             key: 'uradar',
+            desc: '单位雷达(链式)',
             mcode: 'uradar',
             chain: CHAIN,
             compile: function (s, ctx) {

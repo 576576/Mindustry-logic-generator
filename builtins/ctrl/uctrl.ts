@@ -12,6 +12,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const uctrl: InstrDef = {
+      desc: '单位控制(移动/采矿等)',
       key: 'uctrl',
       params: ['类型', '参数…'],
       mcode: 'ucontrol',

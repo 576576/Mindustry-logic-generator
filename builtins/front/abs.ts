@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const abs: InstrDef = {
+      desc: '绝对值',
       key: 'abs',
       params: ['x'],
       compile: function (s, ctx) { return 'op abs ' + ctx.mid() + ' ' + s + ' 0'; }

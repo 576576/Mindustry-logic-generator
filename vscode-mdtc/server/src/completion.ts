@@ -13,13 +13,17 @@ export function buildCompletion(data: InstructionData, doc?: TextDocument, pos?:
   const close = (s: string) => (s.endsWith("(") ? s + ")" : s);
   const insert = (s: string) => close(afterDot && s.startsWith(".") ? s.slice(1) : s);
 
+  // 标签带参数提示:如 .color(hex color) / print(内容);插入文本仍为 .color()
+  const labelWithParams = (head: string, params: string[]) =>
+    (head.endsWith("(") ? head.slice(0, -1) : head) + "(" + params.join(", ") + ")";
+
   // 链式上下文:光标位于可链母指令调用内/其后 → 优先提示该母指令的链键
   const chainCtx = doc && pos ? chainContextAt(doc, pos, data) : null;
   if (chainCtx) {
     for (const ck of chainCtx.chain) {
       const full = "." + ck.key + "(";
       items.push({
-        label: close(full),
+        label: labelWithParams(full, ck.params),
         kind: 6 as CompletionItemKind, // Method
         detail: "链式参数(母指令 " + chainCtx.parentKey.slice(0, -1) + ")",
         insertText: insert(full),
@@ -30,9 +34,9 @@ export function buildCompletion(data: InstructionData, doc?: TextDocument, pos?:
 
   for (const i of data.items) {
     items.push({
-      label: close(i.fullKey),
+      label: labelWithParams(i.fullKey, i.params),
       kind: (i.category.includes("链式") ? 6 : 3) as CompletionItemKind, // Method | Function
-      detail: i.category,
+      detail: i.desc || i.category,
       insertText: insert(i.fullKey),
     });
   }

@@ -12,6 +12,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const log: InstrDef = {
+      desc: '对数(底数,真数)',
       key: 'log',
       params: ['底数', '真数'],
       compile: function (s, ctx) {

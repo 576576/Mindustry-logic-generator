@@ -13,6 +13,7 @@ export interface InstrInfo {
   key: string;
   fullKey: string;
   category: string;
+  desc: string;
   params: string[];
   chain: ChainKeyInfo[];
 }
@@ -58,6 +59,7 @@ export function loadData(builtinsJsPath: string): InstructionData {
           key: d.key,
           fullKey,
           category: label,
+          desc: d.desc ?? "",
           params: d.params ?? [],
           chain,
         });

@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const atan: InstrDef = {
+      desc: '反正切',
       key: 'atan',
       params: ['x'],
       compile: function (s, ctx) { return 'op atan ' + ctx.mid() + ' ' + s + ' 0'; }

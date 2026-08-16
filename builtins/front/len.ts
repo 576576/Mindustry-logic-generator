@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const len: InstrDef = {
+      desc: '向量长度',
       key: 'len',
       params: ['a', 'b'],
       compile: function (s, ctx) {

@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const ceil: InstrDef = {
+      desc: '向上取整',
       key: 'ceil',
       params: ['x'],
       compile: function (s, ctx) { return 'op ceil ' + ctx.mid() + ' ' + s + ' 0'; }

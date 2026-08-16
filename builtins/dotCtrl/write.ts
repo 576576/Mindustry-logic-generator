@@ -12,6 +12,7 @@ namespace Builtins {
     import D = Builtins.Domain;
 
     export const write: InstrDef = {
+      desc: '写入存储单元',
       key: 'write',
       params: ['内容', '单元号'],
       compile: function (s, ctx) {

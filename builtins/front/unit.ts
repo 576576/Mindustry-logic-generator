@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const unit: InstrDef = {
+      desc: '查询单位内容',
       key: 'unit',
       params: ['单位'],
       mcode: 'lookup',

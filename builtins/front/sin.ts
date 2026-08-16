@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const sin: InstrDef = {
+      desc: '正弦',
       key: 'sin',
       params: ['x'],
       compile: function (s, ctx) { return 'op sin ' + ctx.mid() + ' ' + s; }

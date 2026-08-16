@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const lb: InstrDef = {
+      desc: '以2为底对数',
       key: 'lb',
       params: ['x'],
       compile: function (s, ctx) { return 'op logn ' + ctx.mid() + ' ' + s + ' 2'; }

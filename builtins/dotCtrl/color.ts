@@ -11,8 +11,9 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const color: InstrDef = {
+      desc: '设置颜色(16进制)',
       key: 'color',
-      params: ['r', 'g', 'b', 'a'],
+      params: ['hex color'],
       mcode: 'control',
       mcodeSelect: ['color'],
       compile: function (s, ctx) { return 'control color ' + ctx.block() + ' ' + H.padZero(4, ctx.parts(s)); },

@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Dot {
     export const read: InstrDef = {
+      desc: '读取存储单元',
       key: 'read',
       params: ['单元号'],
       mcode: 'read',

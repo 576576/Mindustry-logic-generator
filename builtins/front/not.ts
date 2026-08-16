@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const not: InstrDef = {
+      desc: '逻辑非',
       key: 'not',
       params: ['x'],
       compile: function (s, ctx) { return 'op not ' + ctx.mid() + ' ' + s + ' 0'; }

@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Ctrl {
     export const printchar: InstrDef = {
+      desc: '打印单个字符(码点)',
       key: 'printchar',
       params: ['码点'],
       compile: function (s) { return 'printchar ' + s; },

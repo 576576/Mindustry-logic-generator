@@ -23,6 +23,7 @@ namespace Builtins {
     ];
 
     export const jump: InstrDef = {
+      desc: '条件跳转(目标标签)',
       key: 'jump',
       params: ['目标标签'],
       chain: CHAIN,

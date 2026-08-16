@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const angle: InstrDef = {
+      desc: '向量角度(弧度)',
       key: 'angle',
       params: ['a', 'b'],
       compile: function (s, ctx) {

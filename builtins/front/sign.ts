@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const sign: InstrDef = {
+      desc: '取符号(1/-1/0)',
       key: 'sign',
       params: ['x'],
       compile: function (s, ctx) { return 'op sign ' + ctx.mid() + ' ' + s + ' 0'; }

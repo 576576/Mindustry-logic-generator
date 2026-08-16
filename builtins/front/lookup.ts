@@ -12,6 +12,7 @@ namespace Builtins {
     import D = Builtins.Domain;
 
     export const lookup: InstrDef = {
+      desc: '按索引查询内容',
       key: 'lookup',
       params: ['类型', '索引'],
       compile: function (s, ctx) {

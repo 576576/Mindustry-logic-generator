@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const enable: InstrDef = {
+      desc: '开关方块',
       key: 'enable',
       params: ['0|1'],
       mcode: 'control',

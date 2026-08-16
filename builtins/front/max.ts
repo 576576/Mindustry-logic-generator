@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const max: InstrDef = {
+      desc: '取较大值',
       key: 'max',
       params: ['a', 'b'],
       compile: function (s, ctx) {

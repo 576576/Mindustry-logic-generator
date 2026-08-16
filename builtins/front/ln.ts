@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const ln: InstrDef = {
+      desc: '自然对数',
       key: 'ln',
       params: ['x'],
       compile: function (s, ctx) { return 'op log ' + ctx.mid() + ' ' + s + ' 0'; }

@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const team: InstrDef = {
+      desc: '查询阵营内容',
       key: 'team',
       params: ['阵营'],
       mcode: 'lookup',

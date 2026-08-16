@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const config: InstrDef = {
+      desc: '设置方块配置',
       key: 'config',
       params: ['值'],
       mcode: 'control',

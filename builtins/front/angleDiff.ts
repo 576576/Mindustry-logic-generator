@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const angleDiff: InstrDef = {
+      desc: '角度差',
       key: 'angleDiff',
       params: ['a', 'b'],
       compile: function (s, ctx) {

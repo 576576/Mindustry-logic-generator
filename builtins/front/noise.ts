@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const noise: InstrDef = {
+      desc: '噪声值',
       key: 'noise',
       params: ['a', 'b'],
       compile: function (s, ctx) {

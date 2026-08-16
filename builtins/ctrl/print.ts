@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Ctrl {
     export const print: InstrDef = {
+      desc: '打印内容到消息栏',
       key: 'print',
       params: ['内容'],
       compile: function (s) { return 'print ' + s; },

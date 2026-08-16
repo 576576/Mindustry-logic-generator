@@ -11,6 +11,7 @@ namespace Builtins {
     import H = Builtins.Helpers;
 
     export const pack: InstrDef = {
+      desc: '打包颜色(0~1)',
       key: 'pack',
       params: ['r', 'g', 'b', 'a'],
       mcode: 'packcolor',

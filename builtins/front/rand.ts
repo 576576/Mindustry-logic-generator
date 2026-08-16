@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const rand: InstrDef = {
+      desc: '随机数(0~x)',
       key: 'rand',
       params: ['x'],
       compile: function (s, ctx) { return 'op rand ' + ctx.mid() + ' ' + s + ' 0'; }

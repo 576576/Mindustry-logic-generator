@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Ctrl {
     export const printf: InstrDef = {
+      desc: '格式化打印(%d/%f 等)',
       key: 'printf',
       params: ['格式串', '参数…'],
       compile: function (s, ctx) {

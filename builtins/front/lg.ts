@@ -9,6 +9,7 @@
 namespace Builtins {
   export namespace Front {
     export const lg: InstrDef = {
+      desc: '以10为底对数',
       key: 'lg',
       params: ['x'],
       compile: function (s, ctx) { return 'op log10 ' + ctx.mid() + ' ' + s + ' 0'; }
