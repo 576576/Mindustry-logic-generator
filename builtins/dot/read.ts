@@ -1,6 +1,11 @@
 /**
- * .read — 内存读取(规范见 docs/instructions/dot.md)
+ * .read — 内存读取(表达式,结果变量在等号左侧)。
+ *
+ * 语法:`<结果> = <block>.read(<单元号>)`
+ * 输出:`read mid.<ref> <block> <s>`;调用方随后把 mid.<ref> 代入表达式并递增 ref
+ * 反编译:`read ` → `<结果>=<block>.read(<单元号>)`
  */
+
 namespace Builtins {
   export namespace Dot {
     export const read: InstrDef = {

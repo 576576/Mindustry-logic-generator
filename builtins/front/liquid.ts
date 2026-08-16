@@ -1,7 +1,11 @@
 /**
- * liquid — 内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup",按 "liquid" 分派。
+ * liquid — 内容查询;mcode 为共享指令字 `lookup`,按 liquid 分派。
+ *
+ * 语法:`liquid(@copper-wall)`
+ * 输出:`lookup liquid mid.<ref> <s>`
+ * 反编译:`lookup liquid ` → `<结果>=liquid(<索引>)`
  */
+
 namespace Builtins {
   export namespace Front {
     export const liquid: InstrDef = {

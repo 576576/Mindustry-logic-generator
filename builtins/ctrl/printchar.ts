@@ -1,6 +1,11 @@
 /**
- * printchar — 透传指令(规范见 docs/instructions/ctrl.md)
+ * printchar — 透传指令。
+ *
+ * 语法:`printchar(<码点>)`
+ * 输出:`printchar <s>`
+ * 反编译:`printchar ` → `printchar(<s>)`
  */
+
 namespace Builtins {
   export namespace Ctrl {
     export const printchar: InstrDef = {

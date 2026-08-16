@@ -1,6 +1,11 @@
 /**
- * link — 方块链接引用(规范见 docs/instructions/front.md)
+ * link — 方块链接引用。
+ *
+ * 语法:`link(<索引>)`
+ * 输出:`getlink mid.<ref> <s>`
+ * 反编译:`getlink ` → `<结果>=link(<索引>)`
  */
+
 namespace Builtins {
   export namespace Front {
     export const link: InstrDef = {

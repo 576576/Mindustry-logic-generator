@@ -1,7 +1,11 @@
 /**
- * .ctrl — 控制指令兜底(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",无 mcodeSelect = 兜底(未知控制类型)。
+ * .ctrl — 控制指令兜底;mcode 为共享指令字 `control`(无 mcodeSelect = 兜底)。
+ *
+ * 语法:`<block>.ctrl(<类型>,<参数…>)`
+ * 输出:`control <w0|enabled> <block> <pad(4, w1)>`(w0 缺省 enabled,w1 缺省空串)
+ * 反编译:`control ` 未知类型 → `<block>.ctrl(reduce(0, 类型 参数…))`
  */
+
 namespace Builtins {
   export namespace DotCtrl {
     import H = Builtins.Helpers;

@@ -1,7 +1,11 @@
 /**
- * block — 内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup",按 "block" 分派。
+ * block — 内容查询;mcode 为共享指令字 `lookup`,按 block 分派。
+ *
+ * 语法:`block(@copper-wall)`
+ * 输出:`lookup block mid.<ref> <s>`
+ * 反编译:`lookup block ` → `<结果>=block(<索引>)`
  */
+
 namespace Builtins {
   export namespace Front {
     export const block: InstrDef = {

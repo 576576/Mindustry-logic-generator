@@ -1,7 +1,11 @@
 /**
- * .config — 控制指令(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",按 "config" 分派。
+ * .config — 控制指令;mcode 为共享指令字 `control`,按 config 分派。
+ *
+ * 语法:`<block>.config(<值>)`
+ * 输出:`control config <block> <pad(4, s)>`
+ * 反编译:`control config ` → `<block>.config(<值>)`
  */
+
 namespace Builtins {
   export namespace DotCtrl {
     import H = Builtins.Helpers;

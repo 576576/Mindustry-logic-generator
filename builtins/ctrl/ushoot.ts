@@ -1,7 +1,14 @@
 /**
- * ushoot — 链式参数指令(规范见 docs/instructions/ctrl.md)
- * mcode 为共享指令字 "ucontrol",按 target/targetp 分派。
+ * ushoot — 链式参数指令;mcode 为共享指令字 `ucontrol`,按 target/targetp 分派。
+ *
+ * 语法:`ushoot(<shoot>).target(<目标>|<x>,<y>)`;shoot 缺省 `1`,target 缺省 `@this`
+ * 链式键:main(射击开关), target(目标;双参为坐标,单参为目标单位)
+ * 输出:目标含逗号时 `ucontrol target <pad(5, tgt 逗号替换为空格, shoot)>`,
+ *   否则 `ucontrol targetp <pad(5, tgt, shoot)>`
+ * 示例:`ushoot(1).target(114,514)` → `ucontrol target 114 514 1 0 0`
+ * 反编译:`ucontrol ` target/targetp → `ushoot(<shoot>)` + `.target(...)`
  */
+
 namespace Builtins {
   export namespace Ctrl {
     import H = Builtins.Helpers;

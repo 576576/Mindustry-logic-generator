@@ -1,6 +1,12 @@
 /**
- * log — 任意底对数(规范见 docs/instructions/front.md;两参交换)
+ * log — 任意底对数(两参交换)。
+ *
+ * 语法:`log(<底数>,<真数>)`
+ * 输出:`op logn mid.<ref> <w1> <w0>`(两参交换)
+ * 示例:`log(2,8)` → `op logn mid.1 8 2`
+ * 反编译:op 行通用还原(log 交换两参并去尾部 0)。
  */
+
 namespace Builtins {
   export namespace Front {
     import H = Builtins.Helpers;

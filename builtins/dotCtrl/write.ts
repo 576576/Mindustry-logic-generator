@@ -1,6 +1,11 @@
 /**
- * .write — 内存写指令(规范见 docs/instructions/dot.md)
+ * .write — 内存写指令。
+ *
+ * 语法:`<block>.write(<内容>,<单元号>)`
+ * 输出:`write <w0|null> <block> <w1|0>`
+ * 反编译:`write ` → `<block>.write(<内容>[,<单元号>])`(单元号为 0 省略)
  */
+
 namespace Builtins {
   export namespace DotCtrl {
     import H = Builtins.Helpers;

@@ -1,6 +1,11 @@
 /**
- * wait — 透传指令(规范见 docs/instructions/ctrl.md)
+ * wait — 透传指令。
+ *
+ * 语法:`wait(<秒数>)`
+ * 输出:`wait <s>`
+ * 反编译:`wait ` → `wait(<s>)`
  */
+
 namespace Builtins {
   export namespace Ctrl {
     export const wait: InstrDef = {

@@ -1,7 +1,11 @@
 /**
- * .color — 控制指令(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",按 "color" 分派。
+ * .color — 控制指令;mcode 为共享指令字 `control`,按 color 分派。
+ *
+ * 语法:`<block>.color(<r>,<g>,<b>,<a>)`
+ * 输出:`control color <block> <pad(4, s)>`
+ * 反编译:`control color ` → `<block>.color(<r,g,b,a>)`
  */
+
 namespace Builtins {
   export namespace DotCtrl {
     import H = Builtins.Helpers;

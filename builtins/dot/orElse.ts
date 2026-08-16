@@ -1,6 +1,15 @@
 /**
- * .orElse — 条件选择(规范见 docs/instructions/dot.md)
+ * .orElse — 条件选择。
+ *
+ * 语法:`<value>.orElse(<后备>).when(<条件>)`;后备缺省 `0`
+ * 链式键:main(后备), when(条件)
+ * 条件判定(与 jump 相同,单 token 时不特判 always/never):
+ * - 多 token:子编译;非空产物 → 条件取产物末行,结合 expr 修正
+ * - 单 token:`notEqual <whenExpr> 0`;空:恒真
+ * 输出:`select mid.<ref> <reverseCondition(condition)> <block> <target>`
+ * 反编译:`select ` → `<结果>=<target>.orElse(<后备>).when(<条件>)`
  */
+
 namespace Builtins {
   export namespace Dot {
     import H = Builtins.Helpers;

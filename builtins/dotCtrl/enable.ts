@@ -1,7 +1,11 @@
 /**
- * .enable — 控制指令(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",按 "enabled" 分派。
+ * .enable — 控制指令;mcode 为共享指令字 `control`,按 enabled 分派。
+ *
+ * 语法:`<block>.enable(<0|1>)`
+ * 输出:`control enabled <block> <pad(4, s)>`
+ * 反编译:`control enabled ` → `<block>.enable(<0|1>)`
  */
+
 namespace Builtins {
   export namespace DotCtrl {
     import H = Builtins.Helpers;

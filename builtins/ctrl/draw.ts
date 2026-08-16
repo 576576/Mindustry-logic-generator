@@ -1,6 +1,12 @@
 /**
- * draw — 固定填充指令(规范见 docs/instructions/ctrl.md)
+ * draw — 固定填充指令。
+ *
+ * 语法:`draw(<类型>,<参数…>)`
+ * 输出:`draw <pad(7, s)>`
+ * 示例:`draw(clear)` → `draw clear 0 0 0 0 0 0`
+ * 反编译:`draw ` → `draw(reduce(0, s))`(去掉尾部 0,逗号分隔)
  */
+
 namespace Builtins {
   export namespace Ctrl {
     import H = Builtins.Helpers;

@@ -1,7 +1,12 @@
 /**
- * uctrl — 固定填充指令(规范见 docs/instructions/ctrl.md)
- * mcode 为共享指令字 "ucontrol"(兜底:无 mcodeSelect 命中时)。
+ * uctrl — 固定填充指令;mcode 为共享指令字 `ucontrol`(兜底)。
+ *
+ * 语法:`uctrl(<类型>,<参数…>)`
+ * 输出:`ucontrol <pad(6, s)>`(参数按顶层逗号切分,填充到 6 项,缺省 `0`)
+ * 示例:`uctrl(getBlock)` → `ucontrol getBlock 0 0 0 0 0`
+ * 反编译:`ucontrol ` 非 target/targetp → `uctrl(reduce(0, 类型 参数…))`
  */
+
 namespace Builtins {
   export namespace Ctrl {
     import H = Builtins.Helpers;

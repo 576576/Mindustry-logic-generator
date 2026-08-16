@@ -1,6 +1,17 @@
 /**
- * jump — 链式参数指令(规范见 docs/instructions/ctrl.md)
+ * jump — 链式参数指令。
+ *
+ * 语法:`jump(<目标标签>).when(<条件>)`;when 缺省恒真
+ * 链式键:main(目标标签,DEFAULT), when(条件,空)
+ * 条件判定:
+ * - when 多 token:子编译 whenExpr,产物非空时 condition 取末行(getCondition);
+ *   非 `always 0 0` 弹出该行;`always 0 0` 且子表达式非空则 `notEqual <expr> 0`;产物行并入输出
+ * - when 单 token:`always` → `always 0 0`;`never` → `notEqual 0 0`;其他 → `notEqual <whenExpr> 0`
+ * - when 空:恒真
+ * 输出:`jump <target> <condition>`
+ * 反编译:`jump ` → `jump(<tag>)[.when(<cond>)]`(恒真省略 when)
  */
+
 namespace Builtins {
   export namespace Ctrl {
     import H = Builtins.Helpers;

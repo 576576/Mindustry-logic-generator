@@ -1,7 +1,11 @@
 /**
- * team — 内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup",按 "team" 分派。
+ * team — 内容查询;mcode 为共享指令字 `lookup`,按 team 分派。
+ *
+ * 语法:`team(@copper-wall)`
+ * 输出:`lookup team mid.<ref> <s>`
+ * 反编译:`lookup team ` → `<结果>=team(<索引>)`
  */
+
 namespace Builtins {
   export namespace Front {
     export const team: InstrDef = {

@@ -1,6 +1,11 @@
 /**
- * len — 二元运算(规范见 docs/instructions/front.md)
+ * len — 二元运算。
+ *
+ * 语法:`len(a,b)`
+ * 输出:`op len mid.<ref> <w0> <w1>`(w0/w1 为前两个参数)
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=len(a,b)`)。
  */
+
 namespace Builtins {
   export namespace Front {
     import H = Builtins.Helpers;

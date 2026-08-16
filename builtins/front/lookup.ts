@@ -1,7 +1,11 @@
 /**
- * lookup — 通用内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup"(兜底:非标准内容类型)。
+ * lookup — 通用内容查询;mcode 为共享指令字 `lookup`(兜底:非标准内容类型)。
+ *
+ * 语法:`lookup(<类型>,<索引>)`
+ * 输出:`lookup <w0|block> mid.<ref> <wLast|0>`(类型缺省 block,索引取末参缺省 0)
+ * 反编译:`lookup ` 非标准类型 → `<结果>=lookup(<类型>,<索引>)`
  */
+
 namespace Builtins {
   export namespace Front {
     import H = Builtins.Helpers;

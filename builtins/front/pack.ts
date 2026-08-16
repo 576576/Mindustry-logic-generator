@@ -1,6 +1,11 @@
 /**
- * pack — 颜色打包(规范见 docs/instructions/front.md)
+ * pack — 颜色打包。
+ *
+ * 语法:`pack(<r>,<g>,<b>,<a>)`
+ * 输出:`packcolor mid.<ref> <pad(4, s)>`
+ * 反编译:`packcolor ` → `<结果>=pack(<r,g,b,a>)`
  */
+
 namespace Builtins {
   export namespace Front {
     import H = Builtins.Helpers;

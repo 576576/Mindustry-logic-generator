@@ -1,6 +1,11 @@
 /**
- * .unpack — 取色指令(规范见 docs/instructions/dot.md)
+ * .unpack — 取色指令。
+ *
+ * 语法:`<block>.unpack(<r>,<g>,<b>,<a>)`
+ * 输出:`unpackcolor <pad(4, s)> <block>`
+ * 反编译:`unpackcolor ` → `<block>.unpack(reduce(0, 前4参))`
  */
+
 namespace Builtins {
   export namespace DotCtrl {
     import H = Builtins.Helpers;

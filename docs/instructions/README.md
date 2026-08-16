@@ -2,22 +2,27 @@
 
 > [← 返回 README](../../README.md)
 
-本目录是 MdtC 语言**内置指令的唯一规范(Spec)**,也是"文档驱动开发"的契约:
+本目录是 MdtC 语言**内置指令的规范体系**,也是"文档驱动开发"的契约:
 
 ```text
-docs/instructions/*.md      ←  规范(人类可读,唯一事实源)
-        │ 逐条对应(标题为 `### name(`)
-        ▼
-builtins/{大类}/xxx.ts      ←  每个指令一个 InstrDef 双向映射文件(compile 发射 + restore 还原)
+builtins/{大类}/xxx.ts      ←  指令实现 + 具体规范(文件头 JSDoc:语法/参数/默认值/链式键/输出/反编译)
         │ registry.ts 统一派生(compile/decompile/chain 三表)+ tools/sync-js.mjs 编译
         ▼
 builtins/gen/builtins.js    ←  随包资源(CLI 与模组运行期加载,Rhino 执行)
         │
         ▼
 Java 主程序                 ←  BuiltinEngine 加载注册表,不再硬编码任何指令
+
+docs/instructions/*.md      ←  规范索引与总览(具体指令细节见 .ts JSDoc)
 ```
 
-**一致性保障**:`BuiltinEngineTest` 会读取本目录各分类文档中 `### name(` 标题,
+**规范位置**:每个指令的**具体规范**(语法、参数与默认值、链式键、输出、
+反编译形态)写在其定义文件 `builtins/{大类名}/xxx.ts` 的**文件头 JSDoc**
+中——实现与文档同文件,不易漂移。本目录的 `ctrl.md` / `dot.md` /
+`front.md` / `decompile.md` 为**指令清单索引**(`### name(` 标题 + 一行概要
++ 指向 .ts 的链接);`domain.md` / `operators.md` 保留领域与运算符数据表。
+
+**一致性保障**:`BuiltinEngineTest` 会读取各分类文档中 `### name(` 标题,
 断言其与加载后的指令注册表完全一致(文档里出现的指令必须存在,注册表里
 存在的指令必须被文档收录),防止文档与实现漂移。
 
@@ -27,14 +32,15 @@ Java 主程序                 ←  BuiltinEngine 加载注册表,不再硬编�
 |------|------|
 | [domain.md](domain.md) | 领域数据:ulocate 建筑/locate/lookup 内容类型/链式键/默认值常量 |
 | [operators.md](operators.md) | 运算符表(含优先级与匹配顺序)、别名/反转/偏移表、指令码表 |
-| [ctrl.md](ctrl.md) | 编译端 Ctrl 指令(print…raw,共 15 个) |
-| [dot.md](dot.md) | 编译端 DotCtrl + Dot 指令(enabled…orElse,共 13 个) |
-| [front.md](front.md) | 编译端 FrontHigh + FrontLow 指令(not…radar,共 34 个) |
-| [decompile.md](decompile.md) | 反编译端逆处理器(set…radar,共 24 个,由指令定义派生) |
+| [ctrl.md](ctrl.md) | Ctrl 指令清单(print…raw,共 15 个;规范见 `builtins/ctrl/*.ts`) |
+| [dot.md](dot.md) | DotCtrl + Dot 指令清单(enabled…orElse,共 13 个;规范见 `builtins/dotCtrl|dot/*.ts`) |
+| [front.md](front.md) | FrontHigh + FrontLow 指令清单(not…radar,共 34 个;规范见 `builtins/front/*.ts`) |
+| [decompile.md](decompile.md) | 反编译端逆处理器清单(set…radar,共 24 个,由指令定义派生) |
 
 ## 指令定义结构(InstrDef 双向映射)
 
-每个指令一个文件(`builtins/{大类名}/xxx.ts`),导出 `InstrDef` 对象:
+每个指令一个文件(`builtins/{大类名}/xxx.ts`):文件头 JSDoc 写规范,
+下方导出 `InstrDef` 对象:
 
 | 字段 | 说明 |
 |------|------|
@@ -53,10 +59,6 @@ Java 主程序                 ←  BuiltinEngine 加载注册表,不再硬编�
 | `ctrl` | 裸名 + `(` | `print` → `print(` |
 | `dotCtrl` / `dot` | `.` + 裸名 + `(` | `ulocate` → `.ulocate(` |
 | `front`(high/low) | 裸名 + `(` | `not` → `not(` |
-| `mcodeSelect` | 共享指令字的分派 token(如 `control` 下的 `enabled`/`shoot`) |
-| `chain` | 链式键声明(键名 + 缺省值;**compile 与 restore 的单一默认值来源**) |
-| `compile` | 发射:mdtc 参数 → mdtcode 行(可含 \n 多行) |
-| `restore` | 还原:mdtcode 参数 → mdtc(缺省 = 无反编译条目) |
 
 **统一 compile/decompile**:注册表由 `registry.ts` 从所有指令定义统一派生
 compile 五类映射 + decompile 映射 + chain 表;不再有独立的反编译处理器文件。
@@ -84,13 +86,14 @@ compile 五类映射 + decompile 映射 + chain 表;不再有独立的反编译�
 
 ## 如何新增/修改一条指令(流程)
 
-1. 在本目录对应的分类文档中,按 `### name(` 标题补写/修改规范(语法、参数、
-   默认值、链式键、输出、反编译形态)。
-2. 在 `builtins/{大类名}/` 下新建 `xxx.ts`(或修改现有文件),导出 `InstrDef`:
+1. 在 `builtins/{大类名}/` 下新建 `xxx.ts`(或修改现有文件):**文件头 JSDoc
+   写规范**(语法、参数、默认值、链式键、输出、反编译形态),下方导出 `InstrDef`:
    `key` + `compile` 必填;`restore`(需要反编译)、`chain`(链式指令)、
    `mcode`/`mcodeSelect`(共享指令字分派)按需填写。
-3. 若属新指令,在 `builtins/{大类名}/index.ts` 的 `defs` 数组中登记
-   (**顺序即匹配顺序**;`ctrl` 中 `raw` 必须最后)。
-4. 运行 `node tools/sync-js.mjs` 重新生成 `builtins/gen/builtins.js` 并提交。
-5. 运行 `./gradlew build`:既有行为测试、往返测试、文档↔注册表一致性测试、
+2. 若属新指令,在 `builtins/{大类名}/index.ts` 的 `defs` 数组中登记
+   (**顺序即匹配顺序**;`ctrl` 中 `raw` 必须最后),并在对应分类文档
+   (`ctrl.md` / `dot.md` / `front.md` / `decompile.md`)按 `### name(` 标题
+   补一行索引(链接到 .ts + 一行概要)。
+3. 运行 `node tools/sync-js.mjs` 重新生成 `builtins/gen/builtins.js` 并提交。
+4. 运行 `./gradlew build`:既有行为测试、往返测试、文档↔注册表一致性测试、
    链检查测试全部通过;必要时在 `sample_cases/` 增补用例。

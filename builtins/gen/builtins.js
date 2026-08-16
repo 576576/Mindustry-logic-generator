@@ -434,7 +434,12 @@ var Builtins;
     })(Registry = Builtins.Registry || (Builtins.Registry = {}));
 })(Builtins || (Builtins = {}));
 /**
- * draw — 固定填充指令(规范见 docs/instructions/ctrl.md)
+ * draw — 固定填充指令。
+ *
+ * 语法:`draw(<类型>,<参数…>)`
+ * 输出:`draw <pad(7, s)>`
+ * 示例:`draw(clear)` → `draw clear 0 0 0 0 0 0`
+ * 反编译:`draw ` → `draw(reduce(0, s))`(去掉尾部 0,逗号分隔)
  */
 var Builtins;
 (function (Builtins) {
@@ -449,8 +454,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * end — 零参指令(规范见 docs/instructions/ctrl.md)
- * 无 restore:裸 "end" 行由 decompile 管道还原为 "end()"。
+ * end — 零参指令。
+ *
+ * 语法:`end()`
+ * 输出:`end`(忽略参数)
+ * 反编译:裸 `end` 行由 decompile 管道还原为 `end()`。
  */
 var Builtins;
 (function (Builtins) {
@@ -463,7 +471,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * format — 透传指令(规范见 docs/instructions/ctrl.md)
+ * format — 透传指令。
+ *
+ * 语法:`format(<值>)`
+ * 输出:`format <s>`
+ * 反编译:`format ` → `format(<s>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -477,7 +489,17 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * jump — 链式参数指令(规范见 docs/instructions/ctrl.md)
+ * jump — 链式参数指令。
+ *
+ * 语法:`jump(<目标标签>).when(<条件>)`;when 缺省恒真
+ * 链式键:main(目标标签,DEFAULT), when(条件,空)
+ * 条件判定:
+ * - when 多 token:子编译 whenExpr,产物非空时 condition 取末行(getCondition);
+ *   非 `always 0 0` 弹出该行;`always 0 0` 且子表达式非空则 `notEqual <expr> 0`;产物行并入输出
+ * - when 单 token:`always` → `always 0 0`;`never` → `notEqual 0 0`;其他 → `notEqual <whenExpr> 0`
+ * - when 空:恒真
+ * 输出:`jump <target> <condition>`
+ * 反编译:`jump ` → `jump(<tag>)[.when(<cond>)]`(恒真省略 when)
  */
 var Builtins;
 (function (Builtins) {
@@ -543,8 +565,12 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * jump2 — 计算跳转(规范见 docs/instructions/ctrl.md)
- * 无 restore:@counter 行折叠由 decompile 管道(convertJump2)处理。
+ * jump2 — 计算跳转;不直接产出行,无 restore(多行折叠由 decompile 管道处理)。
+ *
+ * 语法:`jump2(<表达式或增量表达式>)`
+ * 输出:将 `s` 转为 `@counter=<s>`(单 token)或 `@counter=@counter<s>`(多 token),
+ *   交给子编译后把产物行写入 bash 列表,返回空串。
+ * 反编译:decompile 管道 convertJump2 把 `@counter=` 行折叠为 `jump2(...)`。
  */
 var Builtins;
 (function (Builtins) {
@@ -561,7 +587,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * print — 透传指令(规范见 docs/instructions/ctrl.md)
+ * print — 透传指令。
+ *
+ * 语法:`print(<内容>)`
+ * 输出:`print <s>`
+ * 反编译:`print ` → `print(<s>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -575,7 +605,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * printchar — 透传指令(规范见 docs/instructions/ctrl.md)
+ * printchar — 透传指令。
+ *
+ * 语法:`printchar(<码点>)`
+ * 输出:`printchar <s>`
+ * 反编译:`printchar ` → `printchar(<s>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -589,8 +623,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * printf — 多行展开指令(规范见 docs/instructions/ctrl.md)
- * 无 restore:多行(print+format)不折叠回 printf,由 decompile 逐行还原。
+ * printf — 多行展开指令;无 restore(多行 print+format 由 decompile 逐行还原)。
+ *
+ * 语法:`printf(<格式串>,<参数…>)`
+ * 输出:参数不足 2 个时退化为 `print <s>`;否则产生多行:
+ *   `print <p0>` + 每个后续参数一行 `format <pN>`。
  */
 var Builtins;
 (function (Builtins) {
@@ -611,8 +648,10 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * raw — 原生透传指令(规范见 docs/instructions/ctrl.md)
- * 无 restore:未知指令行由 decompile 管道还原为 raw("…")。
+ * raw — 原生透传指令;无 restore(未知指令行由 decompile 还原为 `raw("…")`)。
+ *
+ * 语法:`raw("<原生 mdtcode 指令>")`
+ * 输出:`<s>`(原样透传,不做任何编译)
  * 注意:raw( 必须排在 draw( 之后(注册顺序即匹配顺序)。
  */
 var Builtins;
@@ -626,8 +665,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * stop — 零参指令(规范见 docs/instructions/ctrl.md)
- * 无 restore:裸 "stop" 行由 decompile 管道还原为 "stop()"。
+ * stop — 零参指令。
+ *
+ * 语法:`stop()`
+ * 输出:`stop`(忽略参数)
+ * 反编译:裸 `stop` 行由 decompile 管道还原为 `stop()`。
  */
 var Builtins;
 (function (Builtins) {
@@ -640,8 +682,10 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * tag — 标签指令(规范见 docs/instructions/ctrl.md)
- * 无 restore:"::" 行由 decompile 管道原样保留。
+ * tag — 标签指令;无 restore(`::` 行由 decompile 管道原样保留)。
+ *
+ * 语法:`tag(<标签名>)`
+ * 输出:`::<s>`(标签行;由 convertLink 解析)
  */
 var Builtins;
 (function (Builtins) {
@@ -654,7 +698,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * ubind — 透传指令(规范见 docs/instructions/ctrl.md)
+ * ubind — 透传指令。
+ *
+ * 语法:`ubind(<单位类型>)`
+ * 输出:`ubind <s>`
+ * 反编译:`ubind ` → `ubind(<s>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -668,8 +716,12 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * uctrl — 固定填充指令(规范见 docs/instructions/ctrl.md)
- * mcode 为共享指令字 "ucontrol"(兜底:无 mcodeSelect 命中时)。
+ * uctrl — 固定填充指令;mcode 为共享指令字 `ucontrol`(兜底)。
+ *
+ * 语法:`uctrl(<类型>,<参数…>)`
+ * 输出:`ucontrol <pad(6, s)>`(参数按顶层逗号切分,填充到 6 项,缺省 `0`)
+ * 示例:`uctrl(getBlock)` → `ucontrol getBlock 0 0 0 0 0`
+ * 反编译:`ucontrol ` 非 target/targetp → `uctrl(reduce(0, 类型 参数…))`
  */
 var Builtins;
 (function (Builtins) {
@@ -688,8 +740,14 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * ushoot — 链式参数指令(规范见 docs/instructions/ctrl.md)
- * mcode 为共享指令字 "ucontrol",按 target/targetp 分派。
+ * ushoot — 链式参数指令;mcode 为共享指令字 `ucontrol`,按 target/targetp 分派。
+ *
+ * 语法:`ushoot(<shoot>).target(<目标>|<x>,<y>)`;shoot 缺省 `1`,target 缺省 `@this`
+ * 链式键:main(射击开关), target(目标;双参为坐标,单参为目标单位)
+ * 输出:目标含逗号时 `ucontrol target <pad(5, tgt 逗号替换为空格, shoot)>`,
+ *   否则 `ucontrol targetp <pad(5, tgt, shoot)>`
+ * 示例:`ushoot(1).target(114,514)` → `ucontrol target 114 514 1 0 0`
+ * 反编译:`ucontrol ` target/targetp → `ushoot(<shoot>)` + `.target(...)`
  */
 var Builtins;
 (function (Builtins) {
@@ -736,7 +794,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * wait — 透传指令(规范见 docs/instructions/ctrl.md)
+ * wait — 透传指令。
+ *
+ * 语法:`wait(<秒数>)`
+ * 输出:`wait <s>`
+ * 反编译:`wait ` → `wait(<s>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -767,8 +829,11 @@ var Builtins;
     })(Ctrl = Builtins.Ctrl || (Builtins.Ctrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .color — 控制指令(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",按 "color" 分派。
+ * .color — 控制指令;mcode 为共享指令字 `control`,按 color 分派。
+ *
+ * 语法:`<block>.color(<r>,<g>,<b>,<a>)`
+ * 输出:`control color <block> <pad(4, s)>`
+ * 反编译:`control color ` → `<block>.color(<r,g,b,a>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -789,8 +854,11 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .config — 控制指令(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",按 "config" 分派。
+ * .config — 控制指令;mcode 为共享指令字 `control`,按 config 分派。
+ *
+ * 语法:`<block>.config(<值>)`
+ * 输出:`control config <block> <pad(4, s)>`
+ * 反编译:`control config ` → `<block>.config(<值>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -811,8 +879,11 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .ctrl — 控制指令兜底(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",无 mcodeSelect = 兜底(未知控制类型)。
+ * .ctrl — 控制指令兜底;mcode 为共享指令字 `control`(无 mcodeSelect = 兜底)。
+ *
+ * 语法:`<block>.ctrl(<类型>,<参数…>)`
+ * 输出:`control <w0|enabled> <block> <pad(4, w1)>`(w0 缺省 enabled,w1 缺省空串)
+ * 反编译:`control ` 未知类型 → `<block>.ctrl(reduce(0, 类型 参数…))`
  */
 var Builtins;
 (function (Builtins) {
@@ -836,7 +907,11 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .dflush — 绘制冲刷指令(规范见 docs/instructions/dot.md)
+ * .dflush — 绘制冲刷指令。
+ *
+ * 语法:`<block>.dflush()`
+ * 输出:`drawflush <block>`
+ * 反编译:`drawflush ` → `<block>.dflush()`
  */
 var Builtins;
 (function (Builtins) {
@@ -851,8 +926,11 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .enable — 控制指令(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",按 "enabled" 分派。
+ * .enable — 控制指令;mcode 为共享指令字 `control`,按 enabled 分派。
+ *
+ * 语法:`<block>.enable(<0|1>)`
+ * 输出:`control enabled <block> <pad(4, s)>`
+ * 反编译:`control enabled ` → `<block>.enable(<0|1>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -873,7 +951,11 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .pflush — 打印冲刷指令(规范见 docs/instructions/dot.md)
+ * .pflush — 打印冲刷指令。
+ *
+ * 语法:`<block>.pflush()`
+ * 输出:`printflush <block>`
+ * 反编译:`printflush ` → `<block>.pflush()`
  */
 var Builtins;
 (function (Builtins) {
@@ -888,8 +970,16 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .shoot — 链式参数指令(规范见 docs/instructions/dot.md)
- * mcode 为共享指令字 "control",按 shoot/shootp 分派。
+ * .shoot — 链式参数指令;mcode 为共享指令字 `control`,按 shoot/shootp 分派。
+ *
+ * 语法:`<block>.shoot(<shoot>).target(<设计目标>|<x>,<y>)`;shoot 缺省 `1`,target 缺省 `@this`
+ * 链式键:main(射击开关), target(设计目标或坐标)
+ * 说明:括号内只有射击开关;x/y 坐标或设计目标经 .target(...) 传递,
+ *   由 target 参数量区分——双参为 xy 坐标(shoot),单参为设计目标(shootp)
+ * 输出:`control shoot <block> <pad(4, tgt 逗号替换为空格, shoot)>`(坐标)
+ *   或 `control shootp <block> <pad(4, tgt, shoot)>`(设计目标)
+ * 示例:`turret.shoot(1).target(5,6)` → `control shoot turret 5 6 1 0`
+ * 反编译:`control ` shoot/shootp → `<block>.shoot(<shoot>)` + `.target(...)`
  */
 var Builtins;
 (function (Builtins) {
@@ -936,7 +1026,14 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .ulocate — 链式定位指令(规范见 docs/instructions/dot.md)
+ * .ulocate — 链式定位指令。
+ *
+ * 语法:`<block>.ulocate(<type>).ore(<ore>).building(<bld>).enemy(<enemy>)`
+ * 链式键:main(定位类型,缺省 ore), ore(缺省 0), building(缺省 core), enemy(缺省 0)
+ * 行为:type 命中 Building 分类(buildingContains)时,building = type 且 type = building
+ * 输出:`ulocate <type> <building> <enemy> <ore> <block>.x <block>.y <block>.f <block>`
+ * 反编译:`ulocate ` → `<block>.ulocate(<type>)`(type 为 building 时用 building 参数;
+ *   追加 .ore(<ore>)(仅当 type 为 ore)、.enemy(<enemy>)(非 0 时)
  */
 var Builtins;
 (function (Builtins) {
@@ -986,7 +1083,11 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .unpack — 取色指令(规范见 docs/instructions/dot.md)
+ * .unpack — 取色指令。
+ *
+ * 语法:`<block>.unpack(<r>,<g>,<b>,<a>)`
+ * 输出:`unpackcolor <pad(4, s)> <block>`
+ * 反编译:`unpackcolor ` → `<block>.unpack(reduce(0, 前4参))`
  */
 var Builtins;
 (function (Builtins) {
@@ -1005,7 +1106,11 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .write — 内存写指令(规范见 docs/instructions/dot.md)
+ * .write — 内存写指令。
+ *
+ * 语法:`<block>.write(<内容>,<单元号>)`
+ * 输出:`write <w0|null> <block> <w1|0>`
+ * 反编译:`write ` → `<block>.write(<内容>[,<单元号>])`(单元号为 0 省略)
  */
 var Builtins;
 (function (Builtins) {
@@ -1042,7 +1147,15 @@ var Builtins;
     })(DotCtrl = Builtins.DotCtrl || (Builtins.DotCtrl = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .orElse — 条件选择(规范见 docs/instructions/dot.md)
+ * .orElse — 条件选择。
+ *
+ * 语法:`<value>.orElse(<后备>).when(<条件>)`;后备缺省 `0`
+ * 链式键:main(后备), when(条件)
+ * 条件判定(与 jump 相同,单 token 时不特判 always/never):
+ * - 多 token:子编译;非空产物 → 条件取产物末行,结合 expr 修正
+ * - 单 token:`notEqual <whenExpr> 0`;空:恒真
+ * 输出:`select mid.<ref> <reverseCondition(condition)> <block> <target>`
+ * 反编译:`select ` → `<结果>=<target>.orElse(<后备>).when(<条件>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1100,7 +1213,11 @@ var Builtins;
     })(Dot = Builtins.Dot || (Builtins.Dot = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .read — 内存读取(规范见 docs/instructions/dot.md)
+ * .read — 内存读取(表达式,结果变量在等号左侧)。
+ *
+ * 语法:`<结果> = <block>.read(<单元号>)`
+ * 输出:`read mid.<ref> <block> <s>`;调用方随后把 mid.<ref> 代入表达式并递增 ref
+ * 反编译:`read ` → `<结果>=<block>.read(<单元号>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1118,7 +1235,12 @@ var Builtins;
     })(Dot = Builtins.Dot || (Builtins.Dot = {}));
 })(Builtins || (Builtins = {}));
 /**
- * .sensor — 传感器读取(规范见 docs/instructions/dot.md)
+ * .sensor — 传感器读取(表达式,结果变量在等号左侧)。
+ *
+ * 语法:`<结果> = <block>.sensor(<属性>)`
+ * 输出:`sensor mid.<ref> <block> <s>`;调用方随后把 mid.<ref> 代入表达式并递增 ref
+ * 示例:`heat = reactor.sensor(@heat)`
+ * 反编译:`sensor ` → `<结果>=<block>.sensor(<属性>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1150,8 +1272,11 @@ var Builtins;
     })(Dot = Builtins.Dot || (Builtins.Dot = {}));
 })(Builtins || (Builtins = {}));
 /**
- * abs — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * abs — 一元运算。
+ *
+ * 语法:`abs(x)`
+ * 输出:`op abs mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=abs(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1164,8 +1289,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * acos — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * acos — 一元运算。
+ *
+ * 语法:`acos(x)`
+ * 输出:`op acos mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=acos(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1178,7 +1306,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * angle — 二元运算(规范见 docs/instructions/front.md)
+ * angle — 二元运算。
+ *
+ * 语法:`angle(a,b)`
+ * 输出:`op angle mid.<ref> <w0> <w1>`(w0/w1 为前两个参数)
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=angle(a,b)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1195,7 +1327,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * angleDiff — 二元运算(规范见 docs/instructions/front.md)
+ * angleDiff — 二元运算。
+ *
+ * 语法:`angleDiff(a,b)`
+ * 输出:`op angleDiff mid.<ref> <w0> <w1>`(w0/w1 为前两个参数)
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=angleDiff(a,b)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1212,8 +1348,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * asin — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * asin — 一元运算。
+ *
+ * 语法:`asin(x)`
+ * 输出:`op asin mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=asin(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1226,8 +1365,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * atan — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * atan — 一元运算。
+ *
+ * 语法:`atan(x)`
+ * 输出:`op atan mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=atan(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1240,8 +1382,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * block — 内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup",按 "block" 分派。
+ * block — 内容查询;mcode 为共享指令字 `lookup`,按 block 分派。
+ *
+ * 语法:`block(@copper-wall)`
+ * 输出:`lookup block mid.<ref> <s>`
+ * 反编译:`lookup block ` → `<结果>=block(<索引>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1260,8 +1405,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * ceil — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * ceil — 一元运算。
+ *
+ * 语法:`ceil(x)`
+ * 输出:`op ceil mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=ceil(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1274,7 +1422,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * cos — 三角函数(规范见 docs/instructions/front.md;输出无尾随 0)
+ * cos — 三角函数(输出无尾随 0)。
+ *
+ * 语法:`cos(x)`
+ * 输出:`op cos mid.<ref> <s>`
+ * 反编译:op 行通用还原。
  */
 var Builtins;
 (function (Builtins) {
@@ -1287,8 +1439,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * floor — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * floor — 一元运算。
+ *
+ * 语法:`floor(x)`
+ * 输出:`op floor mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=floor(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1301,8 +1456,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * item — 内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup",按 "item" 分派。
+ * item — 内容查询;mcode 为共享指令字 `lookup`,按 item 分派。
+ *
+ * 语法:`item(@copper-wall)`
+ * 输出:`lookup item mid.<ref> <s>`
+ * 反编译:`lookup item ` → `<结果>=item(<索引>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1321,7 +1479,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * lb — 以 2 为底对数(规范见 docs/instructions/front.md,op 名 logn)
+ * lb — 以 2 为底对数(op 名 logn,尾参 2)。
+ *
+ * 语法:`lb(x)`
+ * 输出:`op logn mid.<ref> <s> 2`
+ * 反编译:op logn 且末参为 2 → `<结果>=lb(<参2>)`。
  */
 var Builtins;
 (function (Builtins) {
@@ -1334,7 +1496,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * len — 二元运算(规范见 docs/instructions/front.md)
+ * len — 二元运算。
+ *
+ * 语法:`len(a,b)`
+ * 输出:`op len mid.<ref> <w0> <w1>`(w0/w1 为前两个参数)
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=len(a,b)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1351,7 +1517,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * lg — 常用对数(规范见 docs/instructions/front.md,op 名 log10)
+ * lg — 常用对数(op 名 log10)。
+ *
+ * 语法:`lg(x)`
+ * 输出:`op log10 mid.<ref> <s> 0`
+ * 反编译:op 行通用还原,log10 按别名表还原为 lg(<参数>)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1364,7 +1534,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * link — 方块链接引用(规范见 docs/instructions/front.md)
+ * link — 方块链接引用。
+ *
+ * 语法:`link(<索引>)`
+ * 输出:`getlink mid.<ref> <s>`
+ * 反编译:`getlink ` → `<结果>=link(<索引>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1382,8 +1556,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * liquid — 内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup",按 "liquid" 分派。
+ * liquid — 内容查询;mcode 为共享指令字 `lookup`,按 liquid 分派。
+ *
+ * 语法:`liquid(@copper-wall)`
+ * 输出:`lookup liquid mid.<ref> <s>`
+ * 反编译:`lookup liquid ` → `<结果>=liquid(<索引>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1402,7 +1579,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * ln — 自然对数(规范见 docs/instructions/front.md,op 名 log)
+ * ln — 自然对数(op 名 log)。
+ *
+ * 语法:`ln(x)`
+ * 输出:`op log mid.<ref> <s> 0`
+ * 反编译:op 行通用还原,log 按别名表还原为 ln(<参数>)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1415,7 +1596,12 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * log — 任意底对数(规范见 docs/instructions/front.md;两参交换)
+ * log — 任意底对数(两参交换)。
+ *
+ * 语法:`log(<底数>,<真数>)`
+ * 输出:`op logn mid.<ref> <w1> <w0>`(两参交换)
+ * 示例:`log(2,8)` → `op logn mid.1 8 2`
+ * 反编译:op 行通用还原(log 交换两参并去尾部 0)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1432,8 +1618,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * lookup — 通用内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup"(兜底:非标准内容类型)。
+ * lookup — 通用内容查询;mcode 为共享指令字 `lookup`(兜底:非标准内容类型)。
+ *
+ * 语法:`lookup(<类型>,<索引>)`
+ * 输出:`lookup <w0|block> mid.<ref> <wLast|0>`(类型缺省 block,索引取末参缺省 0)
+ * 反编译:`lookup ` 非标准类型 → `<结果>=lookup(<类型>,<索引>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1455,7 +1644,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * max — 二元运算(规范见 docs/instructions/front.md)
+ * max — 二元运算。
+ *
+ * 语法:`max(a,b)`
+ * 输出:`op max mid.<ref> <w0> <w1>`(w0/w1 为前两个参数)
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=max(a,b)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1472,7 +1665,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * min — 二元运算(规范见 docs/instructions/front.md)
+ * min — 二元运算。
+ *
+ * 语法:`min(a,b)`
+ * 输出:`op min mid.<ref> <w0> <w1>`(w0/w1 为前两个参数)
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=min(a,b)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1489,7 +1686,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * noise — 二元运算(规范见 docs/instructions/front.md)
+ * noise — 二元运算。
+ *
+ * 语法:`noise(a,b)`
+ * 输出:`op noise mid.<ref> <w0> <w1>`(w0/w1 为前两个参数)
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=noise(a,b)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1506,8 +1707,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * not — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * not — 一元运算。
+ *
+ * 语法:`not(x)`
+ * 输出:`op not mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=not(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1520,7 +1724,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * pack — 颜色打包(规范见 docs/instructions/front.md)
+ * pack — 颜色打包。
+ *
+ * 语法:`pack(<r>,<g>,<b>,<a>)`
+ * 输出:`packcolor mid.<ref> <pad(4, s)>`
+ * 反编译:`packcolor ` → `<结果>=pack(<r,g,b,a>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1541,7 +1749,12 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * radar — 方块雷达(规范见 docs/instructions/front.md)
+ * radar — 方块雷达(链式参数)。
+ *
+ * 语法:`radar().target(<t>).sort(<s>).main(<敌方目标>).order(<o>)`
+ * 链式键:target(缺省 enemy,any,any), sort(缺省 distance), main(缺省 @this), order(缺省 1)
+ * 输出:`radar <pad(any, 3, target)> <sort> <main> <order> mid.<ref>`
+ * 反编译:`radar ` → `<结果>=uradar(<主体>)` + .target/.order/.sort 链(@this 主体省略)
  */
 var Builtins;
 (function (Builtins) {
@@ -1586,8 +1799,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * rand — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * rand — 一元运算。
+ *
+ * 语法:`rand(x)`
+ * 输出:`op rand mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=rand(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1600,8 +1816,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * round — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * round — 一元运算。
+ *
+ * 语法:`round(x)`
+ * 输出:`op round mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=round(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1614,8 +1833,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * sign — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * sign — 一元运算。
+ *
+ * 语法:`sign(x)`
+ * 输出:`op sign mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=sign(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1628,7 +1850,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * sin — 三角函数(规范见 docs/instructions/front.md;输出无尾随 0)
+ * sin — 三角函数(输出无尾随 0)。
+ *
+ * 语法:`sin(x)`
+ * 输出:`op sin mid.<ref> <s>`
+ * 反编译:op 行通用还原(如 `<结果>=sin(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1641,8 +1867,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * sqrt — 一元运算(规范见 docs/instructions/front.md)
- * 无 restore:op 行由注册表通用 opRestore 还原。
+ * sqrt — 一元运算。
+ *
+ * 语法:`sqrt(x)`
+ * 输出:`op sqrt mid.<ref> <s> 0`
+ * 反编译:op 行由注册表通用 opRestore 还原(如 `<结果>=sqrt(<参数>)`)。
  */
 var Builtins;
 (function (Builtins) {
@@ -1655,7 +1884,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * tan — 三角函数(规范见 docs/instructions/front.md;输出无尾随 0)
+ * tan — 三角函数(输出无尾随 0)。
+ *
+ * 语法:`tan(x)`
+ * 输出:`op tan mid.<ref> <s>`
+ * 反编译:op 行通用还原。
  */
 var Builtins;
 (function (Builtins) {
@@ -1668,8 +1901,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * team — 内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup",按 "team" 分派。
+ * team — 内容查询;mcode 为共享指令字 `lookup`,按 team 分派。
+ *
+ * 语法:`team(@copper-wall)`
+ * 输出:`lookup team mid.<ref> <s>`
+ * 反编译:`lookup team ` → `<结果>=team(<索引>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1688,8 +1924,11 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * unit — 内容查询(规范见 docs/instructions/front.md)
- * mcode 为共享指令字 "lookup",按 "unit" 分派。
+ * unit — 内容查询;mcode 为共享指令字 `lookup`,按 unit 分派。
+ *
+ * 语法:`unit(@copper-wall)`
+ * 输出:`lookup unit mid.<ref> <s>`
+ * 反编译:`lookup unit ` → `<结果>=unit(<索引>)`
  */
 var Builtins;
 (function (Builtins) {
@@ -1708,7 +1947,13 @@ var Builtins;
     })(Front = Builtins.Front || (Builtins.Front = {}));
 })(Builtins || (Builtins = {}));
 /**
- * uradar — 单位雷达(规范见 docs/instructions/front.md)
+ * uradar — 单位雷达(链式参数)。
+ *
+ * 语法:`uradar().target(<t>).sort(<s>).order(<o>)`
+ * 链式键:target(缺省 enemy,any,any), sort(缺省 distance), order(缺省 1)
+ * 输出:`uradar <pad(any, 3, target)> <sort> 0 <order> mid.<ref>`
+ *   (target 按逗号切分填充到 3 项,缺省 any)
+ * 反编译:`uradar ` → `<结果>=uradar()` + .target/.order/.sort 链(非缺省时)
  */
 var Builtins;
 (function (Builtins) {

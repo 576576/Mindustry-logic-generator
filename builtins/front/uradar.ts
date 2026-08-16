@@ -1,6 +1,13 @@
 /**
- * uradar — 单位雷达(规范见 docs/instructions/front.md)
+ * uradar — 单位雷达(链式参数)。
+ *
+ * 语法:`uradar().target(<t>).sort(<s>).order(<o>)`
+ * 链式键:target(缺省 enemy,any,any), sort(缺省 distance), order(缺省 1)
+ * 输出:`uradar <pad(any, 3, target)> <sort> 0 <order> mid.<ref>`
+ *   (target 按逗号切分填充到 3 项,缺省 any)
+ * 反编译:`uradar ` → `<结果>=uradar()` + .target/.order/.sort 链(非缺省时)
  */
+
 namespace Builtins {
   export namespace Front {
     import H = Builtins.Helpers;

@@ -1,6 +1,14 @@
 /**
- * .ulocate — 链式定位指令(规范见 docs/instructions/dot.md)
+ * .ulocate — 链式定位指令。
+ *
+ * 语法:`<block>.ulocate(<type>).ore(<ore>).building(<bld>).enemy(<enemy>)`
+ * 链式键:main(定位类型,缺省 ore), ore(缺省 0), building(缺省 core), enemy(缺省 0)
+ * 行为:type 命中 Building 分类(buildingContains)时,building = type 且 type = building
+ * 输出:`ulocate <type> <building> <enemy> <ore> <block>.x <block>.y <block>.f <block>`
+ * 反编译:`ulocate ` → `<block>.ulocate(<type>)`(type 为 building 时用 building 参数;
+ *   追加 .ore(<ore>)(仅当 type 为 ore)、.enemy(<enemy>)(非 0 时)
  */
+
 namespace Builtins {
   export namespace DotCtrl {
     import H = Builtins.Helpers;

@@ -1,6 +1,11 @@
 /**
- * sin — 三角函数(规范见 docs/instructions/front.md;输出无尾随 0)
+ * sin — 三角函数(输出无尾随 0)。
+ *
+ * 语法:`sin(x)`
+ * 输出:`op sin mid.<ref> <s>`
+ * 反编译:op 行通用还原(如 `<结果>=sin(<参数>)`)。
  */
+
 namespace Builtins {
   export namespace Front {
     export const sin: InstrDef = {

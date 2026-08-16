@@ -1,6 +1,12 @@
 /**
- * radar — 方块雷达(规范见 docs/instructions/front.md)
+ * radar — 方块雷达(链式参数)。
+ *
+ * 语法:`radar().target(<t>).sort(<s>).main(<敌方目标>).order(<o>)`
+ * 链式键:target(缺省 enemy,any,any), sort(缺省 distance), main(缺省 @this), order(缺省 1)
+ * 输出:`radar <pad(any, 3, target)> <sort> <main> <order> mid.<ref>`
+ * 反编译:`radar ` → `<结果>=uradar(<主体>)` + .target/.order/.sort 链(@this 主体省略)
  */
+
 namespace Builtins {
   export namespace Front {
     import H = Builtins.Helpers;
