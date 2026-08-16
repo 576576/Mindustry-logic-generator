@@ -11,12 +11,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import cn.sumitm.mdtc.compiler.CodeCompiler;
+
 public final class Utils {
     private Utils() {}
 
     /** 内置指令引擎(指令/运算符/领域数据的运行期提供者) */
     private static BuiltinEngine eng() {
         return BuiltinEngine.get();
+    }
+
+    /** 编译期收集开关:true 时 stringSplit 的负数守卫等警告写入 CodeCompiler.lastWarnings;反编译路径关闭 */
+    private static boolean collectWarnings = false;
+
+    public static void setCollectWarnings(boolean on) {
+        collectWarnings = on;
+    }
+
+    public static boolean isCollectWarnings() {
+        return collectWarnings;
     }
 
     public static String readFile(String filePath) {
@@ -190,11 +203,18 @@ public final class Utils {
 
         for (int i = 0; i < tokens.size(); i++) {
             String token = tokens.get(i);
-            if (token.startsWith("-") && token.length() > 1 && !isNumeric(token)) {
-                List<String> tokenTo = List.of("(", "0", eng().subOperatorValue(), token.substring(1), ")");
-                tokens.remove(i);
-                tokens.addAll(i, tokenTo);
-                i += tokenTo.size() - 1;
+            if (token.startsWith("-") && token.length() > 1 && !Character.isWhitespace(token.charAt(1))) {
+                // 负数无空格守卫:减号与后续字符无空格,按负数/负变量解析,提示减法写法
+                if (collectWarnings) {
+                    CodeCompiler.addWarning("无空格负数 \"" + token
+                        + "\" 已按负数解析;若意图为减法请写成 \" - " + token.substring(1) + "\"(前后空格)");
+                }
+                if (!isNumeric(token)) {
+                    List<String> tokenTo = List.of("(", "0", eng().subOperatorValue(), token.substring(1), ")");
+                    tokens.remove(i);
+                    tokens.addAll(i, tokenTo);
+                    i += tokenTo.size() - 1;
+                }
             }
         }
 

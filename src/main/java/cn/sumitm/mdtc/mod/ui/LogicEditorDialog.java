@@ -1,11 +1,13 @@
 package cn.sumitm.mdtc.mod.ui;
 
 import arc.Core;
+import arc.graphics.Color;
 import arc.scene.ui.CheckBox;
 import arc.scene.ui.Label;
 import arc.scene.ui.ScrollPane;
 import arc.scene.ui.Slider;
 import arc.scene.ui.TextArea;
+import arc.util.Align;
 import arc.util.Log;
 import cn.sumitm.mdtc.compiler.CodeCompiler;
 import cn.sumitm.mdtc.compiler.CodeDecompiler;
@@ -19,6 +21,8 @@ public class LogicEditorDialog extends BaseDialog {
     private TextArea sourceArea;
     private TextArea outputArea;
     private Label statusLabel;
+    private Label warnLabel;
+    private ScrollPane warnScroll;
     private boolean autoFormat;
     private boolean autoLoad;
     private boolean autoSave;
@@ -120,6 +124,17 @@ public class LogicEditorDialog extends BaseDialog {
                 right.add(outputScroll).grow().fill();
             }).grow().fill().padLeft(PAD * 2).padRight(PAD * 3);
         }).grow().fill().minHeight(400f).row();
+
+        cont.table(warnBar -> {
+            warnBar.add(I18n.get("mdtc.warnings")).color(Color.orange).padRight(PAD * 2).left();
+            warnLabel = new Label("");
+            warnLabel.setWrap(true);
+            warnLabel.setAlignment(Align.topLeft);
+            warnScroll = new ScrollPane(warnLabel);
+            warnScroll.setFadeScrollBars(false);
+            warnScroll.setScrollingDisabledX(true);
+            warnBar.add(warnScroll).growX().height(2 * 20f); // 2 行高,可上下滚动
+        }).growX().pad(PAD).row();
 
         cont.table(statusBar -> {
             statusLabel = statusBar.add(I18n.get("mdtc.ready")).growX().left().get();
@@ -246,12 +261,14 @@ public class LogicEditorDialog extends BaseDialog {
             String result = CodeCompiler.compile(source);
             outputArea.setText(result);
             relayoutScrolls();
-            String warn = CodeCompiler.lastWarning;
-            if (warn != null) {
-                statusLabel.setText("[orange]" + warn);
-                Log.warn("[MdtC] " + warn);
-            } else {
+            var warnings = CodeCompiler.lastWarnings;
+            if (warnings.isEmpty()) {
+                warnLabel.setText("");
                 statusLabel.setText("[green]" + I18n.format("mdtc.compiled", result.split("\n").length));
+            } else {
+                warnLabel.setText("[orange]" + String.join("\n", warnings));
+                statusLabel.setText("[orange]" + I18n.format("mdtc.warn.count", warnings.size()));
+                for (String w : warnings) Log.warn("[MdtC] " + w);
             }
         } catch (Throwable ex) {
             statusLabel.setText("[red]" + I18n.get("mdtc.error.compile") + ex.getMessage());

@@ -73,9 +73,9 @@ public final class EmitCtx {
         return obj;
     }
 
-    /** 输出一条编译警告(打印到 stderr,不中断编译) */
+    /** 输出一条编译警告(收集到 CodeCompiler.lastWarnings 并打印到 stderr,不中断编译) */
     public void warn(String msg) {
-        Utils.printError(msg);
+        CodeCompiler.addWarning(msg);
     }
 
     /** Building 分类 contains(含模组运行期合并的游戏内容名) */

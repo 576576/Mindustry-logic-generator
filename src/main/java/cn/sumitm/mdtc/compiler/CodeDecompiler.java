@@ -20,6 +20,7 @@ public final class CodeDecompiler {
      * 主转换函数入口
      */
     public static String decompile(String codeBlock) {
+        Utils.setCollectWarnings(false);
         ArrayList<String> bashList = new ArrayList<>(List.of(codeBlock.split("\n")));
 
         stdCodeStream result_link = convertLink(stdCodeStream.of(bashList));

@@ -115,6 +115,36 @@ class CodeCompilerTest {
         // 无空格的 "-" 是标识符,不是减法
         assertThat(CodeCompiler.compile("x=a-b")).isEqualTo("set x a-b");
     }
+
+    // ==================== 负数无空格守卫警告 ====================
+
+    @Test void guard_negativeLiteral_warns() {
+        CodeCompiler.compile("x=(1 + -1)");
+        assertThat(CodeCompiler.lastWarnings)
+            .anyMatch(w -> w.contains("-1") && w.contains("减法"));
+    }
+
+    @Test void guard_negativeVar_warns() {
+        CodeCompiler.compile("y = -x0");
+        assertThat(CodeCompiler.lastWarnings)
+            .anyMatch(w -> w.contains("-x0") && w.contains("减法"));
+    }
+
+    @Test void guard_spacedSub_noWarning() {
+        CodeCompiler.compile("x=1 - 1");
+        assertThat(CodeCompiler.lastWarnings).isEmpty();
+    }
+
+    @Test void guard_hyphenIdentifier_noWarning() {
+        CodeCompiler.compile("x=phase-fabric");
+        assertThat(CodeCompiler.lastWarnings).isEmpty();
+    }
+
+    @Test void guard_legacyDotSub_noWarning() {
+        // 旧写法 .- 是完整运算符,不产生无空格负数
+        CodeCompiler.compile("x=1 .- 2");
+        assertThat(CodeCompiler.lastWarnings).isEmpty();
+    }
     @Test void compile_sub_rpnPrecedence() {
         assertContains("x=1 - 2*3", "op sub");
         assertContains("x=1 - 2*3", "op mul");

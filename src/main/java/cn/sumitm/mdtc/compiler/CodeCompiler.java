@@ -17,14 +17,27 @@ import cn.sumitm.mdtc.formatter.CodeFormatter;
 public final class CodeCompiler {
     private CodeCompiler() {}
 
-    /** 最近一次编译的警告信息（供 UI 读取） */
+    /** 最近一次编译的警告信息（供 UI 读取,兼容旧单条用法） */
     public static String lastWarning;
+
+    /** 最近一次编译的全部警告（供 UI 警告栏读取,去重保序） */
+    public static final List<String> lastWarnings = new ArrayList<>();
+
+    /** 追加一条编译警告（去重;编辑器/CLI 均可读取 lastWarnings） */
+    public static void addWarning(String msg) {
+        lastWarning = msg;
+        if (lastWarnings.contains(msg)) return;
+        lastWarnings.add(msg);
+        Utils.printError("Compile Warning: " + msg);
+    }
 
     /**
      * 主转换函数入口
      */
     public static String compile(String codeBlock) {
         lastWarning = null;
+        lastWarnings.clear();
+        Utils.setCollectWarnings(true);
         ArrayList<String> bashList = new ArrayList<>();
         Map<Integer, stdFuncStream> funcMap = new HashMap<>();
 
@@ -659,8 +672,7 @@ public final class CodeCompiler {
                         String jumpString = String.join(" ", "jump", index + "", parts[2]);
                         bashList.set(i, jumpString);
                     } else {
-                        Utils.printError("Compile Warning: jump() tag not found of [" + target + "] — replaced with DEFAULT");
-                        lastWarning = "jump() tag not found: " + target;
+                        addWarning("jump() tag not found: " + target + " — replaced with DEFAULT");
                         // 替换为 DEFAULT 并重新解析，避免输出不可用的动态标签
                         String fallback = String.join(" ", "jump", "DEFAULT", parts[2]);
                         bashList.set(i, fallback);
