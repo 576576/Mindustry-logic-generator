@@ -45,8 +45,6 @@ repositories {
 
 dependencies {
     implementation("info.picocli:picocli:4.7.7")
-    // LSP 语言服务器协议(lsp jar 构建时打包;mod jar 不包含)
-    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.21.2")
 
     // Mindustry 编译时依赖（mod 开发用，不打包进最终产物）
     if (useLatestMindustry) {
@@ -109,23 +107,6 @@ tasks.shadowJar {
     archiveFileName.set("${project.name}-${project.version}-Cli.jar")
     dependsOn("extractRhino")
     from(layout.buildDirectory.dir("generated/rhino"))
-}
-
-// ==================== LSP 语言服务器构建 ====================
-
-val lspJar = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("lspJar") {
-    group = "mdtc lsp"
-    description = "Build standalone LSP server JAR (stdio, for the VSCode extension)"
-    archiveFileName.set("${project.name}-${project.version}-Lsp.jar")
-    manifest {
-        attributes["Main-Class"] = "cn.sumitm.mdtc.lsp.LspMain"
-    }
-    dependsOn("extractRhino")
-    from(layout.buildDirectory.dir("generated/rhino"))
-    from(sourceSets.main.get().output)
-    from(project.provider { project.configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) } })
-    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "module-info.class")
-    mergeServiceFiles()
 }
 
 tasks.processResources {
@@ -200,9 +181,12 @@ tasks.register<Jar>("jarMod") {
     description = "Build desktop Mindustry mod JAR (includes mod.hjson + assets/)"
     archiveFileName.set("${project.name}-${project.version}-Desktop.jar")
     dependsOn("processModHjson", "cleanModJars")
+    // Gradle 9:重复条目默认报错;mod 打包对重复的 META-INF 等条目取 EXCLUDE
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     from(sourceSets.main.get().output) {
         exclude("version.properties")
+        exclude("cn/sumitm/mdtc/lsp/**") // Java LSP 已由 TS 实现取代,mod 不携带
     }
 
     // 打包运行时依赖（排除 picocli — CLI 工具专用，mod 不需要）
@@ -210,7 +194,9 @@ tasks.register<Jar>("jarMod") {
         configurations.runtimeClasspath.get()
             .filter { it.exists() && !it.name.contains("picocli") }
             .map { if (it.isDirectory) it else zipTree(it) }
-    })
+    }) {
+        exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+    }
 
     // 打包处理后的 mod.hjson（版本号已同步）
     from(tasks.named("processModHjson")) {
@@ -287,6 +273,7 @@ tasks.register<Jar>("deployMod") {
     group = "mindustry mod"
     description = "Deploy combined Mindustry mod JAR (Desktop + Android)"
     dependsOn("jarMod", "jarAndroidMod")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveFileName.set("${project.name}-${project.version}.jar")
 
     from({
