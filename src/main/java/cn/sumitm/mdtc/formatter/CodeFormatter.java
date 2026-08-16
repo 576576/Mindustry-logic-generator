@@ -49,14 +49,18 @@ public final class CodeFormatter {
     }
 
     /**
-     * 代码去格式化(去除空行及trim)
+     * 代码去格式化(trim 各行;保留空行,保证编译诊断的行号与源码一致)
      */
     public static String deformat(String codeBlock) {
         StringBuilder sb = new StringBuilder();
         for (String line : codeBlock.split("\n")) {
-            if (!line.isBlank())
-                sb.append(line.trim()).append("\n");
+            sb.append(line.trim()).append("\n");
         }
-        return sb.toString().trim();
+        // 仅去掉末尾多余换行(不 trim 开头,保留行号对齐)
+        String out = sb.toString();
+        while (!out.isEmpty() && out.endsWith("\n")) {
+            out = out.substring(0, out.length() - 1);
+        }
+        return out;
     }
 }

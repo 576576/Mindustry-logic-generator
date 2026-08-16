@@ -100,9 +100,33 @@ class LspServerTest {
             .filter(d -> d.getSeverity() == DiagnosticSeverity.Warning)
             .findFirst().orElse(null);
         assertThat(warn).isNotNull();
-        assertThat(warn.getMessage()).contains("line 3");
         assertThat(warn.getRange().getStart().getLine()).isEqualTo(2);
         assertThat(warn.getRange().getEnd().getLine()).isEqualTo(2);
+    }
+
+    @Test
+    void diagnostics_warningBelowCommentAndBlankLines() {
+        // 注释与空行之后的负数警告 → 仍精确标在源码行(回归:行号偏移)
+        open("file:///test.mdtc", "::注释\n\n\n::计算\nx=1 + -1");
+        Diagnostic warn = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Warning)
+            .findFirst().orElse(null);
+        assertThat(warn).isNotNull();
+        assertThat(warn.getRange().getStart().getLine()).isEqualTo(4);
+        assertThat(warn.getRange().getEnd().getLine()).isEqualTo(4);
+    }
+
+    @Test
+    void diagnostics_warningWithFunctionAbove() {
+        // 函数定义在上方(编译时函数块被提取,行号会变)→ 警告仍标在原文行
+        String code = "function void f(x){\n\tprint(x)\n}\n\n::主\nx=1 + -1";
+        open("file:///test.mdtc", code);
+        Diagnostic warn = lastDiagnostics().stream()
+            .filter(d -> d.getSeverity() == DiagnosticSeverity.Warning)
+            .findFirst().orElse(null);
+        assertThat(warn).isNotNull();
+        assertThat(warn.getRange().getStart().getLine()).isEqualTo(5);
+        assertThat(warn.getRange().getEnd().getLine()).isEqualTo(5);
     }
 
     @Test

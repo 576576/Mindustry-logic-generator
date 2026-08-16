@@ -15,6 +15,7 @@ import org.eclipse.lsp4j.Range;
 
 import cn.sumitm.mdtc.cli.Main;
 import cn.sumitm.mdtc.compiler.CodeCompiler;
+import cn.sumitm.mdtc.core.Utils;
 
 /**
  * 编译诊断收集:重定向 System.err 捕获编译错误,结合 CodeCompiler.lastWarnings
@@ -60,11 +61,23 @@ final class CompileDiagnostics {
             out.add(diagnostic(line, parseLine(line), DiagnosticSeverity.Error));
         }
 
-        // ---- 3. 警告(带行号的消息定位到该行,否则整个文档) ----
-        // 警告消息行号为 1-based(用户友好),转 LSP 0-based 需减 1
+        // ---- 3. 负数守卫警告:按原文逐行扫描精确定位(不依赖编译行号,
+        //      函数/import/repeat 展开或空行都不会造成偏移) ----
+        String[] lines = text.split("\n", -1);
+        for (int i = 0; i < lines.length; i++) {
+            String token = Utils.findInfixNegative(lines[i]);
+            if (token != null) {
+                out.add(diagnostic("中置运算符后无空格负数 \"" + token
+                    + "\" 已按负数解析;若意图为减法请写成 \" - " + token.substring(1)
+                    + "\"(前后空格)", i, DiagnosticSeverity.Warning));
+            }
+        }
+
+        // ---- 4. 其他警告(jump 标签缺失、chain 警告等;无行号,定位整个文档) ----
+        // 负数守卫消息已由第 3 步精确覆盖,这里跳过避免重复
         for (String w : CodeCompiler.lastWarnings) {
-            int ln = parseLine(w);
-            out.add(diagnostic(w, ln > 0 ? ln - 1 : -1, DiagnosticSeverity.Warning));
+            if (w.contains("中置运算符后无空格负数")) continue;
+            out.add(diagnostic(w, -1, DiagnosticSeverity.Warning));
         }
         return out;
     }

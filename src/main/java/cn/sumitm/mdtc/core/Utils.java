@@ -258,6 +258,23 @@ public final class Utils {
         return tokens;
     }
 
+    /**
+     * 检测一行中"中置运算符后无空格负数"的 token(供 LSP 按原文行精确定位警告)。
+     *
+     * @return 命中时返回负数 token(如 "-1");否则返回 null
+     */
+    public static String findInfixNegative(String line) {
+        List<String> tokens = stringSplit(line);
+        for (int i = 1; i < tokens.size(); i++) {
+            String t = tokens.get(i);
+            if (t.startsWith("-") && t.length() > 1 && !Character.isWhitespace(t.charAt(1))
+                    && isAfterInfixOperator(tokens, i)) {
+                return t;
+            }
+        }
+        return null;
+    }
+
     /** 是否位于中置运算符之后(排除赋值 =、括号与 always/never 伪运算符) */
     private static boolean isAfterInfixOperator(List<String> tokens, int idx) {
         if (idx <= 0) return false;

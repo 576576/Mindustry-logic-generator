@@ -22,8 +22,16 @@ class CodeFormatterTest {
     }
 
     @Test
-    void deformat_removesBlankLinesAndTrims() {
+    void deformat_trimsButKeepsBlankLines() {
+        // 保留空行:编译诊断的行号需与源码一致
         String input = "  x=1  \n\n  y=2  ";
+        String result = CodeFormatter.deformat(input);
+        assertThat(result).isEqualTo("x=1\n\ny=2");
+    }
+
+    @Test
+    void deformat_trimsEachLine() {
+        String input = "  x=1  \n  y=2  ";
         String result = CodeFormatter.deformat(input);
         assertThat(result).isEqualTo("x=1\ny=2");
     }
