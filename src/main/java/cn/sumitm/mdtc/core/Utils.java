@@ -220,7 +220,9 @@ public final class Utils {
                 if (collectWarnings && isAfterInfixOperator(tokens, i)) {
                     CodeCompiler.addWarning("line " + (currentLine + 1)
                         + ": 负数 \"" + token + "\" 未被 () 包裹;建议写成 \"(" + token
-                        + ")\" 或使用空格减法 \" - " + token.substring(1) + "\"");
+                        + ")\" 或使用空格减法 \" - " + token.substring(1)
+                        + "\" | Negative \"" + token + "\" is not wrapped in parentheses; use \"(" + token
+                        + ")\" or spaced subtraction \" - " + token.substring(1) + "\"");
                 }
                 if (!isNumeric(token)) {
                     List<String> tokenTo = List.of("(", "0", eng().subOperatorValue(), token.substring(1), ")");

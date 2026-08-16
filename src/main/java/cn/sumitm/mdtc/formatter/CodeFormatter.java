@@ -28,7 +28,7 @@ public final class CodeFormatter {
                     break;
                 }
             if (matchIndex < 0) {
-                Utils.printError("Syntax error on token \"}\", delete this token\n> " + line);
+                Utils.printError("Syntax error on token \"}\", delete this token | 语法错误:标记 \"}\" 无效,请删除该标记\n> " + line);
                 return "";
             }
 

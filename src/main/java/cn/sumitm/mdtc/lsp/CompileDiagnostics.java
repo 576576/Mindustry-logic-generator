@@ -48,6 +48,8 @@ final class CompileDiagnostics {
         } catch (Throwable t) {
             // 编译崩溃(如 RPN 栈越界)也转为错误诊断,避免客户端断连
             out.add(diagnostic("编译异常: " + t.getClass().getSimpleName()
+                + (t.getMessage() != null ? " - " + t.getMessage() : "")
+                + " | Compile exception: " + t.getClass().getSimpleName()
                 + (t.getMessage() != null ? " - " + t.getMessage() : ""), -1, DiagnosticSeverity.Error));
         } finally {
             System.setErr(oldErr);
@@ -59,7 +61,7 @@ final class CompileDiagnostics {
         String[] srcLines = text.split("\\n", -1);
         StringBuilder pending = new StringBuilder();
         for (String rawLine : errText.split("\\n")) {
-            String line = rawLine.trim().replaceAll("\\u001B\\[[;\\d]*m", "").trim();
+            String line = rawLine.replaceAll("\\x1B\\[[;\\d]*m", "").trim();
             if (line.isEmpty() || line.contains("Compile Warning:")) {
                 if (!pending.isEmpty()) {
                     out.add(errorFrom(pending.toString(), srcLines));
@@ -88,7 +90,9 @@ final class CompileDiagnostics {
             String token = Utils.findInfixNegative(lines[i]);
             if (token != null) {
                 out.add(diagnostic("负数 \"" + token + "\" 未被 () 包裹;建议写成 \"(" + token
-                    + ")\" 或使用空格减法 \" - " + token.substring(1) + "\"", i, DiagnosticSeverity.Warning));
+                    + ")\" 或使用空格减法 \" - " + token.substring(1)
+                    + "\" | Negative \"" + token + "\" is not wrapped in parentheses; use \"(" + token
+                    + ")\" or spaced subtraction \" - " + token.substring(1) + "\"", i, DiagnosticSeverity.Warning));
             }
         }
 

@@ -269,7 +269,7 @@ public final class CodeCompiler {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 if (end == -1) {
-                    Utils.printError("Syntax error on token \"(\", delete this token\n> " + expr);
+                    Utils.printError("Syntax error on token \"(\", delete this token | 语法错误:标记 \"(\" 无效,请删除该标记\n> " + expr);
                     return stream;
                 }
                 String s = expr.substring(start + entry.getKey().length(), end).trim();
@@ -311,7 +311,7 @@ public final class CodeCompiler {
             while (expr.contains(entry.getKey())) {
                 int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                 if (end == -1) {
-                    Utils.printError("Syntax error on token \"(\", delete this token\n> " + expr);
+                    Utils.printError("Syntax error on token \"(\", delete this token | 语法错误:标记 \"(\" 无效,请删除该标记\n> " + expr);
                     return stream;
                 }
                 String s = expr.substring(start + entry.getKey().length(), end).trim();
@@ -399,7 +399,7 @@ public final class CodeCompiler {
                 while (expr.contains(entry.getKey())) {
                     int start = expr.indexOf(entry.getKey()), end = Utils.getEndDotChain(expr, start);
                     if (end == -1) {
-                        Utils.printError("Syntax error on token \"(\", delete this token\n> " + expr);
+                        Utils.printError("Syntax error on token \"(\", delete this token | 语法错误:标记 \"(\" 无效,请删除该标记\n> " + expr);
                         return stream;
                     }
                     String s = expr.substring(start + entry.getKey().length(), end).trim();
@@ -535,7 +535,7 @@ public final class CodeCompiler {
             }
             if (line2Index == -1) {
                 if (lineIndex != -1) {
-                    Utils.printError("Syntax error on token \"{\", delete this token\n> " + bashList.get(lineIndex));
+                    Utils.printError("Syntax error on token \"{\", delete this token | 语法错误:标记 \"{\" 无效,请删除该标记\n> " + bashList.get(lineIndex));
                     return stdCodeStream.of();
                 } else break;
             }
@@ -563,7 +563,7 @@ public final class CodeCompiler {
 
                 String endIfLine = bashList.get(lineIndex - 1);
                 if (!endIfLine.startsWith("::") || !endIfLine.endsWith("_endIf")) {
-                    Utils.printError("Syntax error on token \"else\", delete this token\n> " + line);
+                    Utils.printError("Syntax error on token \"else\", delete this token | 语法错误:标记 \"else\" 无效,请删除该标记\n> " + line);
                     return stdCodeStream.of();
                 }
                 String jumpString = "jump " + tagTo + " always 0 0";
@@ -593,7 +593,7 @@ public final class CodeCompiler {
 
                 String[] forParts = bracketContent.split(";");
                 if (forParts.length != 3) {
-                    Utils.printError("Error: for() content not match");
+                    Utils.printError("Error: for() content not match | 错误:for() 内容不匹配");
                     return stdCodeStream.of();
                 }
                 ArrayList<String> initStream = convertCodeLine(stdCodeStream.of(forParts[0])).bash();
@@ -663,7 +663,7 @@ public final class CodeCompiler {
                         String jumpString = String.join(" ", "jump", index + "", parts[2]);
                         bashList.set(i, jumpString);
                     } else {
-                        addWarning("jump() tag not found: " + target + " — replaced with DEFAULT");
+                        addWarning("jump() 标签未找到: " + target + ",已替换为 DEFAULT | jump() tag not found: " + target + " — replaced with DEFAULT");
                         // 替换为 DEFAULT 并重新解析，避免输出不可用的动态标签
                         String fallback = String.join(" ", "jump", "DEFAULT", parts[2]);
                         bashList.set(i, fallback);
