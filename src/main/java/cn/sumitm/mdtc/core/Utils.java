@@ -219,8 +219,8 @@ public final class Utils {
                 // 避免 "x = -5"、"(-114514)" 等常规负数写法产生噪音
                 if (collectWarnings && isAfterInfixOperator(tokens, i)) {
                     CodeCompiler.addWarning("line " + (currentLine + 1)
-                        + ": 中置运算符后无空格负数 \"" + token
-                        + "\" 已按负数解析;若意图为减法请写成 \" - " + token.substring(1) + "\"(前后空格)");
+                        + ": 负数 \"" + token + "\" 未被 () 包裹;建议写成 \"(" + token
+                        + ")\" 或使用空格减法 \" - " + token.substring(1) + "\"");
                 }
                 if (!isNumeric(token)) {
                     List<String> tokenTo = List.of("(", "0", eng().subOperatorValue(), token.substring(1), ")");

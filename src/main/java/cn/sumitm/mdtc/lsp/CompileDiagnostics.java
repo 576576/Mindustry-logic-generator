@@ -87,16 +87,15 @@ final class CompileDiagnostics {
         for (int i = 0; i < lines.length; i++) {
             String token = Utils.findInfixNegative(lines[i]);
             if (token != null) {
-                out.add(diagnostic("中置运算符后无空格负数 \"" + token
-                    + "\" 已按负数解析;若意图为减法请写成 \" - " + token.substring(1)
-                    + "\"(前后空格)", i, DiagnosticSeverity.Warning));
+                out.add(diagnostic("负数 \"" + token + "\" 未被 () 包裹;建议写成 \"(" + token
+                    + ")\" 或使用空格减法 \" - " + token.substring(1) + "\"", i, DiagnosticSeverity.Warning));
             }
         }
 
         // ---- 4. 其他警告(jump 标签缺失、chain 警告等;无行号,定位整个文档) ----
         // 负数守卫消息已由第 3 步精确覆盖,这里跳过避免重复
         for (String w : CodeCompiler.lastWarnings) {
-            if (w.contains("中置运算符后无空格负数")) continue;
+            if (w.contains("未被 () 包裹")) continue;
             out.add(diagnostic(w, -1, DiagnosticSeverity.Warning));
         }
         return out;
